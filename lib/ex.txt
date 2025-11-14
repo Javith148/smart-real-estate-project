@@ -1,0 +1,76 @@
+Text(
+                    'Smart \nReal Estate\n',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 35,
+                      fontFamily: 'Lato',
+                      fontWeight: FontWeight.bold,
+                      letterSpacing: -1.08,
+                    ),
+                  ),
+
+
+
+                   Image.asset(
+                "assets/logo.png",
+                fit: BoxFit.cover,
+                width: 250,
+                height: 250,
+              ),
+
+
+
+
+              ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFF8BC83F),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+              ),
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => LoadPage1()),
+                );
+              },
+              child: const Text(
+                "Let's Start",
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 16,
+                  fontFamily: 'Lato',
+                  fontWeight: FontWeight.w700,
+                  letterSpacing: 0.48,
+                ),
+              ),
+            ),
+
+
+
+
+            Text.rich(
+              TextSpan(
+                children: [
+                  TextSpan(
+                    text: 'Made with love\n',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 12,
+                      fontFamily: 'Raleway',
+                      fontWeight: FontWeight.w400,
+                      letterSpacing: 0.30,
+                    ),
+                  ),
+                  TextSpan(
+                    text: 'v.1.0',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 12,
+                      fontFamily: 'Montserrat',
+                      fontWeight: FontWeight.w700,
+                      letterSpacing: 0.30,
+                    ),
+                  ),
