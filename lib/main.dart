@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:real_esate_finder/loader.dart';
-import 'package:real_esate_finder/screens/loader/page1.dart';
+
 
 
 void main() {
