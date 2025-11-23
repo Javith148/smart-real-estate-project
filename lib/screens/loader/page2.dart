@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:real_esate_finder/main_login.dart';
+import 'package:real_esate_finder/screens/FAQpage/FAQPage.dart';
 import 'package:real_esate_finder/screens/loader/page3.dart';
 
 class LoadPage2 extends StatelessWidget {
@@ -38,7 +38,7 @@ class LoadPage2 extends StatelessWidget {
                     onPressed: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => FAQpage()),
+                        MaterialPageRoute(builder: (context) => FAQPage()),
                       );
                     },
                     child: Text(

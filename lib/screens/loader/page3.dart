@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:real_esate_finder/main_login.dart';
+import 'package:real_esate_finder/screens/FAQpage/FAQPage.dart';
 
 
 class LoadPage3 extends StatelessWidget {
@@ -38,7 +39,7 @@ class LoadPage3 extends StatelessWidget {
                     onPressed: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => FAQpage()),
+                        MaterialPageRoute(builder: (context) => FAQPage()),
                       );
                     },
                     child: Text(
@@ -123,7 +124,7 @@ class LoadPage3 extends StatelessWidget {
               padding: EdgeInsets.symmetric(horizontal: width * 0.002),
               child: Stack(
                 children: [
-                  Center(
+                   Center(
                     child: Image.asset(
                       "assets/load_img3.png",
                       width: width,
@@ -146,7 +147,7 @@ class LoadPage3 extends StatelessWidget {
                       onPressed: () {
                         Navigator.push(
                           context,
-                          MaterialPageRoute(builder: (context) =>FAQpage()),
+                          MaterialPageRoute(builder: (context) =>LoginPage()),
                         );
                       },
                       child: const Text(

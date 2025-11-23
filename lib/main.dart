@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:real_esate_finder/loader.dart';
+import 'package:real_esate_finder/SplashScreen.dart';
+
 
 
 
@@ -17,17 +18,9 @@ class MyApp extends StatelessWidget {
       title: 'Real Esate Finder',
       debugShowCheckedModeBanner: false,
       home: const Scaffold(
-        body: Center(child: HomePage()),
+        body: Center(child: const SplashScreen()),
       ),
     );
   }
 }
 
-class HomePage extends StatelessWidget {
-  const HomePage({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Loader();
-  }
-}

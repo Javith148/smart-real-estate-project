@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:real_esate_finder/screens/FAQpage/FAQPage.dart';
+import 'package:real_esate_finder/screens/register/register.dart';
 
-class Register extends StatefulWidget {
-  const Register({super.key});
+class Maillogin extends StatefulWidget {
+  const Maillogin({super.key});
 
   @override
-  State<Register> createState() => _RegisterState();
+  State<Maillogin> createState() => _MailloginState();
 }
 
-class _RegisterState extends State<Register> {
+class _MailloginState extends State<Maillogin> {
   final _formKey = GlobalKey<FormState>();
   bool _obscurePassword = true;
 
@@ -86,42 +86,39 @@ class _RegisterState extends State<Register> {
     final height = MediaQuery.of(context).size.height;
 
     return Scaffold(
-      appBar: AppBar(
-        leading: Padding(
-          padding: EdgeInsets.only(left: width * 0.1, top: height * 0.02),
-          child: IconButton(
-            onPressed: () => Navigator.pop(context),
-            icon: const Icon(Icons.arrow_back_ios_new),
-            iconSize: width * 0.04,
-          ),
-        ),
-      ),
       body: SingleChildScrollView(
-        child: Padding(
-          padding: EdgeInsets.symmetric(vertical: height * 0.06, horizontal: width*0.08),
+        child: Form(
+          key: _formKey,
           child: Column(
             mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Row(
+              SizedBox(height: height * 0.015),
+              Image.asset("assets/login_back.png"),
+              SizedBox(height: height * 0.015),
+
+              // TITLE
+              Padding(
+                padding: EdgeInsets.only(left: width * 0.07),
+                child: Row(
                   children: [
                     Text.rich(
                       TextSpan(
                         children: [
                           TextSpan(
-                            text: "Create your ",
+                            text: "Let's",
                             style: TextStyle(
                               fontFamily: 'Lato',
-                              fontSize: width * 0.075,
+                              fontSize: width * 0.070,
                               fontWeight: FontWeight.w400,
                               color: const Color(0xFF1F4C6B),
                             ),
                           ),
                           TextSpan(
-                            text: "account",
+                            text: "\tSign In",
                             style: TextStyle(
                               fontFamily: 'Lato',
-                              fontSize: width * 0.075,
+                              fontSize: width * 0.070,
                               fontWeight: FontWeight.bold,
                               color: const Color(0xFF1F4C6B),
                             ),
@@ -131,22 +128,25 @@ class _RegisterState extends State<Register> {
                     ),
                   ],
                 ),
-              
+              ),
+
               SizedBox(height: height * 0.03),
 
-              
-                 Row(
+              Padding(
+                padding: EdgeInsets.only(left: width * 0.07),
+                child: Row(
                   children: [
                     Text(
-                      'Your journey begins with a new account.',
+                      'Welcome back! Please sign in to continue..',
                       style: TextStyle(
-                        fontSize: width * 0.045,
+                        fontSize: width * 0.040,
                         color: const Color(0xFF53577A),
                       ),
                     ),
                   ],
                 ),
-              
+              ),
+
               SizedBox(height: height * 0.05),
               buildCombinedError(width),
               SizedBox(height: height * 0.02),
@@ -307,16 +307,17 @@ class _RegisterState extends State<Register> {
               ),
 
               // rest of UI...
-               Row(
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: width * 0.09),
+                child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     TextButton(
-                      onPressed: () { Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (context) => FAQPage()),
-                        );},
+                      onPressed: () {
+                       
+                      },
                       child: Text(
-                        "Terms of service",
+                        "Forget password?",
                         style: TextStyle(
                           color: const Color(0xFF1F4C6B),
                           fontSize: height * 0.018,
@@ -342,9 +343,174 @@ class _RegisterState extends State<Register> {
                     ),
                   ],
                 ),
-              
+              ),
 
               SizedBox(height: height * 0.025),
+
+              // LOGIN BUTTON
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFF8BC83F),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                ),
+                onPressed: () {
+                  // run validators; they set emailError/passError inside
+                  final valid = _formKey.currentState!.validate();
+
+                  // if invalid, the combined container will show messages (setState already called inside validators)
+                  if (valid) {
+                    // clear errors on success
+                    setState(() {
+                      emailError = null;
+                      passError = null;
+                    });
+
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text("Form Submitted")),
+                    );
+
+                    print(
+                      "mail id ${mailController.text}\npassword ${passController.text}",
+                    );
+
+                    mailController.clear();
+                    passController.clear();
+                  } else {
+                    // ensure rebuild to show messages (validators already called but call setState once)
+                    setState(() {});
+                  }
+                },
+                child: SizedBox(
+                  width: width * 0.59,
+                  height: height * 0.07,
+                  child: Center(
+                    child: Text(
+                      "Login",
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: height * 0.02,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+
+              SizedBox(height: height * 0.045),
+
+              // OR LINE
+              Center(
+                child: Stack(
+                  children: [
+                    Positioned(
+                      top: height * 0.015,
+                      left: height * 0.035,
+                      right: height * 0.035,
+                      child: Container(
+                        width: width * 0.85,
+                        height: height * 0.0005,
+                        color: Colors.grey,
+                      ),
+                    ),
+                    Center(
+                      child: Container(
+                        height: height * 0.03,
+                        width: width * 0.1,
+                        alignment: Alignment.center,
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        child: Text(
+                          "or",
+                          style: TextStyle(
+                            color: Colors.grey,
+                            fontSize: height * 0.02,
+                            fontWeight: FontWeight.w500,
+                            fontFamily: 'Raleway',
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+
+              // SOCIAL BUTTONS
+              Padding(
+                padding: EdgeInsets.symmetric(
+                  horizontal: width * 0.09,
+                  vertical: height * 0.035,
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Container(
+                      width: width * 0.38,
+                      height: height * 0.08,
+                      decoration: BoxDecoration(
+                        color: const Color.fromARGB(255, 239, 239, 240),
+                        borderRadius: BorderRadius.circular(25),
+                      ),
+                      child: Center(
+                        child: Image.asset(
+                          "assets/google_icon.png",
+                          width: width * 0.08,
+                        ),
+                      ),
+                    ),
+                    Container(
+                      width: width * 0.38,
+                      height: height * 0.08,
+                      decoration: BoxDecoration(
+                        color: const Color.fromARGB(255, 239, 239, 240),
+                        borderRadius: BorderRadius.circular(25),
+                      ),
+                      child: Center(
+                        child: Image.asset(
+                          "assets/facebook.png",
+                          width: width * 0.08,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              SizedBox(height: height * 0.040),
+
+              // REGISTER
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    "Don't have an account? ",
+                    style: TextStyle(
+                      color: Colors.black45,
+                      fontSize: height * 0.018,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+
+                  TextButton(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => Register()),
+                      );
+                    },
+                    child: Text(
+                      "Register",
+                      style: TextStyle(
+                        color: const Color(0xFF1F4C6B),
+                        fontSize: height * 0.018,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             ],
           ),
         ),
