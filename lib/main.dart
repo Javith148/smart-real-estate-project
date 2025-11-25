@@ -1,11 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:real_esate_finder/CreateProvider.dart';
 import 'package:real_esate_finder/SplashScreen.dart';
-
-
-
+import 'package:real_esate_finder/screens/register/register.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(
+    MultiProvider(
+      providers: [ChangeNotifierProvider(create: (_) => Createprovider())],
+      child: const MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
@@ -14,13 +19,11 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      
       title: 'Real Esate Finder',
       debugShowCheckedModeBanner: false,
       home: const Scaffold(
-        body: Center(child: const SplashScreen()),
-      ),
+        backgroundColor: Colors.white,
+        body: Center(child: const SplashScreen())),
     );
   }
 }
-

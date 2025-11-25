@@ -1,7 +1,14 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
+import 'package:real_esate_finder/CreateProvider.dart';
 import 'package:real_esate_finder/homepage.dart';
 import 'package:real_esate_finder/screens/FAQpage/FAQPage.dart';
+import 'package:real_esate_finder/screens/register/Otp.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:provider/provider.dart';
+import 'package:mailer/mailer.dart';
+import 'package:mailer/smtp_server.dart';
 
 class Register extends StatefulWidget {
   const Register({super.key});
@@ -83,6 +90,35 @@ class _RegisterState extends State<Register> {
         isNameFocused = nameFocus.hasFocus;
       });
     });
+  }
+
+  String otpGenrated() {
+    return (1000 + Random().nextInt(9000)).toString();
+  }
+
+  Future<void> sendOtpMail(String toMail, String otp) async {
+    String username = 'javithjavi148@gmail.com';
+    String password = 'mkhf uefe xbff udta';
+
+    final smtpServer = gmail(username, password);
+
+    final message = Message()
+      ..from = Address(username, "My App")
+      ..recipients.add(toMail)
+      ..subject = "Your OTP Code"
+      ..html =
+          """
+      <h2>Your OTP Code</h2>
+      <p>Your OTP is <b>$otp</b></p>
+      <p>Use within 5 minutes.</p>
+    """;
+
+    try {
+      await send(message, smtpServer);
+      print("Mail Sent Successfully");
+    } catch (e) {
+      print("Mail Error: $e");
+    }
   }
 
   Widget buildCombinedError(double width) {
@@ -254,6 +290,11 @@ class _RegisterState extends State<Register> {
                               border: InputBorder.none,
                               hintText: "Full Name",
                             ),
+                            onChanged: (value) {
+                              context.read<Createprovider>().setUsername(
+                                nameController.text.trim(),
+                              );
+                            },
                             validator: (value) {
                               if (value == null || value.isEmpty) {
                                 setState(() {
@@ -331,6 +372,11 @@ class _RegisterState extends State<Register> {
                               border: InputBorder.none,
                               hintText: "Email",
                             ),
+                            onChanged: (value) {
+                              context.read<Createprovider>().setMailid(
+                                mailController.text.trim(),
+                              );
+                            },
                             // validator only sets emailError and returns a non-null string to mark invalid
                             validator: (value) {
                               if (value == null || value.isEmpty) {
@@ -411,6 +457,12 @@ class _RegisterState extends State<Register> {
                               border: InputBorder.none,
                               hintText: "Password",
                             ),
+                            onChanged: (value) {
+                              context.read<Createprovider>().setPassword(
+                                passController.text.trim(),
+                              );
+                            },
+
                             validator: (value) {
                               if (value == null || value.isEmpty) {
                                 setState(() {
@@ -492,7 +544,7 @@ class _RegisterState extends State<Register> {
 
                 SizedBox(height: height * 0.025),
 
-                // LOGIN BUTTON
+                // Resgiter BUTTON
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xFF8BC83F),
@@ -509,9 +561,17 @@ class _RegisterState extends State<Register> {
                       prefs.setString("username", storeName);
                       await prefs.setBool("isLoggedIn", true);
 
+                      String userMail = mailController.text.trim();
+
+                      String otp = otpGenrated();
+
+                      await sendOtpMail(userMail, otp);
+
                       Navigator.pushReplacement(
                         context,
-                        MaterialPageRoute(builder: (context) => HomePage()),
+                        MaterialPageRoute(
+                          builder: (context) => OtpPage(otp: otp),
+                        ),
                       );
                     }
                   },
@@ -532,7 +592,7 @@ class _RegisterState extends State<Register> {
                 ),
 
                 Text(
-                  "name ${storeName} mail id ${storeMail} pass ${storePass}",
+                  "name ${storeName}\n mail id ${storeMail}\n pass ${storePass} ",
                 ),
               ],
             ),
