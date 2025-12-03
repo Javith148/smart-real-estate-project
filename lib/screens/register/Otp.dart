@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:real_esate_finder/CreateProvider.dart';
 import 'package:real_esate_finder/homepage.dart';
-
+import 'dart:async';
 
 class OtpPage extends StatefulWidget {
   final String otp;
@@ -35,7 +35,29 @@ class _OtpPageState extends State<OtpPage> {
     f2.dispose();
     f3.dispose();
     f4.dispose();
+    timer?.cancel();
     super.dispose();
+  }
+
+  int seconds = 60;
+  Timer? timer;
+
+  @override
+  void initState() {
+    super.initState();
+    startTimer();
+  }
+
+  void startTimer() {
+    timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      if (seconds > 0) {
+        setState(() {
+          seconds--;
+        });
+      } else {
+        timer.cancel();
+      }
+    });
   }
 
   @override
@@ -123,17 +145,7 @@ class _OtpPageState extends State<OtpPage> {
                 ),
               ),
 
-              Padding(
-                padding: EdgeInsets.only(left: width * 0.07),
-                child: Text(
-                  "OTP is: ${widget.otp}",
-                  style: TextStyle(
-                    fontSize: width * 0.045,
-                    fontWeight: FontWeight.bold,
-                    color: Color(0xFF1F4C6B),
-                  ),
-                ),
-              ),
+             
               SizedBox(height: height * 0.12),
 
               // OTP BOXES ROW (fixed)
@@ -150,32 +162,50 @@ class _OtpPageState extends State<OtpPage> {
                 ],
               ),
 
-              SizedBox(height: 40),
-
-              // VERIFY BUTTON
-              Center(
-                child: ElevatedButton(
-                  onPressed: () {
-                    String enteredOtp =
-                        field1.text + field2.text + field3.text + field4.text;
-
-                    if (enteredOtp == widget.otp) {
-                        Navigator.push(context, MaterialPageRoute(builder: (context)=>HomePage()));
-
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text("OTP Verified Successfully!")),
-                      );
-                    } else {
-                      ScaffoldMessenger.of(
-                        context,
-                      ).showSnackBar(SnackBar(content: Text("Incorrect OTP")));
-                    }
-                  },
-                  child: Text("Verify OTP"),
-                ),
+              SizedBox(height: height * 0.3),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(
+                    Icons.timer_outlined,
+                    size: height * 0.025,
+                    color: Color(0xFF1F4C6B),
+                  ),
+                  SizedBox(width: width * 0.015),
+                  Text(
+                    "00.$seconds",
+                    style: TextStyle(
+                      fontSize: width * 0.05,
+                      fontWeight: FontWeight.bold,
+                      color: Color(0xFF1F4C6B),
+                    ),
+                  ),
+                ],
               ),
-
-             
+              SizedBox(height: height * 0.02),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    "Didn't receive the OTP?",
+                    style: TextStyle(
+                      fontSize: width * 0.040,
+                      color: Color(0xFF53577A),
+                    ),
+                  ),
+                  TextButton(
+                    onPressed: () {},
+                    child: Text(
+                      "Resend OTP",
+                      style: TextStyle(
+                        fontSize: width * 0.040,
+                        fontWeight: FontWeight.bold,
+                        color: Color(0xFF1F4C6B),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             ],
           ),
         ),
@@ -216,9 +246,40 @@ class _OtpPageState extends State<OtpPage> {
             counterText: "",
           ),
 
+          // HERE — UPDATED
           onChanged: (value) {
-            if (value.length == 1 && nextNode != null) {
-              FocusScope.of(context).requestFocus(nextNode);
+            if (value.length == 1) {
+              if (nextNode != null) {
+                FocusScope.of(context).requestFocus(nextNode);
+              }
+
+              // Check full OTP
+              String userOtp =
+                  field1.text + field2.text + field3.text + field4.text;
+
+              if (userOtp.length == 4) {
+                if (userOtp == widget.otp) {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => HomePage()),
+                  );
+
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text("OTP Verified Successfully!")),
+                  );
+                } else {
+                  ScaffoldMessenger.of(
+                    context,
+                  ).showSnackBar(SnackBar(content: Text("Incorrect OTP")));
+
+                  // Clear fields on wrong OTP
+                  field1.clear();
+                  field2.clear();
+                  field3.clear();
+                  field4.clear();
+                  FocusScope.of(context).requestFocus(f1);
+                }
+              }
             }
           },
         ),

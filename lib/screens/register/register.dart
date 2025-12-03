@@ -103,15 +103,45 @@ class _RegisterState extends State<Register> {
     final smtpServer = gmail(username, password);
 
     final message = Message()
-      ..from = Address(username, "My App")
-      ..recipients.add(toMail)
-      ..subject = "Your OTP Code"
-      ..html =
-          """
-      <h2>Your OTP Code</h2>
-      <p>Your OTP is <b>$otp</b></p>
-      <p>Use within 5 minutes.</p>
-    """;
+     ..from = Address(username, "Smart Real esate")
+..recipients.add(toMail)
+..subject = "🔐 Verification Code – Your One-Time Password (OTP)"
+..html = """
+<!DOCTYPE html>
+<html>
+<body style="font-family: Arial, sans-serif; background-color:#f4f4f4; padding:20px;">
+  <div style="max-width:500px; margin:auto; background:white; padding:25px; border-radius:10px; box-shadow:0 2px 8px rgba(0,0,0,0.1);">
+
+    <h2 style="color:#333; text-align:center;">Your Verification Code</h2>
+    <p style="font-size:15px; color:#555;">
+      Hello,
+      <br><br>
+      Please use the One-Time Password (OTP) provided below to verify your email address.
+    </p>
+
+    <div style="text-align:center; margin:30px 0;">
+      <span style="font-size:32px; font-weight:bold; padding:12px 30px; background:#eef1ff; color:#2b3aff; border-radius:8px; display:inline-block;">
+        $otp
+      </span>
+    </div>
+
+    <p style="font-size:14px; color:#555;">
+      This OTP is valid for <b>5 minutes</b>. Do not share it with anyone for security reasons.
+    </p>
+
+    <hr style="border:0; border-top:1px solid #eee; margin:20px 0;">
+
+    <p style="font-size:13px; color:#888; text-align:center;">
+      If you didn’t request this, please ignore this email.
+      <br><br>
+      — My App Security Team
+    </p>
+
+  </div>
+</body>
+</html>
+""";
+
 
     try {
       await send(message, smtpServer);

@@ -1,82 +1,26 @@
 import 'package:flutter/material.dart';
-import 'package:real_esate_finder/screens/FAQpage/FAQPage.dart';
+import 'package:provider/provider.dart';
+import 'package:real_esate_finder/CreateProvider.dart';
+import 'package:real_esate_finder/main_login.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
-class Register extends StatefulWidget {
-  const Register({super.key});
+class HomePage extends StatefulWidget {
+  const HomePage({super.key});
 
   @override
-  State<Register> createState() => _RegisterState();
+  State<HomePage> createState() => _HomePageState();
 }
 
-class _RegisterState extends State<Register> {
-  final _formKey = GlobalKey<FormState>();
-  bool _obscurePassword = true;
+class _HomePageState extends State<HomePage> {
+  // Logout Function
+  Future<void> logout(BuildContext context) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.clear(); // Removing saved login/session details
 
-  TextEditingController mailController = TextEditingController();
-  TextEditingController passController = TextEditingController();
-
-  FocusNode emailFocus = FocusNode();
-  bool isFocused = false;
-  FocusNode passFocus = FocusNode();
-  bool isPassFocused = false;
-
-  String? emailError;
-  String? passError;
-
-  @override
-  void initState() {
-    super.initState();
-
-    emailFocus.addListener(() {
-      setState(() {
-        isFocused = emailFocus.hasFocus;
-      });
-    });
-
-    passFocus.addListener(() {
-      setState(() {
-        isPassFocused = passFocus.hasFocus;
-      });
-    });
-  }
-
-  Widget buildCombinedError(double width) {
-    final width = MediaQuery.of(context).size.width;
-    final height = MediaQuery.of(context).size.height;
-    // If no error → empty space
-    if (emailError == null && passError == null) {
-      return const SizedBox.shrink();
-    }
-
-    // If both fields have error → show only ONE message
-    String finalMessage;
-
-    if (emailError != null && passError != null) {
-      finalMessage = "Please enter valid email & password";
-    } else if (emailError != null) {
-      finalMessage = emailError!;
-    } else {
-      finalMessage = passError!;
-    }
-
-    return Container(
-      width: width * 0.85,
-      height: height * 0.07,
-      padding: const EdgeInsets.all(12),
-      margin: const EdgeInsets.only(top: 8),
-      decoration: BoxDecoration(
-        color: const Color(0xFF1F4C6B),
-        borderRadius: BorderRadius.circular(8),
-      ),
-      child: Center(
-        child: Expanded(
-          child: Text(
-            finalMessage,
-            style: TextStyle(color: Colors.white, fontSize: width * 0.035),
-            textAlign: TextAlign.center,
-          ),
-        ),
-      ),
+    // Go to Login Page
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (context) => const LoginPage()),
     );
   }
 
@@ -84,270 +28,162 @@ class _RegisterState extends State<Register> {
   Widget build(BuildContext context) {
     final width = MediaQuery.of(context).size.width;
     final height = MediaQuery.of(context).size.height;
+    // Read Username from Provider
+    final name = context.watch<Createprovider>().username;
+    final mail = context.watch<Createprovider>().mailid;
+    final pass = context.watch<Createprovider>().password;
+
+     int pageIndex = 0;
+  final page = [
+    Center(),
+    Center(),
+    Center(),
+    Center(),
+    Center(),
+   
+  ];
 
     return Scaffold(
-      appBar: AppBar(
-        leading: Padding(
-          padding: EdgeInsets.only(left: width * 0.1, top: height * 0.02),
-          child: IconButton(
-            onPressed: () => Navigator.pop(context),
-            icon: const Icon(Icons.arrow_back_ios_new),
-            iconSize: width * 0.04,
-          ),
+      backgroundColor: Colors.white,
+      // appBar: AppBar(
+      //   title: const Text("Home Page"),
+      //   actions: [
+      //     IconButton(
+      //       icon: const Icon(Icons.logout),
+      //       onPressed: () => logout(context),
+      //     ),
+      //   ],
+      // ),
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            SizedBox(
+              height: height * 0.30,
+              child: Stack(
+                clipBehavior: Clip.none,
+                children: [
+                  // Background Circle
+                  Positioned(
+                    left: width * -0.25,
+                    top: height * -0.15,
+                    child: Container(
+                      width: width * 0.95,
+                      height: height * 0.55,
+                      decoration: const BoxDecoration(
+                        color: Color.fromARGB(83, 102, 181, 230),
+                        shape: BoxShape.circle,
+                      ),
+                    ),
+                  ),
+
+                  // Row overlay
+                  Positioned(
+                    top: height * 0.05,
+                    left: width * 0.07,
+                    right: width * 0.05,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        Container(
+                          width: width * 0.35,
+                          height: width * 0.12,
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(25),
+                          ),
+                          child: Row(
+                            children: [
+                              SizedBox(width: width * 0.035),
+                              Icon(
+                                Icons.location_on,
+                                size: height * 0.022,
+                                color: Color(0xFF1F4C6B),
+                              ),
+                              SizedBox(width: width * 0.02),
+                              Text(
+                                "Coimbatore, TN",
+                                style: TextStyle(
+                                  fontSize: width * 0.032,
+                                  fontWeight: FontWeight.bold,
+                                  color: Color(0xFF1F4C6B),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        SizedBox(width: width * 0.23),
+                        Container(
+                          width: width * 0.12,
+                          height: width * 0.12,
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            shape: BoxShape.circle,
+                            border: Border.all(
+                              color: const Color(0xFF8BC83F),
+                              width: 2,
+                            ),
+                          ),
+                          child: Icon(
+                            Icons.notifications_none_outlined,
+                            size: height * 0.025,
+                            color: Color(0xFF1F4C6B),
+                          ),
+                        ),
+                        SizedBox(width: width * 0.04),
+                        Container(
+                          width: width * 0.12,
+                          height: width * 0.12,
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            shape: BoxShape.circle,
+                            border: Border.all(color: Colors.grey, width: 0.1),
+                          ),
+                          child: Icon(
+                            Icons.person_2_outlined,
+                            size: height * 0.025,
+                            color: Color(0xFF1F4C6B),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
         ),
       ),
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: EdgeInsets.symmetric(vertical: height * 0.06, horizontal: width*0.08),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                  children: [
-                    Text.rich(
-                      TextSpan(
-                        children: [
-                          TextSpan(
-                            text: "Create your ",
-                            style: TextStyle(
-                              fontFamily: 'Lato',
-                              fontSize: width * 0.075,
-                              fontWeight: FontWeight.w400,
-                              color: const Color(0xFF1F4C6B),
-                            ),
-                          ),
-                          TextSpan(
-                            text: "account",
-                            style: TextStyle(
-                              fontFamily: 'Lato',
-                              fontSize: width * 0.075,
-                              fontWeight: FontWeight.bold,
-                              color: const Color(0xFF1F4C6B),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              
-              SizedBox(height: height * 0.03),
+       bottomNavigationBar: BottomNavigationBar(
+        type: BottomNavigationBarType.fixed,
+        backgroundColor: Colors.white,
+        unselectedItemColor: Colors.grey,
+        selectedItemColor:     Color(0xFF1F4C6B),
+        currentIndex: pageIndex,
+        onTap: (value) {
+          setState(() {
+            pageIndex = value;
+          });
+        },
 
-              
-                 Row(
-                  children: [
-                    Text(
-                      'Your journey begins with a new account.',
-                      style: TextStyle(
-                        fontSize: width * 0.045,
-                        color: const Color(0xFF53577A),
-                      ),
-                    ),
-                  ],
-                ),
-              
-              SizedBox(height: height * 0.05),
-              buildCombinedError(width),
-              SizedBox(height: height * 0.02),
-              // EMAIL FIELD
-              Container(
-                width: width * 0.85,
-                height: width * 0.15,
-                decoration: BoxDecoration(
-                  color: const Color(0xFFF4F4F8),
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(
-                    color: isFocused
-                        ? const Color(0xFF4CAF50)
-                        : Colors.transparent,
-                    width: 2,
-                  ),
-                ),
-                child: Row(
-                  children: [
-                    if (!isFocused)
-                      Padding(
-                        padding: EdgeInsets.only(left: width * 0.04),
-                        child: Icon(
-                          Icons.email_outlined,
-                          size: width * 0.06,
-                          color: const Color(0xFF1F4C6B),
-                        ),
-                      ),
-
-                    Expanded(
-                      child: Padding(
-                        padding: EdgeInsets.only(
-                          left: isFocused ? width * 0.04 : width * 0.03,
-                          right: width * 0.03,
-                        ),
-                        child: TextFormField(
-                          controller: mailController,
-                          focusNode: emailFocus,
-                          decoration: const InputDecoration(
-                            border: InputBorder.none,
-                            hintText: "Email",
-                          ),
-                          // validator only sets emailError and returns a non-null string to mark invalid
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              setState(() {
-                                emailError = "Please enter your email";
-                              });
-                              return "";
-                            }
-                            if (!value.contains("@")) {
-                              setState(() {
-                                emailError = "Please enter a valid email";
-                              });
-                              return "";
-                            }
-
-                            // valid -> clear error
-                            setState(() {
-                              emailError = null;
-                            });
-                            return null;
-                          },
-                        ),
-                      ),
-                    ),
-
-                    if (isFocused)
-                      Padding(
-                        padding: EdgeInsets.only(right: width * 0.04),
-                        child: Icon(
-                          Icons.email_outlined,
-                          size: width * 0.06,
-                          color: const Color(0xFF1F4C6B),
-                        ),
-                      ),
-                  ],
-                ),
-              ),
-
-              SizedBox(height: height * 0.02),
-
-              // PASSWORD FIELD
-              Container(
-                width: width * 0.85,
-                height: width * 0.15,
-                decoration: BoxDecoration(
-                  color: const Color(0xFFF4F4F8),
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(
-                    color: isPassFocused
-                        ? const Color(0xFF4CAF50)
-                        : Colors.transparent,
-                    width: 2,
-                  ),
-                ),
-                child: Row(
-                  children: [
-                    if (!isPassFocused)
-                      Padding(
-                        padding: EdgeInsets.only(left: width * 0.04),
-                        child: Icon(
-                          Icons.lock_outline,
-                          size: width * 0.06,
-                          color: const Color(0xFF1F4C6B),
-                        ),
-                      ),
-
-                    Expanded(
-                      child: Padding(
-                        padding: EdgeInsets.only(
-                          left: isPassFocused ? width * 0.04 : width * 0.03,
-                          right: width * 0.03,
-                        ),
-                        child: TextFormField(
-                          controller: passController,
-                          focusNode: passFocus,
-                          obscureText: _obscurePassword,
-                          decoration: const InputDecoration(
-                            border: InputBorder.none,
-                            hintText: "Password",
-                          ),
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              setState(() {
-                                passError = "Please enter your password";
-                              });
-                              return "";
-                            }
-                            if (value.length < 6) {
-                              setState(() {
-                                passError =
-                                    "Password must be at least 6 characters";
-                              });
-                              return "";
-                            }
-
-                            setState(() {
-                              passError = null;
-                            });
-                            return null;
-                          },
-                        ),
-                      ),
-                    ),
-
-                    if (isPassFocused)
-                      Padding(
-                        padding: EdgeInsets.only(right: width * 0.04),
-                        child: Icon(
-                          Icons.lock_outline,
-                          size: width * 0.06,
-                          color: const Color(0xFF1F4C6B),
-                        ),
-                      ),
-                  ],
-                ),
-              ),
-
-              // rest of UI...
-               Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    TextButton(
-                      onPressed: () { Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (context) => FAQPage()),
-                        );},
-                      child: Text(
-                        "Terms of service",
-                        style: TextStyle(
-                          color: const Color(0xFF1F4C6B),
-                          fontSize: height * 0.018,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-
-                    TextButton(
-                      onPressed: () {
-                        setState(() {
-                          _obscurePassword = !_obscurePassword;
-                        });
-                      },
-                      child: Text(
-                        _obscurePassword ? "Show password" : "Hide password",
-                        style: TextStyle(
-                          color: const Color(0xFF1F4C6B),
-                          fontSize: height * 0.018,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              
-
-              SizedBox(height: height * 0.025),
-            ],
+        items: [
+          BottomNavigationBarItem(icon: Icon(Icons.home), ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.search_rounded),
+           
           ),
-        ),
+         
+          BottomNavigationBarItem(
+            icon: Icon(Icons.favorite),
+          
+          ),
+           BottomNavigationBarItem(
+            icon: Icon(Icons.person_2_rounded),
+            
+          ),
+        
+        
+         
+        ],
       ),
     );
   }
