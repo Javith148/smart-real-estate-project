@@ -63,9 +63,7 @@ class _RegisterState extends State<Register> {
       storePass = passController.text;
     });
 
-    nameController.clear();
-    mailController.clear();
-    passController.clear();
+   
   }
 
   @override
@@ -103,10 +101,11 @@ class _RegisterState extends State<Register> {
     final smtpServer = gmail(username, password);
 
     final message = Message()
-     ..from = Address(username, "Smart Real esate")
-..recipients.add(toMail)
-..subject = "🔐 Verification Code – Your One-Time Password (OTP)"
-..html = """
+      ..from = Address(username, "Smart Real esate")
+      ..recipients.add(toMail)
+      ..subject = "🔐 Verification Code – Your One-Time Password (OTP)"
+      ..html =
+          """
 <!DOCTYPE html>
 <html>
 <body style="font-family: Arial, sans-serif; background-color:#f4f4f4; padding:20px;">
@@ -141,7 +140,6 @@ class _RegisterState extends State<Register> {
 </body>
 </html>
 """;
-
 
     try {
       await send(message, smtpServer);
@@ -582,30 +580,31 @@ class _RegisterState extends State<Register> {
                       borderRadius: BorderRadius.circular(10),
                     ),
                   ),
-                  onPressed: () async {
-                    if (_formKey.currentState!.validate()) {
-                      savedata();
+                onPressed: () async {
+  if (_formKey.currentState!.validate()) {
+    // SAVE DATA FIRST
+    savedata();
 
-                      SharedPreferences prefs =
-                          await SharedPreferences.getInstance();
-                      prefs.setString("username", storeName);
-                      await prefs.setBool("isLoggedIn", true);
+    final prefs = await SharedPreferences.getInstance();
 
-                      String userMail = mailController.text.trim();
 
-                      String otp = otpGenrated();
+    prefs.setString("name", nameController.text.trim());
+    prefs.setBool("isLoggedIn", true);
 
-                      await sendOtpMail(userMail, otp);
+    String userMail = mailController.text.trim();
+    String otp = otpGenrated();
 
-                      Navigator.pushReplacement(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => OtpPage(otp: otp),
-                        ),
-                      );
-                    }
-                  },
-                  child: SizedBox(
+    await sendOtpMail(userMail, otp);
+
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(
+        builder: (context) => OtpPage(otp: otp),
+      ),
+    );
+  }
+},
+ child: SizedBox(
                     width: width * 0.59,
                     height: height * 0.07,
                     child: Center(

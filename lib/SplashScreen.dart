@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:real_esate_finder/homepage.dart';
 import 'package:real_esate_finder/loader.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:provider/provider.dart';
+import 'package:real_esate_finder/CreateProvider.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -11,7 +13,6 @@ class SplashScreen extends StatefulWidget {
 }
 
 class _SplashScreenState extends State<SplashScreen> {
-
   @override
   void initState() {
     super.initState();
@@ -20,11 +21,21 @@ class _SplashScreenState extends State<SplashScreen> {
 
   void checkLogin() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
+
     bool loggedIn = prefs.getBool("isLoggedIn") ?? false;
+    String savedUsername = prefs.getString("username") ?? "";
 
     await Future.delayed(const Duration(seconds: 2));
 
     if (loggedIn) {
+   
+      if (savedUsername.isNotEmpty) {
+        final provider = Provider.of<Createprovider>(context, listen: false);
+        provider.setUsername(savedUsername);
+      }
+      print("Username from SharedPref: $savedUsername");
+
+
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (context) => HomePage()),
@@ -41,12 +52,11 @@ class _SplashScreenState extends State<SplashScreen> {
   Widget build(BuildContext context) {
     final width = MediaQuery.of(context).size.width;
     final height = MediaQuery.of(context).size.height;
-
+    final prov = Provider.of<Createprovider>(context);
     return Scaffold(
       backgroundColor: Colors.white,
       body: Stack(
         children: [
-
           // ---------- CENTER CONTENT ----------
           Center(
             child: Column(
@@ -65,6 +75,8 @@ class _SplashScreenState extends State<SplashScreen> {
                   color: Colors.blueAccent,
                   strokeWidth: 3,
                 ),
+
+                Text(prov.username),
               ],
             ),
           ),

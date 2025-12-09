@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:real_esate_finder/CreateProvider.dart';
 import 'package:real_esate_finder/SplashScreen.dart';
-import 'package:real_esate_finder/screens/register/register.dart';
+
 
 void main() {
   runApp(
