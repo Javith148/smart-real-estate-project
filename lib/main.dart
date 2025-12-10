@@ -2,12 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:real_esate_finder/CreateProvider.dart';
 import 'package:real_esate_finder/SplashScreen.dart';
+import 'package:real_esate_finder/cartpage.dart';
 
 
 void main() {
   runApp(
     MultiProvider(
-      providers: [ChangeNotifierProvider(create: (_) => Createprovider())],
+      providers: [ChangeNotifierProvider(create: (_) => Createprovider()),
+              ChangeNotifierProvider(create: (_) => CartProvider()),
+      ],
       child: const MyApp(),
     ),
   );

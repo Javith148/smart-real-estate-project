@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:real_esate_finder/CreateProvider.dart';
+import 'package:real_esate_finder/cartpage.dart';
+
 import 'package:real_esate_finder/loader.dart';
 import 'package:real_esate_finder/main_login.dart';
 import 'package:real_esate_finder/screens/Homepage_tab/alltab.dart';
+import 'package:real_esate_finder/userprofile.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:provider/provider.dart';
 
@@ -100,17 +103,38 @@ class _HomePageState extends State<HomePage> {
             showUnselectedLabels: false,
 
             onTap: (value) {
-              if (value == 1) {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => const SearchPage()),
-                );
-              } else {
-                setState(() {
-                  pageIndex = value;
-                });
-              }
-            },
+             if (value == 1) {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => SearchPage()),
+              );
+              return;
+            }
+
+            // FAVORITE PAGE (index = 2)
+            if (value == 2) {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => Cartpage()),
+              );
+              return;
+            }
+
+            // USER PAGE (index = 3)
+            if (value == 3) {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => Userprofile()),
+              );
+              return;
+            }
+
+            // HOME (index = 0)
+            setState(() {
+              pageIndex = value;
+            });
+          },
+
 
             items: [
               _navItem(
