@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:real_esate_finder/screens/register/register.dart';
+import 'package:real_esate_finder/screens/promotion/halloween.dart';
 import 'package:real_esate_finder/CreateProvider.dart';
 import 'package:provider/provider.dart';
 
@@ -57,7 +58,12 @@ class Alltab extends StatelessWidget {
                   children: [
                     SizedBox(width: width * 0.04),
                     GestureDetector(
-                      onTap: () {},
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => Halloween()),
+                        );
+                      },
                       child: Stack(
                         children: [
                           Image.asset(
@@ -1403,46 +1409,78 @@ class Alltab extends StatelessWidget {
                                   fit: BoxFit.contain,
                                 ),
 
-Positioned(
-  right: width * 0.03,
-  top: height * 0.025,
-  child: Consumer<CartProvider>(
-    builder: (context, cart, child) {
-      bool isAdded = cart.isInCart(item);
+                                Positioned(
+                                  right: width * 0.03,
+                                  top: height * 0.025,
+                                  child: Consumer<CartProvider>(
+                                    builder: (context, cart, child) {
+                                      bool isAdded = cart.isInCart(item);
 
-      return InkWell(
-        onTap: () {
-          if (isAdded) {
-            cart.removeFromCart(item);
-          } else {
-            cart.addToCart(item);
-          }
-        },
-        child: AnimatedContainer(
-          duration: Duration(milliseconds: 250),
-          width: width * 0.08,
-          height: width * 0.08,
-          decoration: BoxDecoration(
-            color: isAdded ? Colors.green : Colors.white,
-            shape: BoxShape.circle,
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black12,
-                blurRadius: 4,
-                spreadRadius: 1,
-              ),
-            ],
-          ),
-          child: Icon(
-            isAdded ? Icons.favorite : Icons.favorite_border,
-            color: isAdded ? Colors.white : Colors.pinkAccent,
-            size: height * 0.020,
-          ),
-        ),
-      );
-    },
-  ),
-),
+                                      return InkWell(
+                                        onTap: () {
+                                          if (isAdded) {
+                                            cart.removeFromCart(item);
+
+                                            ScaffoldMessenger.of(
+                                              context,
+                                            ).showSnackBar(
+                                              SnackBar(
+                                                content: Text(
+                                                  "${item['title']} removed from favorites",
+                                                ),
+                                                duration: Duration(seconds: 1),
+                                                backgroundColor:
+                                                    Colors.redAccent,
+                                              ),
+                                            );
+                                          } else {
+                                            cart.addToCart(item);
+
+                                            ScaffoldMessenger.of(
+                                              context,
+                                            ).showSnackBar(
+                                              SnackBar(
+                                                content: Text(
+                                                  "${item['title']} added to favorites",
+                                                ),
+                                                duration: Duration(seconds: 1),
+                                                backgroundColor: Colors.green,
+                                              ),
+                                            );
+                                          }
+                                        },
+
+                                        child: AnimatedContainer(
+                                          duration: Duration(milliseconds: 250),
+                                          width: width * 0.08,
+                                          height: width * 0.08,
+                                          decoration: BoxDecoration(
+                                            color: isAdded
+                                                ? Colors.green
+                                                : Colors.white,
+                                            shape: BoxShape.circle,
+                                            boxShadow: [
+                                              BoxShadow(
+                                                color: Colors.black12,
+                                                blurRadius: 4,
+                                                spreadRadius: 1,
+                                              ),
+                                            ],
+                                          ),
+                                          child: Icon(
+                                            isAdded
+                                                ? Icons.favorite
+                                                : Icons.favorite_border,
+                                            color: isAdded
+                                                ? Colors.white
+                                                : Colors.pinkAccent,
+                                            size: height * 0.020,
+                                          ),
+                                        ),
+                                      );
+                                    },
+                                  ),
+                                ),
 
                                 Positioned(
                                   bottom: height * 0.025,
