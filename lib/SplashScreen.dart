@@ -23,7 +23,7 @@ class _SplashScreenState extends State<SplashScreen> {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
 
     bool loggedIn = prefs.getBool("isLoggedIn") ?? false;
-    String savedUsername = prefs.getString("username") ?? "";
+    String savedUsername = prefs.getString("name") ?? "";
 
     await Future.delayed(const Duration(seconds: 2));
 

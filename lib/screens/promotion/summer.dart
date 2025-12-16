@@ -1,12 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:share_plus/share_plus.dart';
-import 'dart:io';
 import 'package:flutter/services.dart';
-import 'package:path_provider/path_provider.dart';
 
-class Halloween extends StatelessWidget {
-  const Halloween({super.key});
+class Summer extends StatelessWidget {
+  const Summer({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -14,16 +12,16 @@ class Halloween extends StatelessWidget {
     final height = MediaQuery.of(context).size.height;
     Future<void> shareHalloweenOffer() async {
       await Share.share('''
-Halloween Sale – Limited Time Offer
+Summer Sale – Limited Time Offer
 
-Get flat 40% off on your purchase using the promo code below.
+Get flat 60% off on your purchase using the promo code below.
 
-Promo Code: HLWN40
-Offer Valid Till: October 31, 2025
+Promo Code: JVIA147
+Offer Valid Till: April 1,2025
 
 Don't miss this opportunity to save more. Explore the offer now:
 https://yourwebsite.com/halloween-offer
-''', subject: 'Halloween Sale – Flat 40% Off');
+''', subject: 'Summer Sale – Flat 40% Off');
     }
 
     return Scaffold(
@@ -63,84 +61,88 @@ https://yourwebsite.com/halloween-offer
                 SizedBox(height: height * 0.08),
                 Center(
                   child: Stack(
-                    children: [
-                      Image.asset(
-                        "assets/tab_img.png",
-                        fit: BoxFit.contain,
-                        width: width * 0.8,
-                        height: height * 0.225,
-                      ),
-                      Opacity(
-                        opacity: 0.30,
-                        child: Container(
-                          width: width * 0.725,
-                          height: height * 0.225,
-                          decoration: ShapeDecoration(
-                            color: const Color(0xFF234F68),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(25),
+                        children: [
+                          ClipRRect(
+                            borderRadius: BorderRadius.circular(25),
+                            child: Image.asset(
+                              "assets/tab_img2.png",
+                              fit: BoxFit.cover,
+                              width: width * 0.725,
+                              height: height * 0.225,
                             ),
                           ),
-                        ),
-                      ),
-                      Positioned(
-                        top: height * 0.175,
-                        child: Container(
-                          width: width * 0.22,
-                          height: height * 0.05,
-                          decoration: ShapeDecoration(
-                            color: const Color(0xFF234F68),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.only(
-                                topRight: Radius.circular(25),
-                              ),
-                            ),
-                          ),
-                          child: Center(
-                            child: Icon(
-                              Icons.arrow_right_alt,
-                              color: Colors.white,
-                              size: height * 0.03,
-                            ),
-                          ),
-                        ),
-                      ),
-                      Container(
-                        width: width * 0.4,
-                        height: height * 0.2,
-                        child: Stack(
-                          children: [
-                            Positioned(
-                              left: width * 0.05,
-                              top: height * 0.05,
-                              child: Text(
-                                'Halloween \nSale!',
-                                style: GoogleFonts.raleway(
-                                  color: Colors.white,
-                                  fontSize: width * 0.059,
-                                  fontWeight: FontWeight.w900,
-                                  letterSpacing: 0.54,
+
+                          Opacity(
+                            opacity: 0.30,
+                            child: Container(
+                              width: width * 0.725,
+                              height: height * 0.225,
+                              decoration: ShapeDecoration(
+                                color: Colors.black,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(25),
                                 ),
                               ),
                             ),
-                            Positioned(
-                              left: width * 0.05,
-                              top: height * 0.115,
-                              child: Text(
-                                'All discount up to 60%',
-                                style: GoogleFonts.raleway(
+                          ),
+                          Positioned(
+                            top: height * 0.175,
+                            child: Container(
+                              width: width * 0.22,
+                              height: height * 0.05,
+                              decoration: ShapeDecoration(
+                                color: const Color(0xFF234F68),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.only(
+                                    topRight: Radius.circular(25),
+                                  ),
+                                ),
+                              ),
+                              child: Center(
+                                child: Icon(
+                                  Icons.arrow_right_alt,
                                   color: Colors.white,
-                                  fontSize: width * 0.035,
-                                  fontWeight: FontWeight.w600,
+                                  size: height * 0.03,
                                 ),
                               ),
                             ),
-                          ],
-                        ),
+                          ),
+                          Container(
+                            width: width * 0.4,
+                            height: height * 0.2,
+                            child: Stack(
+                              children: [
+                                Positioned(
+                                  left: width * 0.05,
+                                  top: height * 0.05,
+                                  child: Text(
+                                    'Summer\nVacation',
+                                    style: GoogleFonts.raleway(
+                                      color: Colors.white,
+                                      fontSize: width * 0.059,
+                                      fontWeight: FontWeight.w900,
+                                      letterSpacing: 0.54,
+                                    ),
+                                  ),
+                                ),
+                                Positioned(
+                                  left: width * 0.05,
+                                  top: height * 0.115,
+                                  child: Text(
+                                    'All discount up to 80%',
+                                    style: GoogleFonts.raleway(
+                                      color: Colors.white,
+                                      fontSize: width * 0.035,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
                       ),
-                    ],
-                  ),
-                ),
+                     ),
 
                 SizedBox(height: height * 0.03),
                 Padding(
@@ -159,7 +161,7 @@ https://yourwebsite.com/halloween-offer
                           ),
                         ),
                         TextSpan(
-                          text: 'Halloween \nSale',
+                          text: 'Summer \nSale',
                           style: TextStyle(
                             color: const Color(0xFF204D6C),
                             fontSize: width * 0.075,
@@ -193,7 +195,7 @@ https://yourwebsite.com/halloween-offer
                         color: const Color.fromARGB(255, 3, 154, 181),
                       ),
                       Text(
-                        'October 31,2025',
+                        'April 1,2025',
                         style: GoogleFonts.raleway(
                           color: Colors.grey,
                           fontSize: width * 0.035,
@@ -224,7 +226,7 @@ https://yourwebsite.com/halloween-offer
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'HLWN40',
+                            'JVIA147',
                             style: TextStyle(
                               color: const Color(0xFF242B5C),
                               fontSize: width * 0.05, // responsive
@@ -248,7 +250,7 @@ https://yourwebsite.com/halloween-offer
                                   ),
                                 ),
                                 TextSpan(
-                                  text: '40%',
+                                  text: '80%',
                                   style: TextStyle(
                                     color: const Color(0xFF234F68),
                                     fontSize: width * 0.03, // responsive
@@ -279,7 +281,7 @@ https://yourwebsite.com/halloween-offer
                 Padding(
                   padding: EdgeInsets.all(height * 0.03),
                   child: Text(
-                    "The Halloween Sale is coming back with even bigger surprises and irresistible offers. This season, we are bringing a spooky twist to your shopping experience with exclusive deals that you simply cannot miss. Whether you are planning to upgrade your essentials or explore new collections, this is the perfect time to shop smart and save more.\n\n\nFrom limited-time discount codes to special combo offers, our Halloween Sale is designed to give you maximum value. Unlock exciting price drops across categories and enjoy offers crafted to match your needs. With easy checkout and fast delivery, your festive shopping becomes smoother and more rewarding than ever.\n\n\nGet ready to explore thrilling deals, claim your coupons, and grab the best products before they vanish. The clock is ticking, and these offers will not stay for long. Mark your calendar, stay alert for updates, and make sure you don’t miss the return of our most awaited Halloween Sale.",
+                    "The Summer Sale is coming back with even bigger surprises and irresistible offers. This season, we are bringing a spooky twist to your shopping experience with exclusive deals that you simply cannot miss. Whether you are planning to upgrade your essentials or explore new collections, this is the perfect time to shop smart and save more.\n\n\nFrom limited-time discount codes to special combo offers, our Summer Sale is designed to give you maximum value. Unlock exciting price drops across categories and enjoy offers crafted to match your needs. With easy checkout and fast delivery, your festive shopping becomes smoother and more rewarding than ever.\n\n\nGet ready to explore thrilling deals, claim your coupons, and grab the best products before they vanish. The clock is ticking, and these offers will not stay for long. Mark your calendar, stay alert for updates, and make sure you don’t miss the return of our most awaited Summer Sale.",
                     style: GoogleFonts.raleway(
                       color: const Color(0xFF234F68),
                       fontSize: width * 0.04,
@@ -338,7 +340,6 @@ https://yourwebsite.com/halloween-offer
           ),
         ],
       ),
-      
     );
   }
 }

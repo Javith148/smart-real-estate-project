@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:real_esate_finder/screens/register/register.dart';
 import 'package:real_esate_finder/screens/promotion/halloween.dart';
+import 'package:real_esate_finder/screens/promotion/summer.dart';
+import 'package:real_esate_finder/screens/promotion/Winter.dart';
 import 'package:real_esate_finder/CreateProvider.dart';
 import 'package:provider/provider.dart';
 
@@ -145,7 +147,12 @@ class Alltab extends StatelessWidget {
                     ),
                     SizedBox(width: width * 0.05),
                     GestureDetector(
-                      onTap: () {},
+                      onTap: () {
+                           Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => Summer()),
+                        );
+                      },
                       child: Stack(
                         children: [
                           ClipRRect(
@@ -231,7 +238,12 @@ class Alltab extends StatelessWidget {
                     ),
                     SizedBox(width: width * 0.05),
                     GestureDetector(
-                      onTap: () {},
+                      onTap: () {
+                           Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => Winter()),
+                        );
+                      },
                       child: Stack(
                         children: [
                           ClipRRect(
