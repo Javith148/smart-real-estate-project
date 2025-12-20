@@ -5,6 +5,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:real_esate_finder/loader.dart';
 import 'package:real_esate_finder/main_login.dart';
 import 'package:real_esate_finder/screens/Homepage_tab/alltab.dart';
+import 'package:real_esate_finder/screens/Homepage_tab/map.dart';
 import 'package:real_esate_finder/userprofile.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:provider/provider.dart';
@@ -205,13 +206,23 @@ class HomeBody extends StatefulWidget {
 
 class _HomeBodyState extends State<HomeBody> {
   // 🔹 STATE (LOGIC ONLY)
-  List<String> locations = ["Five corner,townhall,coimatore,\ntamilNadu"];
+  List<String> locations = ["Coimatore,tamilNadu"];
 
   int selectedIndex = 0;
 
   Future<void> saveLocationsToPrefs(List<String> locations) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setStringList('saved_locations', locations);
+  }
+
+  Future<void> saveSelectedIndex(int index) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setInt('selected_location_index', index);
+  }
+
+  Future<int> loadSelectedIndex() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getInt('selected_location_index') ?? 0;
   }
 
   Future<List<String>> loadLocationsFromPrefs() async {
@@ -226,11 +237,18 @@ class _HomeBodyState extends State<HomeBody> {
   }
 
   Future<void> loadSavedLocations() async {
-    final saved = await loadLocationsFromPrefs();
-    if (saved.isNotEmpty) {
+    final savedLocations = await loadLocationsFromPrefs();
+    final savedIndex = await loadSelectedIndex();
+
+    if (savedLocations.isNotEmpty) {
       setState(() {
-        locations = saved;
-        selectedIndex = 0;
+        locations = savedLocations;
+
+        if (savedIndex < savedLocations.length) {
+          selectedIndex = savedIndex;
+        } else {
+          selectedIndex = 0;
+        }
       });
     }
   }
@@ -341,10 +359,16 @@ class _HomeBodyState extends State<HomeBody> {
                         onPressed: () async {
                           setState(() {
                             locations.removeAt(index);
-                            selectedIndex = locations.isNotEmpty ? 0 : -1;
+
+                            if (locations.isEmpty) {
+                              selectedIndex = -1;
+                            } else if (selectedIndex >= locations.length) {
+                              selectedIndex = 0;
+                            }
                           });
 
                           await saveLocationsToPrefs(locations);
+                          await saveSelectedIndex(selectedIndex);
 
                           setModalState(() {});
                           Navigator.pop(context);
@@ -454,12 +478,15 @@ class _HomeBodyState extends State<HomeBody> {
                       return Padding(
                         padding: EdgeInsets.only(bottom: height * 0.03),
                         child: GestureDetector(
-                          onTap: () {
+                          onTap: () async {
                             setState(() {
                               selectedIndex = index;
                             });
+
+                            await saveSelectedIndex(index);
                             setModalState(() {});
                           },
+
                           onLongPress: () {
                             _showDeleteDialog(context, index, setModalState);
                           },
@@ -529,9 +556,27 @@ class _HomeBodyState extends State<HomeBody> {
                         borderRadius: BorderRadius.circular(10),
                       ),
                     ),
-                    onPressed: () {
-                   
+                    onPressed: () async {
+                      final result = await Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const MapWithAddress(),
+                        ),
+                      );
+
+                      if (result != null &&
+                          result.toString().trim().isNotEmpty) {
+                        setState(() {
+                          locations.add(result);
+                          selectedIndex = locations.length - 1;
+                        });
+
+                        await saveLocationsToPrefs(locations);
+                        await saveSelectedIndex(selectedIndex);
+                        setModalState(() {});
+                      }
                     },
+
                     child: SizedBox(
                       width: width * 0.59,
                       height: height * 0.07,
