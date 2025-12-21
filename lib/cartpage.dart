@@ -27,7 +27,7 @@ class Cartpage extends StatelessWidget {
                   trailing: IconButton(
                     icon: Icon(Icons.delete),
                     onPressed: () {
-                      cart.removeFromCart(item);  // FIXED
+                      cart.removeFromCart(item);  
                     },
                   ),
                 );

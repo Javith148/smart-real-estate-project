@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:real_esate_finder/CreateProvider.dart';
 import 'package:real_esate_finder/cartpage.dart';
-import 'package:google_fonts/google_fonts.dart';
-import 'package:real_esate_finder/loader.dart';
 import 'package:real_esate_finder/main_login.dart';
 import 'package:real_esate_finder/screens/Homepage_tab/alltab.dart';
+import 'package:real_esate_finder/screens/Homepage_tab/house_tab.dart';
+import 'package:real_esate_finder/screens/Homepage_tab/apartment.dart';
+import 'package:real_esate_finder/screens/Homepage_tab/Villa.dart';
 import 'package:real_esate_finder/screens/Homepage_tab/map.dart';
 import 'package:real_esate_finder/userprofile.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:provider/provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 // SEARCH PAGE
 class SearchPage extends StatelessWidget {
@@ -58,15 +58,6 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  int pageIndex = 0;
-
-  final List<Widget> pages = [
-    HomeBody(),
-    Loader(),
-    Center(child: Text("Favorites Page")),
-    Center(child: Text("Profile Page")),
-  ];
-
   Future<void> logout(BuildContext context) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     await prefs.clear();
@@ -77,13 +68,25 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
+  int pageIndex = 0;
+
+  // ✅ All pages here
+  final List<Widget> pages = [
+    HomeBody(), 
+    SearchPage(), 
+    Cartpage(), 
+    Userprofile(), // index 3
+  ];
+
   @override
   Widget build(BuildContext context) {
     final width = MediaQuery.of(context).size.width;
-    final height = MediaQuery.of(context).size.height;
+    
 
     return Scaffold(
       backgroundColor: Colors.white,
+
+      // ✅ Page switching (NO Navigator.push)
       body: pages[pageIndex],
 
       bottomNavigationBar: Padding(
@@ -98,38 +101,10 @@ class _HomePageState extends State<HomePage> {
 
             selectedItemColor: const Color(0xFF1F4C6B),
             unselectedItemColor: Colors.grey,
-
             showSelectedLabels: false,
             showUnselectedLabels: false,
 
             onTap: (value) {
-              if (value == 1) {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => SearchPage()),
-                );
-                return;
-              }
-
-              // FAVORITE PAGE (index = 2)
-              if (value == 2) {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => Cartpage()),
-                );
-                return;
-              }
-
-              // USER PAGE (index = 3)
-              if (value == 3) {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => Userprofile()),
-                );
-                return;
-              }
-
-              // HOME (index = 0)
               setState(() {
                 pageIndex = value;
               });
@@ -142,7 +117,7 @@ class _HomePageState extends State<HomePage> {
                 unselectedIcon: Icons.home_outlined,
               ),
               _navItem(
-                isSelected: false,
+                isSelected: pageIndex == 1,
                 selectedIcon: Icons.search,
                 unselectedIcon: Icons.search_outlined,
               ),
@@ -163,6 +138,7 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
+  // ✅ Custom bottom nav item
   BottomNavigationBarItem _navItem({
     required bool isSelected,
     required IconData selectedIcon,
@@ -181,7 +157,6 @@ class _HomePageState extends State<HomePage> {
             size: height * 0.028,
           ),
           SizedBox(height: height * 0.003),
-
           if (isSelected)
             Container(
               width: width * 0.015,
@@ -205,7 +180,6 @@ class HomeBody extends StatefulWidget {
 }
 
 class _HomeBodyState extends State<HomeBody> {
-  // 🔹 STATE (LOGIC ONLY)
   List<String> locations = ["Coimatore,tamilNadu"];
 
   int selectedIndex = 0;
@@ -284,7 +258,6 @@ class _HomeBodyState extends State<HomeBody> {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                // 🔴 ICON
                 Container(
                   width: 70,
                   height: 70,
@@ -803,7 +776,7 @@ class _HomeBodyState extends State<HomeBody> {
                               color: const Color(0xFF1F4C6B),
                             ),
                           ),
-
+  
                           SizedBox(width: width * 0.04),
 
                           // 🔹 Profile Icon (FIXED)
@@ -909,12 +882,7 @@ class _HomeBodyState extends State<HomeBody> {
           ],
 
           body: TabBarView(
-            children: [
-              Alltab(),
-              Center(child: Text("Homes List")),
-              Center(child: Text("Apartments List")),
-              Center(child: Text("Villas List")),
-            ],
+            children: [Alltab(), HouseTab(), ApartmentTab(), VillaTab()],
           ),
         ),
       ),

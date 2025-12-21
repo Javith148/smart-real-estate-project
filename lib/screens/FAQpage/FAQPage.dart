@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:real_esate_finder/screens/Termspage.dart';
+import 'package:real_esate_finder/screens/FAQpage/Termspage.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class FAQPage extends StatefulWidget {

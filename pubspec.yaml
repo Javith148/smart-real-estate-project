@@ -96,11 +96,6 @@ flutter:
       - assets/featured_img.png
       - assets/featured_img2.png
       - assets/featured_img3.png
-      - assets/varkala.jpg
-      - assets/chennai.jpg
-      - assets/ooty.jpg
-      - assets/kovai.jpg
-      - assets/cochin.jpg
       - assets/person1.png
       - assets/person2.png
       - assets/person3.png
@@ -112,7 +107,39 @@ flutter:
       - assets/nearby4.png
       - assets/coupan.png
       
+
+      - assets/cochin.jpg
+      - assets/cochin1.jpg
+      - assets/cochin2.jpg
+
+
+      - assets/varkala.jpg
+      - assets/varkala1.jpg
+      - assets/varkala2.jpg
+
+
+      - assets/kovai.jpg
+      - assets/kovai1.jpg
+      - assets/kovai2.jpg
+
+      
+      - assets/chennai.jpg
+      - assets/chennai1.jpg
+      - assets/chennai2.jpg
+      
      
+      - assets/ooty.jpg
+      - assets/ooty1.jpg
+      - assets/ooty2.jpg
+
+
+      
+      - assets/bangalore.jpg
+      - assets/bangalore1.jpg
+      - assets/bangalore2.jpg
+
+      
+
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images

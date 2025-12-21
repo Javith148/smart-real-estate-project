@@ -1,8 +1,6 @@
 import 'dart:math';
-
 import 'package:flutter/material.dart';
 import 'package:real_esate_finder/CreateProvider.dart';
-import 'package:real_esate_finder/homepage.dart';
 import 'package:real_esate_finder/screens/FAQpage/FAQPage.dart';
 import 'package:real_esate_finder/screens/register/Otp.dart';
 import 'package:shared_preferences/shared_preferences.dart';
