@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:real_esate_finder/screens/FAQpage/FAQPage.dart';
 import 'package:real_esate_finder/screens/loader/page2.dart';
+import 'package:real_esate_finder/main_login.dart';
 
 class LoadPage1 extends StatelessWidget {
   const LoadPage1({super.key});
@@ -32,20 +32,20 @@ class LoadPage1 extends StatelessWidget {
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color(0xFFDFDFDF),
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(20),
+                        borderRadius: BorderRadius.circular(15),
                       ),
                     ),
                     onPressed: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => FAQPage()),
+                        MaterialPageRoute(builder: (context) => LoginPage()),
                       );
                     },
                     child: Text(
                       "Skip",
                       style: TextStyle(
                         color: Colors.black,
-                        fontSize: width * 0.030,
+                        fontSize: width * 0.035,
                         fontFamily: 'Montserrat',
                         fontWeight: FontWeight.w500,
                       ),

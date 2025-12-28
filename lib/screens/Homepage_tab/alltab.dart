@@ -8,6 +8,7 @@ import 'package:real_esate_finder/screens/promotion/Winter.dart';
 import 'package:real_esate_finder/CreateProvider.dart';
 import 'package:provider/provider.dart';
 import 'package:real_esate_finder/screens/topLocation/topLocation.dart';
+import 'package:real_esate_finder/screens/topLocation/locationdetail.dart';
 
 class Alltab extends StatelessWidget {
   const Alltab({super.key});
@@ -214,6 +215,45 @@ class Alltab extends StatelessWidget {
         "price": "₹28k",
         "rating": "4.9",
         "location": "Saibaba Colony, TN",
+      },
+    ];
+
+    List<Map<String, dynamic>> loaction = [
+      {
+        "image": "assets/kovai.jpg",
+        "title": "Coimbatore",
+        "sub1": "assets/kovai1.jpg",
+        "sub2": "assets/kovai2.jpg",
+      },
+      {
+        "image": "assets/chennai.jpg",
+        "title": "Chennai",
+        "sub1": "assets/chennai2.jpg",
+        "sub2": "assets/chennai1.jpg",
+      },
+      {
+        "image": "assets/ooty.jpg",
+        "title": "Ooty",
+        "sub1": "assets/ooty1.jpg",
+        "sub2": "assets/ooty2.jpg",
+      },
+      {
+        "image": "assets/cochin.jpg",
+        "title": "Cochin",
+        "sub1": "assets/cochin1.jpg",
+        "sub2": "assets/cochin2.jpg",
+      },
+      {
+        "image": "assets/varkala.jpg",
+        "title": "Varkala",
+        "sub1": "assets/varkala1.jpg",
+        "sub2": "assets/varkala2.jpg",
+      },
+      {
+        "image": "assets/bangalore.jpg",
+        "title": "Bangalore",
+        "sub1": "assets/bangalore1.jpg",
+        "sub2": "assets/bangalore2.jpg",
       },
     ];
 
@@ -730,6 +770,7 @@ class Alltab extends StatelessWidget {
               ),
 
               SizedBox(height: height * 0.011),
+              //top loction title
               Padding(
                 padding: EdgeInsetsGeometry.directional(
                   start: width * 0.07,
@@ -777,119 +818,60 @@ class Alltab extends StatelessWidget {
 
               SizedBox(height: height * 0.013),
 
-              SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                child: Row(
-                  children: [
-                    SizedBox(width: width * 0.05),
-                    Row(
-                      children: [
-                        ClipOval(
-                          child: Image.asset(
-                            "assets/kovai.jpg",
-                            width: width * 0.1,
-                            height: width * 0.1,
-                            fit: BoxFit.cover,
+              // top loction list
+              Padding(
+                padding: EdgeInsetsGeometry.directional(start: width * 0.05),
+                child: SizedBox(
+                  height: width * 0.15,
+                  child: ListView.builder(
+                    scrollDirection: Axis.horizontal,
+
+                    itemCount: loaction.length > 5 ? 5 : loaction.length,
+
+                    padding: EdgeInsets.only(left: width * 0.02),
+                    itemBuilder: (context, index) {
+                      final item = loaction[index];
+
+                      return GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => Locationdetail(item: item, index: index)
+                            ),
+                          );
+                        },
+
+                        child: Padding(
+                          padding: EdgeInsets.only(right: width * 0.11),
+                          child: Row(
+                            children: [
+                              ClipOval(
+                                child: Image.asset(
+                                  item["image"],
+                                  width: width * 0.1,
+                                  height: width * 0.1,
+                                  fit: BoxFit.cover,
+                                ),
+                              ),
+                              SizedBox(width: width * 0.03),
+                              Text(
+                                item["title"],
+                                style: GoogleFonts.raleway(
+                                  color: const Color(0xFF234F68),
+                                  fontSize: width * 0.04,
+                                ),
+                              ),
+                            ],
                           ),
                         ),
-                        SizedBox(width: width * 0.03),
-                        Text(
-                          "Coimbatore",
-                          style: GoogleFonts.raleway(
-                            color: const Color(0xFF234F68),
-                            fontSize: width * 0.04,
-                          ),
-                        ),
-                      ],
-                    ),
-                    SizedBox(width: width * 0.11),
-                    Row(
-                      children: [
-                        ClipOval(
-                          child: Image.asset(
-                            "assets/varkala.jpg",
-                            width: width * 0.1,
-                            height: width * 0.1,
-                            fit: BoxFit.cover,
-                          ),
-                        ),
-                        SizedBox(width: width * 0.03),
-                        Text(
-                          "Varkala",
-                          style: GoogleFonts.raleway(
-                            color: const Color(0xFF234F68),
-                            fontSize: width * 0.04,
-                          ),
-                        ),
-                      ],
-                    ),
-                    SizedBox(width: width * 0.11),
-                    Row(
-                      children: [
-                        ClipOval(
-                          child: Image.asset(
-                            "assets/ooty.jpg",
-                            width: width * 0.1,
-                            height: width * 0.1,
-                            fit: BoxFit.cover,
-                          ),
-                        ),
-                        SizedBox(width: width * 0.03),
-                        Text(
-                          "Ooty",
-                          style: GoogleFonts.raleway(
-                            color: const Color(0xFF234F68),
-                            fontSize: width * 0.04,
-                          ),
-                        ),
-                      ],
-                    ),
-                    SizedBox(width: width * 0.11),
-                    Row(
-                      children: [
-                        ClipOval(
-                          child: Image.asset(
-                            "assets/chennai.jpg",
-                            width: width * 0.1,
-                            height: width * 0.1,
-                            fit: BoxFit.cover,
-                          ),
-                        ),
-                        SizedBox(width: width * 0.03),
-                        Text(
-                          "chennai",
-                          style: GoogleFonts.raleway(
-                            color: const Color(0xFF234F68),
-                            fontSize: width * 0.04,
-                          ),
-                        ),
-                      ],
-                    ),
-                    SizedBox(width: width * 0.11),
-                    Row(
-                      children: [
-                        ClipOval(
-                          child: Image.asset(
-                            "assets/cochin.jpg",
-                            width: width * 0.1,
-                            height: width * 0.1,
-                            fit: BoxFit.cover,
-                          ),
-                        ),
-                        SizedBox(width: width * 0.03),
-                        Text(
-                          "cochin",
-                          style: GoogleFonts.raleway(
-                            color: const Color(0xFF234F68),
-                            fontSize: width * 0.04,
-                          ),
-                        ),
-                      ],
-                    ),
-                    SizedBox(width: width * 0.11),
-                  ],
+                      );
+                    },
+                  ),
                 ),
               ),
+
+              //top agent heading
               SizedBox(height: height * 0.011),
               Padding(
                 padding: EdgeInsetsGeometry.directional(
@@ -936,7 +918,7 @@ class Alltab extends StatelessWidget {
                 ),
               ),
               SizedBox(height: height * 0.013),
-
+              //top agent list
               SingleChildScrollView(
                 scrollDirection: Axis.horizontal,
                 child: Row(
@@ -1052,6 +1034,8 @@ class Alltab extends StatelessWidget {
               ),
 
               SizedBox(height: height * 0.011),
+
+              // nearest estate title
               Padding(
                 padding: EdgeInsetsGeometry.directional(
                   start: width * 0.07,
@@ -1074,6 +1058,7 @@ class Alltab extends StatelessWidget {
                 ),
               ),
               SizedBox(height: height * 0.02),
+              //nearest estate
               GridView.builder(
                 shrinkWrap: true,
                 physics: NeverScrollableScrollPhysics(),
