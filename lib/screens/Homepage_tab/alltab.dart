@@ -1114,7 +1114,7 @@ class Alltab extends StatelessWidget {
                                                 content: Text(
                                                   "${item['title']} removed from favorites",
                                                 ),
-                                                duration: Duration(seconds: 1),
+                                                
                                                 backgroundColor:
                                                     Colors.redAccent,
                                               ),
@@ -1129,8 +1129,8 @@ class Alltab extends StatelessWidget {
                                                 content: Text(
                                                   "${item['title']} added to favorites",
                                                 ),
-                                                duration: Duration(seconds: 1),
-                                                backgroundColor: Colors.green,
+                                                
+                                               
                                               ),
                                             );
                                           }

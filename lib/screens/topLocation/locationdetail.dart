@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'dart:async';
+import 'package:real_esate_finder/CreateProvider.dart';
+import 'package:provider/provider.dart';
 
 class Locationdetail extends StatefulWidget {
   final Map<String, dynamic> item;
@@ -13,6 +15,39 @@ class Locationdetail extends StatefulWidget {
 }
 
 class _LocationdetailState extends State<Locationdetail> {
+  bool isGridView = true;
+
+  List<Map<String, dynamic>> propertyList = [
+    {
+      "image": "assets/nearby1.png",
+      "title": "Wings Tower",
+      "price": "₹30k",
+      "rating": "4.9",
+      "location": "Coimbatore, TN",
+    },
+    {
+      "image": "assets/nearby2.png",
+      "title": "Mill Sper House",
+      "price": "₹20k",
+      "rating": "4.8",
+      "location": "Peelamedu, TN",
+    },
+    {
+      "image": "assets/nearby3.png",
+      "title": "Garden Residency",
+      "price": "₹25k",
+      "rating": "4.7",
+      "location": "RS Puram, TN",
+    },
+    {
+      "image": "assets/nearby4.png",
+      "title": "Elite Apartment",
+      "price": "₹28k",
+      "rating": "4.9",
+      "location": "Saibaba Colony, TN",
+    },
+  ];
+ int get listcounter => propertyList.length;
   late FocusNode _focusNode;
   Timer? _keyboardTimer;
 
@@ -383,6 +418,7 @@ class _LocationdetailState extends State<Locationdetail> {
 
     final String sub1Image = widget.item["sub1"] ?? mainImage;
     final String sub2Image = widget.item["sub2"] ?? mainImage;
+
     return Scaffold(
       backgroundColor: Colors.white,
 
@@ -633,43 +669,72 @@ class _LocationdetailState extends State<Locationdetail> {
             ),
             Padding(
               padding: EdgeInsetsGeometry.directional(start: width * 0.08),
-              child: Text.rich(
-                TextSpan(
-                  children: [
+              child: Row(
+                children: [
+                  Text.rich(
                     TextSpan(
-                      text: 'Found',
-                      style: TextStyle(
-                        color: Colors.black,
-                        fontSize: width * 0.075,
-                        fontFamily: 'Lato',
-                        fontWeight: FontWeight.w600,
-                        height: 1.3,
-                      ),
+                      children: [
+                        TextSpan(
+                          text: 'Found ',
+                          style: TextStyle(
+                            color: const Color(0xFF204D6C),
+                            fontSize: width * 0.060,
+                            fontFamily: 'Lato',
+                            fontWeight: FontWeight.w600,
+                            height: 1.3,
+                          ),
+                        ),
+                        TextSpan(
+                          text: "$listcounter",
+                          style: TextStyle(
+                            color: const Color(0xFF204D6C),
+                            fontSize: width * 0.065,
+                            fontFamily: 'Lato',
+                            fontWeight: FontWeight.w900,
+                            height: 1.3,
+                          ),
+                        ),
+                        TextSpan(
+                          text: ' estate',
+                          style: TextStyle(
+                            color: const Color(0xFF204D6C),
+                            fontSize: width * 0.060,
+                            fontFamily: 'Lato',
+                            fontWeight: FontWeight.w600,
+                            height: 1.3,
+                          ),
+                        ),
+                      ],
                     ),
-                    TextSpan(
-                      text: '__',
-                      style: TextStyle(
-                        color: const Color(0xFF204D6C),
-                        fontSize: width * 0.075,
-                        fontFamily: 'Lato',
-                        fontWeight: FontWeight.w800,
-                        height: 1.3,
+                  ),
+                  SizedBox(width: width * 0.3),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      IconButton(
+                        icon: Icon(
+                          Icons.grid_view_rounded,
+                          color: isGridView
+                              ? const Color(0xFF204D6C)
+                              : Colors.grey,
+                        ),
+                        onPressed: () => setState(() => isGridView = true),
                       ),
-                    ),
-                    TextSpan(
-                      text: 'estate',
-                      style: TextStyle(
-                        color: Colors.black,
-                        fontSize: width * 0.075,
-                        fontFamily: 'Lato',
-                        fontWeight: FontWeight.w600,
-                        height: 1.3,
+                      IconButton(
+                        icon: Icon(
+                          Icons.list,
+                          color: !isGridView
+                              ? const Color(0xFF204D6C)
+                              : Colors.grey,
+                        ),
+                        onPressed: () => setState(() => isGridView = false),
                       ),
-                    ),
-                  ],
-                ),
+                    ],
+                  ),
+                ],
               ),
             ),
+            SizedBox(height: height * 0.02),
             if (selectedHouse ||
                 selectedApartment ||
                 selectedVilla ||
@@ -710,6 +775,466 @@ class _LocationdetailState extends State<Locationdetail> {
                   ),
                 ),
               ),
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: width*0.05),
+              child: isGridView
+                  ? GridView.builder(
+                      shrinkWrap: true,
+                      physics: NeverScrollableScrollPhysics(),
+                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: 2,
+                        mainAxisSpacing: 10,
+                        crossAxisSpacing: 10,
+                        childAspectRatio: (width * 0.45) / (height * 0.32),
+                      ),
+
+                      itemCount: propertyList.length,
+
+                      itemBuilder: (context, index) {
+                        final item = propertyList[index];
+
+                        return Card(
+                          child: Container(
+                            width: width * 0.45,
+                            height: height * 0.3,
+                            decoration: BoxDecoration(
+                              color: Color.fromARGB(186, 244, 242, 242),
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Center(
+                                  child: Stack(
+                                    children: [
+                                      Image.asset(
+                                        item["image"],
+                                        height: height * 0.23,
+                                        width: width * 0.4,
+                                        fit: BoxFit.contain,
+                                      ),
+
+                                      Positioned(
+                                        right: width * 0.03,
+                                        top: height * 0.025,
+                                        child: Consumer<CartProvider>(
+                                          builder: (context, cart, child) {
+                                            bool isAdded = cart.isInCart(item);
+
+                                            return InkWell(
+                                              onTap: () {
+                                                if (isAdded) {
+                                                  cart.removeFromCart(item);
+
+                                                  ScaffoldMessenger.of(
+                                                    context,
+                                                  ).showSnackBar(
+                                                    SnackBar(
+                                                      content: Text(
+                                                        "${item['title']} removed from favorites",
+                                                      ),
+
+                                                      backgroundColor:
+                                                          Colors.redAccent,
+                                                    ),
+                                                  );
+                                                } else {
+                                                  cart.addToCart(item);
+
+                                                  ScaffoldMessenger.of(
+                                                    context,
+                                                  ).showSnackBar(
+                                                    SnackBar(
+                                                      content: Text(
+                                                        "${item['title']} added to favorites",
+                                                      ),
+                                                    ),
+                                                  );
+                                                }
+                                              },
+
+                                              child: AnimatedContainer(
+                                                duration: Duration(
+                                                  milliseconds: 250,
+                                                ),
+                                                width: width * 0.08,
+                                                height: width * 0.08,
+                                                decoration: BoxDecoration(
+                                                  color: isAdded
+                                                      ? Colors.green
+                                                      : Colors.white,
+                                                  shape: BoxShape.circle,
+                                                  boxShadow: [
+                                                    BoxShadow(
+                                                      color: Colors.black12,
+                                                      blurRadius: 4,
+                                                      spreadRadius: 1,
+                                                    ),
+                                                  ],
+                                                ),
+                                                child: Icon(
+                                                  isAdded
+                                                      ? Icons.favorite
+                                                      : Icons.favorite_border,
+                                                  color: isAdded
+                                                      ? Colors.white
+                                                      : Colors.pinkAccent,
+                                                  size: height * 0.020,
+                                                ),
+                                              ),
+                                            );
+                                          },
+                                        ),
+                                      ),
+
+                                      Positioned(
+                                        bottom: height * 0.025,
+                                        right: width * 0.03,
+                                        child: Container(
+                                          height: height * 0.045,
+                                          width: width * 0.18,
+                                          decoration: ShapeDecoration(
+                                            color: Color.fromARGB(
+                                              214,
+                                              35,
+                                              79,
+                                              104,
+                                            ),
+                                            shape: RoundedRectangleBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(8),
+                                            ),
+                                          ),
+                                          child: Center(
+                                            child: Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.center,
+                                              children: [
+                                                Text(
+                                                  item["price"],
+                                                  style: GoogleFonts.montserrat(
+                                                    color: Colors.white,
+                                                    fontSize: width * 0.035,
+                                                    fontWeight: FontWeight.w700,
+                                                  ),
+                                                ),
+                                                Padding(
+                                                  padding: EdgeInsets.only(
+                                                    top: height * 0.005,
+                                                  ),
+                                                  child: Text(
+                                                    "/month",
+                                                    style:
+                                                        GoogleFonts.montserrat(
+                                                          color: Colors.white,
+                                                          fontSize:
+                                                              width * 0.02,
+                                                          fontWeight:
+                                                              FontWeight.w500,
+                                                        ),
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+
+                                Padding(
+                                  padding: EdgeInsets.only(left: width * 0.04),
+                                  child: Text(
+                                    item["title"],
+                                    style: GoogleFonts.raleway(
+                                      color: Color(0xFF242B5C),
+                                      fontSize: width * 0.05,
+                                      fontWeight: FontWeight.w700,
+                                    ),
+                                  ),
+                                ),
+
+                                SizedBox(height: height * 0.005),
+
+                                Padding(
+                                  padding: EdgeInsets.only(left: width * 0.03),
+                                  child: Row(
+                                    children: [
+                                      Icon(
+                                        Icons.star,
+                                        color: Colors.amber,
+                                        size: height * 0.02,
+                                      ),
+                                      SizedBox(width: width * 0.01),
+
+                                      Text(
+                                        item["rating"],
+                                        style: GoogleFonts.montserrat(
+                                          color: Color(0xFF234F68),
+                                          fontSize: width * 0.03,
+                                          fontWeight: FontWeight.w700,
+                                        ),
+                                      ),
+
+                                      SizedBox(width: width * 0.03),
+
+                                      Icon(
+                                        Icons.location_on,
+                                        size: height * 0.015,
+                                        color: Color(0xFF1F4C6B),
+                                      ),
+
+                                      SizedBox(width: width * 0.01),
+
+                                      Text(
+                                        item["location"],
+                                        style: TextStyle(
+                                          fontSize: width * 0.025,
+                                          fontWeight: FontWeight.bold,
+                                          color: Color(0xFF1F4C6B),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        );
+                      },
+                    )
+                  : ListView.builder(
+                      itemCount: propertyList.length,
+                      shrinkWrap: true,
+                      physics: const BouncingScrollPhysics(),
+                      itemBuilder: (context, index) {
+                        final item = propertyList[index];
+
+                        return Padding(
+                          padding: EdgeInsets.only(bottom: height * 0.02),
+                          child: Container(
+                            width: width * 0.9,
+                            height: height * 0.25,
+                            decoration: BoxDecoration(
+                              color: const Color.fromARGB(186, 244, 242, 242),
+                              borderRadius: BorderRadius.circular(20),
+                            ),
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(20),
+                              child: Row(
+                                children: [
+                                  Stack(
+                                    children: [
+                                      Padding(
+                                        padding: EdgeInsets.symmetric(
+                                          horizontal: width * 0.03,
+                                          vertical: height * 0.02,
+                                        ),
+                                        child: Image.asset(
+                                          item["image"],
+                                          height: height * 0.25,
+                                          fit: BoxFit.fill,
+                                        ),
+                                      ),
+
+                                      // ❤️ Favorite icon (LEFT side like old design)
+                                      Positioned(
+                                        left: width * 0.05,
+                                        top: height * 0.03,
+                                        child: Consumer<CartProvider>(
+                                          builder: (context, cart, child) {
+                                            bool isAdded = cart.isInCart(item);
+
+                                            return InkWell(
+                                              onTap: () {
+                                                if (isAdded) {
+                                                  cart.removeFromCart(item);
+                                                  ScaffoldMessenger.of(
+                                                    context,
+                                                  ).showSnackBar(
+                                                    SnackBar(
+                                                      content: Text(
+                                                        "${item['title']} removed from favorites",
+                                                      ),
+                                                      duration: Duration(
+                                                        seconds: 1,
+                                                      ),
+                                                      backgroundColor:
+                                                          Colors.redAccent,
+                                                    ),
+                                                  );
+                                                } else {
+                                                  cart.addToCart(item);
+                                                  ScaffoldMessenger.of(
+                                                    context,
+                                                  ).showSnackBar(
+                                                    SnackBar(
+                                                      content: Text(
+                                                        "${item['title']} added to favorites",
+                                                      ),
+                                                    ),
+                                                  );
+                                                }
+                                              },
+                                              child: AnimatedContainer(
+                                                duration: const Duration(
+                                                  milliseconds: 250,
+                                                ),
+                                                width: width * 0.08,
+                                                height: width * 0.08,
+                                                decoration: BoxDecoration(
+                                                  color: isAdded
+                                                      ? Colors.lightGreen
+                                                      : Colors.white,
+                                                  shape: BoxShape.circle,
+                                                ),
+                                                child: Icon(
+                                                  isAdded
+                                                      ? Icons.favorite
+                                                      : Icons.favorite_border,
+                                                  color: isAdded
+                                                      ? Colors.white
+                                                      : Colors.pinkAccent,
+                                                ),
+                                              ),
+                                            );
+                                          },
+                                        ),
+                                      ),
+
+                                      // 🏠 Apartment button
+                                      Positioned(
+                                        top: height * 0.165,
+                                        left: width * 0.058,
+                                        child: SizedBox(
+                                          width: width * 0.24,
+                                          child: ElevatedButton(
+                                            style: ElevatedButton.styleFrom(
+                                              backgroundColor: const Color(
+                                                0xFF234F68,
+                                              ),
+                                              shape: RoundedRectangleBorder(
+                                                borderRadius:
+                                                    BorderRadius.circular(10),
+                                              ),
+                                            ),
+                                            onPressed: () {},
+                                            child: Text(
+                                              "Apartment",
+                                              style: GoogleFonts.raleway(
+                                                color: Colors.white,
+                                                fontSize: width * 0.025,
+                                                fontWeight: FontWeight.w600,
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+
+                                  SizedBox(width: width * 0.02),
+
+                                  Padding(
+                                    padding: EdgeInsets.only(
+                                      top: height * 0.03,
+                                    ),
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          "${item["title"]}\nApartment",
+                                          style: GoogleFonts.raleway(
+                                            color: const Color(0xFF234F68),
+                                            fontSize: width * 0.045,
+                                            fontWeight: FontWeight.w800,
+                                            letterSpacing: 0.54,
+                                          ),
+                                        ),
+                                        SizedBox(height: height * 0.01),
+
+                                        Row(
+                                          children: [
+                                            Icon(
+                                              Icons.star,
+                                              color: Colors.amber,
+                                              size: height * 0.02,
+                                            ),
+                                            SizedBox(width: width * 0.01),
+                                            Text(
+                                              item["rating"],
+                                              style: GoogleFonts.montserrat(
+                                                color: const Color(0xFF234F68),
+                                                fontSize: width * 0.045,
+                                                fontWeight: FontWeight.w700,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+
+                                        SizedBox(height: height * 0.01),
+
+                                        Row(
+                                          children: [
+                                            Icon(
+                                              Icons.location_on,
+                                              size: height * 0.020,
+                                              color: const Color(0xFF1F4C6B),
+                                            ),
+                                            SizedBox(width: width * 0.01),
+                                            Text(
+                                              item["location"],
+                                              style: TextStyle(
+                                                fontSize: width * 0.035,
+                                                fontWeight: FontWeight.bold,
+                                                color: const Color(0xFF1F4C6B),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+
+                                        SizedBox(height: height * 0.03),
+
+                                        Row(
+                                          children: [
+                                            Text(
+                                              item["price"],
+                                              style: GoogleFonts.montserrat(
+                                                color: const Color(0xFF234F68),
+                                                fontSize: width * 0.06,
+                                                fontWeight: FontWeight.w700,
+                                              ),
+                                            ),
+                                            Padding(
+                                              padding: EdgeInsets.only(
+                                                top: height * 0.01,
+                                              ),
+                                              child: Text(
+                                                " / month",
+                                                style: GoogleFonts.montserrat(
+                                                  color: const Color(
+                                                    0xFF234F68,
+                                                  ),
+                                                  fontSize: width * 0.035,
+                                                  fontWeight: FontWeight.w500,
+                                                ),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+            ),
           ],
         ),
       ),
