@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:real_esate_finder/cartpage.dart';
-import 'package:real_esate_finder/screens/register/register.dart';
 import 'package:real_esate_finder/screens/promotion/halloween.dart';
 import 'package:real_esate_finder/screens/promotion/summer.dart';
 import 'package:real_esate_finder/screens/promotion/Winter.dart';
@@ -9,6 +8,8 @@ import 'package:real_esate_finder/CreateProvider.dart';
 import 'package:provider/provider.dart';
 import 'package:real_esate_finder/screens/topLocation/topLocation.dart';
 import 'package:real_esate_finder/screens/topLocation/locationdetail.dart';
+import 'package:real_esate_finder/screens/top agent page/agent.dart';
+import 'package:real_esate_finder/screens/top agent page/agentprofile.dart';
 
 class Alltab extends StatelessWidget {
   const Alltab({super.key});
@@ -83,7 +84,7 @@ class Alltab extends StatelessWidget {
                       ),
                       onPressed: () {},
                       child: Text(
-                        getPropertyType(item["title"]), // ✅ AUTO TYPE
+                        getPropertyType(item["title"]), 
                         style: GoogleFonts.raleway(
                           color: Colors.white,
                           fontSize: width * 0.025,
@@ -254,6 +255,58 @@ class Alltab extends StatelessWidget {
         "title": "Bangalore",
         "sub1": "assets/bangalore1.jpg",
         "sub2": "assets/bangalore2.jpg",
+      },
+    ];
+
+    final List<Map<String, String>> peopleList = [
+      
+      {
+        "name": "Javi",
+        "mail id":"javithjavi@gmail.com",
+        "image": "assets/person_javi.jpeg",
+        "rating": "5",
+        "sold": "500",
+        "reviews":"1000"
+      },
+      {
+        "name": "Amanda",
+           "mail id":"javithjavi@gmail.com",
+        "image": "assets/person1.png",
+        "rating": "4.5",
+        "sold": "124",
+        "reviews":"400"
+      },
+      {
+        "name": "Anderson",
+           "mail id":"javithjavi@gmail.com",
+        "image": "assets/person2.png",
+        "rating": "4",
+        "sold": "124",
+        "reviews":"180"
+      },
+      {
+        "name": "Samantha",
+           "mail id":"javithjavi@gmail.com",
+        "image": "assets/person3.png",
+        "rating": "4",
+        "sold": "124",
+        "reviews":"440"
+      },
+      {
+        "name": "Andrew",
+           "mail id":"javithjavi@gmail.com",
+        "image": "assets/person4.png",
+        "rating": "4",
+        "sold": "124",
+        "reviews":"102"
+      },
+      {
+        "name": "Michael",
+           "mail id":"javithjavi@gmail.com",
+        "image": "assets/person5.png",
+        "rating": "4",
+        "sold": "124",
+        "reviews":"340"
       },
     ];
 
@@ -837,7 +890,8 @@ class Alltab extends StatelessWidget {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => Locationdetail(item: item, index: index)
+                              builder: (context) =>
+                                  Locationdetail(item: item, index: index),
                             ),
                           );
                         },
@@ -899,10 +953,12 @@ class Alltab extends StatelessWidget {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                builder: (context) => Register(),
+                                builder: (context) =>
+                                    TopAgent(peopleList: peopleList,)
                               ),
                             );
                           },
+
                           child: Text(
                             'explore',
                             style: GoogleFonts.raleway(
@@ -919,120 +975,58 @@ class Alltab extends StatelessWidget {
               ),
               SizedBox(height: height * 0.013),
               //top agent list
-              SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                child: Row(
-                  children: [
-                    SizedBox(width: width * 0.05),
-                    Column(
-                      children: [
-                        ClipOval(
-                          child: Image.asset(
-                            "assets/person1.png",
-                            width: width * 0.2,
-                            height: width * 0.2,
-                            fit: BoxFit.cover,
-                          ),
-                        ),
-                        SizedBox(height: width * 0.03),
-                        Text(
-                          "Amanda",
-                          style: GoogleFonts.raleway(
-                            color: const Color(0xFF234F68),
-                            fontSize: width * 0.05,
-                          ),
-                        ),
-                      ],
-                    ),
-                    SizedBox(width: width * 0.08),
-                    Column(
-                      children: [
-                        ClipOval(
-                          child: Image.asset(
-                            "assets/person2.png",
-                            width: width * 0.2,
-                            height: width * 0.2,
-                            fit: BoxFit.cover,
-                          ),
-                        ),
-                        SizedBox(height: width * 0.03),
-                        Text(
-                          "Anderson",
-                          style: GoogleFonts.raleway(
-                            color: const Color(0xFF234F68),
-                            fontSize: width * 0.05,
-                          ),
-                        ),
-                      ],
-                    ),
-                    SizedBox(width: width * 0.08),
-                    Column(
-                      children: [
-                        ClipOval(
-                          child: Image.asset(
-                            "assets/person3.png",
-                            width: width * 0.2,
-                            height: width * 0.2,
-                            fit: BoxFit.cover,
-                          ),
-                        ),
-                        SizedBox(height: width * 0.03),
-                        Text(
-                          "Samantha",
-                          style: GoogleFonts.raleway(
-                            color: const Color(0xFF234F68),
-                            fontSize: width * 0.05,
-                          ),
-                        ),
-                      ],
-                    ),
-                    SizedBox(width: width * 0.08),
-                    Column(
-                      children: [
-                        ClipOval(
-                          child: Image.asset(
-                            "assets/person4.png",
-                            width: width * 0.2,
-                            height: width * 0.2,
-                            fit: BoxFit.cover,
-                          ),
-                        ),
-                        SizedBox(height: width * 0.03),
-                        Text(
-                          "Andrew",
-                          style: GoogleFonts.raleway(
-                            color: const Color(0xFF234F68),
-                            fontSize: width * 0.05,
-                          ),
-                        ),
-                      ],
-                    ),
-                    SizedBox(width: width * 0.08),
-                    Column(
-                      children: [
-                        ClipOval(
-                          child: Image.asset(
-                            "assets/person5.png",
-                            width: width * 0.2,
-                            height: width * 0.2,
-                            fit: BoxFit.cover,
-                          ),
-                        ),
-                        SizedBox(height: width * 0.03),
-                        Text(
-                          "Michael",
-                          style: GoogleFonts.raleway(
-                            color: const Color(0xFF234F68),
-                            fontSize: width * 0.05,
-                          ),
-                        ),
-                      ],
-                    ),
-                    SizedBox(width: width * 0.08),
-                  ],
-                ),
-              ),
+          Padding(
+  padding: EdgeInsets.only(left: width * 0.05),
+  child: SizedBox(
+    height: width * 0.35,
+    child: ListView.builder(
+  scrollDirection: Axis.horizontal,
+   itemCount: peopleList.length > 5 ? 6 : peopleList.length,
 
+  itemBuilder: (context, index) {
+    final detail = peopleList[index];
+
+    return GestureDetector(
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => Agentprofile(
+              peopleList: peopleList,
+              index: index, 
+            ),
+          ),
+        );
+      },
+          child: Padding(
+            padding: EdgeInsets.only(right: width * 0.11),
+            child: Column(
+              children: [
+                ClipOval(
+                  child: Image.asset(
+                    detail["image"]!,
+                    width: width * 0.2,
+                    height: width * 0.2,
+                    fit: BoxFit.cover,
+                  ),
+                ),
+                SizedBox(height: width * 0.03),
+                Text(
+                  detail["name"]!,
+                  style: GoogleFonts.raleway(
+                    color: const Color(0xFF234F68),
+                    fontSize: width * 0.05,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    ),
+  ),
+),
+  
               SizedBox(height: height * 0.011),
 
               // nearest estate title
@@ -1057,7 +1051,7 @@ class Alltab extends StatelessWidget {
                   ],
                 ),
               ),
-              SizedBox(height: height * 0.02),
+              SizedBox(height: height * 0.0),
               //nearest estate
               GridView.builder(
                 shrinkWrap: true,
@@ -1114,7 +1108,7 @@ class Alltab extends StatelessWidget {
                                                 content: Text(
                                                   "${item['title']} removed from favorites",
                                                 ),
-                                                
+
                                                 backgroundColor:
                                                     Colors.redAccent,
                                               ),
@@ -1129,8 +1123,6 @@ class Alltab extends StatelessWidget {
                                                 content: Text(
                                                   "${item['title']} added to favorites",
                                                 ),
-                                                
-                                               
                                               ),
                                             );
                                           }
