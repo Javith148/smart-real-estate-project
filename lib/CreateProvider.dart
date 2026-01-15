@@ -25,9 +25,6 @@ class Createprovider with ChangeNotifier {
   }
 }
 
-
-
-
 class CartProvider with ChangeNotifier {
   final List<Map<String, dynamic>> _cartItems = [];
 
@@ -35,11 +32,13 @@ class CartProvider with ChangeNotifier {
 
   void addToCart(Map<String, dynamic> item) {
     _cartItems.add(item);
+    print("prodect added");
     notifyListeners();
   }
 
   void removeFromCart(Map<String, dynamic> item) {
     _cartItems.removeWhere((x) => x["title"] == item["title"]);
+    print("product removed");
     notifyListeners();
   }
 

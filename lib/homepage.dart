@@ -75,7 +75,7 @@ class _HomePageState extends State<HomePage> {
     HomeBody(), 
     SearchPage(), 
     Cartpage(), 
-    Userprofile(), // index 3
+    Userprofile(), 
   ];
 
   @override
@@ -364,7 +364,7 @@ class _HomeBodyState extends State<HomeBody> {
       },
     );
   }
-
+ 
   //🔹 LOCATION BOTTOM SHEET
   void openLocationBottomDrawer(BuildContext context) {
     final width = MediaQuery.of(context).size.width;

@@ -805,3 +805,29 @@
               ],
             ),
           ),
+
+
+
+
+
+
+
+
+          ListView.builder(
+              itemCount: cart.cartItems.length,
+              itemBuilder: (context, index) {
+                final item = cart.cartItems[index];
+
+                return ListTile(
+                  leading: Image.asset(item["image"]),
+                  title: Text(item["title"]),
+                  subtitle: Text("Price: ${item["price"]}"),
+                  trailing: IconButton(
+                    icon: Icon(Icons.delete),
+                    onPressed: () {
+                      cart.removeFromCart(item);
+                    },
+                  ),
+                );
+              },
+            ),

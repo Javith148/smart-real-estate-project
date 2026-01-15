@@ -49,6 +49,7 @@ dev_dependencies:
   url_launcher: ^6.3.0
   provider: ^6.0.5
   mailer: ^6.0.0
+  flutter_slidable: ^3.0.1
 
   # The "flutter_lints" package below contains a set of recommended lints to
   # encourage good coding practices. The lint set provided by the package is
@@ -141,6 +142,7 @@ flutter:
       - assets/bangalore2.jpg
 
       
+      - assets/fav_icon.png
 
 
   # An image asset can refer to one or more resolution-specific "variants", see
