@@ -107,7 +107,7 @@ class _ApartmentTabState extends State<ApartmentTab> {
                         Positioned(
                           right: width * 0.03,
                           top: height * 0.025,
-                          child: Consumer<CartProvider>(
+                          child: Consumer<Createprovider>(
                             builder: (context, cart, child) {
                               bool isAdded = cart.isInCart(item);
 

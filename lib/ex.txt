@@ -831,3 +831,15 @@
                 );
               },
             ),
+
+
+
+
+              onPressed: () {
+                        Provider.of<CartProvider>(
+                          context,
+                          listen: false,
+                        ).removeFromCart(item); 
+
+                        Navigator.pop(context);
+                      },

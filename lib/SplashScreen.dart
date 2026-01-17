@@ -33,7 +33,7 @@ class _SplashScreenState extends State<SplashScreen> {
         final provider = Provider.of<Createprovider>(context, listen: false);
         provider.setUsername(savedUsername);
       }
-      print("Username from SharedPref: $savedUsername");
+     
 
 
       Navigator.pushReplacement(

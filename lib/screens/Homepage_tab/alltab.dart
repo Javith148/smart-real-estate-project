@@ -184,7 +184,7 @@ class Alltab extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final cart = Provider.of<CartProvider>(context);
+    final cart = Provider.of<Createprovider>(context);
     final width = MediaQuery.of(context).size.width;
     final height = MediaQuery.of(context).size.height;
 
@@ -1092,7 +1092,7 @@ class Alltab extends StatelessWidget {
                                 Positioned(
                                   right: width * 0.03,
                                   top: height * 0.025,
-                                  child: Consumer<CartProvider>(
+                                  child: Consumer<Createprovider>(
                                     builder: (context, cart, child) {
                                       bool isAdded = cart.isInCart(item);
 
