@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:real_esate_finder/widgets/map.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:provider/provider.dart';
+import 'package:real_esate_finder/CreateProvider.dart';
 
 class Locationcontainer extends StatefulWidget {
   const Locationcontainer({super.key});
@@ -41,21 +43,28 @@ class _LocationcontainerState extends State<Locationcontainer> {
   }
 
   Future<void> loadSavedLocations() async {
-    final savedLocations = await loadLocationsFromPrefs();
-    final savedIndex = await loadSelectedIndex();
+  final savedLocations = await loadLocationsFromPrefs();
+  final savedIndex = await loadSelectedIndex();
 
-    if (savedLocations.isNotEmpty) {
-      setState(() {
-        locations = savedLocations;
+  if (savedLocations.isNotEmpty) {
+    setState(() {
+      locations = savedLocations;
 
-        if (savedIndex < savedLocations.length) {
-          selectedIndex = savedIndex;
-        } else {
-          selectedIndex = 0;
-        }
-      });
-    }
+      if (savedIndex < savedLocations.length) {
+        selectedIndex = savedIndex;
+      } else {
+        selectedIndex = 0;
+      }
+    });
+
+    // 🔥 PASTE THIS EXACTLY HERE
+    Provider.of<Createprovider>(
+      context,
+      listen: false,
+    ).setAddress(locations[selectedIndex]);
   }
+}
+
 
   String getSelectedLocationTitle() {
     if (locations.isEmpty) return "";
@@ -287,12 +296,19 @@ class _LocationcontainerState extends State<Locationcontainer> {
                             });
 
                             await saveSelectedIndex(index);
+
+                            // 🔥 FULL ADDRESS
+                            String fullAddress = locations[index];
+
+                            // 🔥 SEND TO PROVIDER
+                            Provider.of<Createprovider>(
+                              context,
+                              listen: false,
+                            ).setAddress(fullAddress);
+
                             setModalState(() {});
                           },
 
-                          onLongPress: () {
-                            _showDeleteDialog(context, index, setModalState);
-                          },
                           child: Container(
                             padding: EdgeInsets.all(width * 0.04),
                             decoration: BoxDecoration(
@@ -514,43 +530,47 @@ class _LocationcontainerState extends State<Locationcontainer> {
     final width = MediaQuery.of(context).size.width;
     final height = MediaQuery.of(context).size.height;
 
-    return  GestureDetector(
-          onTap: () {
-            openLocationBottomDrawer(context);
-          },
-          child: Container(
-            height: width * 0.12,
-            padding: EdgeInsets.symmetric(horizontal: width * 0.04),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(25),
-            ),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Icon(
-                  Icons.location_on,
-                  size: height * 0.022,
-                  color: const Color(0xFF1F4C6B),
-                ),
-                SizedBox(width: width * 0.02),
-                Text(
-                  getSelectedLocationTitle(),
+    return GestureDetector(
+      onTap:() {
+        openLocationBottomDrawer(context);
+      },
 
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: TextStyle(
-                    fontSize: width * 0.032,
-                    fontWeight: FontWeight.bold,
-                    color: const Color(0xFF1F4C6B),
-                  ),
-                ),
-                 SizedBox(width: width * 0.01),
-                Icon(Icons.keyboard_arrow_down ,size: height * 0.015,color: const Color(0xFF1F4C6B),)
-              ],
+      child: Container(
+        height: width * 0.12,
+        padding: EdgeInsets.symmetric(horizontal: width * 0.04),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(25),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              Icons.location_on,
+              size: height * 0.022,
+              color: const Color(0xFF1F4C6B),
             ),
-          ),
-   
+            SizedBox(width: width * 0.02),
+            Text(
+              getSelectedLocationTitle(),
+
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(
+                fontSize: width * 0.032,
+                fontWeight: FontWeight.bold,
+                color: const Color(0xFF1F4C6B),
+              ),
+            ),
+            SizedBox(width: width * 0.01),
+            Icon(
+              Icons.keyboard_arrow_down,
+              size: height * 0.015,
+              color: const Color(0xFF1F4C6B),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

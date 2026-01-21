@@ -57,4 +57,17 @@ class Createprovider with ChangeNotifier {
   bool isInCart(Map<String, dynamic> item) {
     return _cartItems.any((x) => x["title"] == item["title"]);
   }
+
+
+ String _address = "";
+
+  String get address => _address;
+
+  void setAddress(String value) {
+    _address = value;
+    notifyListeners();
+  }
 }
+
+
+

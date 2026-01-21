@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geocoding/geocoding.dart';
-import 'package:geolocator/geolocator.dart';
 import 'package:real_esate_finder/widgets/locationContainer.dart';
 import 'dart:ui' as ui;
 import 'dart:typed_data';
 import 'package:flutter/services.dart';
+import 'package:provider/provider.dart';
+import 'package:real_esate_finder/CreateProvider.dart';
 
 class Searchpage extends StatefulWidget {
   const Searchpage({super.key});
@@ -15,6 +16,48 @@ class Searchpage extends StatefulWidget {
 }
 
 class _SearchpageState extends State<Searchpage> {
+
+@override
+void didChangeDependencies() {
+  super.didChangeDependencies();
+
+  final address = context.watch<Createprovider>().address;
+
+  if (address.isEmpty) return;
+
+  if (_lastAddress != address) {
+    _lastAddress = address;
+    moveCameraToAddress();
+  }
+}
+@override
+void initState() {
+  super.initState();
+  createMarkersFromList(); // 🔥 THIS LINE IS IMPORTANT
+}
+
+
+
+GoogleMapController? mapController;
+
+  String? _lastAddress;
+
+  /// ADDRESS → LAT LNG → CAMERA MOVE
+Future<void> moveCameraToAddress() async {
+  final address = context.read<Createprovider>().address;
+
+  List<Location> locations = await locationFromAddress(address);
+
+  final latLng = LatLng(
+    locations.first.latitude,
+    locations.first.longitude,
+  );
+
+  mapController?.animateCamera(
+    CameraUpdate.newLatLngZoom(latLng, 15),
+  );
+}
+
   LatLng selectedLocation = const LatLng(11.0168, 76.9558);
 
   List<Map<String, dynamic>> propertyList = [
@@ -48,7 +91,6 @@ class _SearchpageState extends State<Searchpage> {
     },
   ];
 
-
   Future<LatLng?> getLatLngFromAddress(String address) async {
     try {
       List<Location> locations = await locationFromAddress(address);
@@ -62,108 +104,99 @@ class _SearchpageState extends State<Searchpage> {
     return null;
   }
 
-  
-Future<BitmapDescriptor> markerWithCenterImage({
-  required String markerAsset, // your pin image
-  required String profileAsset, // list/profile image
-}) async {
-  /// Load marker base image
-  final ByteData markerData = await rootBundle.load(markerAsset);
-  final ui.Codec markerCodec = await ui.instantiateImageCodec(
-    markerData.buffer.asUint8List(),
-    targetWidth: 95,
-  );
-  final ui.FrameInfo markerFrame = await markerCodec.getNextFrame();
-  final ui.Image markerImage = markerFrame.image;
 
-  /// Load profile image
-  final ByteData profileData = await rootBundle.load(profileAsset);
-  final ui.Codec profileCodec = await ui.instantiateImageCodec(
-    profileData.buffer.asUint8List(),
-    targetWidth: 60,
-  );
-  final ui.FrameInfo profileFrame = await profileCodec.getNextFrame();
-  final ui.Image profileImage = profileFrame.image;
 
-  final double width = markerImage.width.toDouble();
-  final double height = markerImage.height.toDouble();
+  Future<BitmapDescriptor> markerWithCenterImage({
+    required String markerAsset, // your pin image
+    required String profileAsset, // list/profile image
+  }) async {
+    /// Load marker base image
+    final ByteData markerData = await rootBundle.load(markerAsset);
+    final ui.Codec markerCodec = await ui.instantiateImageCodec(
+      markerData.buffer.asUint8List(),
+      targetWidth: 95,
+    );
+    final ui.FrameInfo markerFrame = await markerCodec.getNextFrame();
+    final ui.Image markerImage = markerFrame.image;
 
-  final recorder = ui.PictureRecorder();
-  final canvas = Canvas(recorder);
+    /// Load profile image
+    final ByteData profileData = await rootBundle.load(profileAsset);
+    final ui.Codec profileCodec = await ui.instantiateImageCodec(
+      profileData.buffer.asUint8List(),
+      targetWidth: 60,
+    );
+    final ui.FrameInfo profileFrame = await profileCodec.getNextFrame();
+    final ui.Image profileImage = profileFrame.image;
 
-  /// 1️⃣ Draw your marker image
-  canvas.drawImage(markerImage, Offset.zero, Paint());
+    final double width = markerImage.width.toDouble();
+    final double height = markerImage.height.toDouble();
 
-  /// 2️⃣ Profile image center position (adjust Y if needed)
-  final Offset imageCenter = Offset(width / 2, height * 0.38);
+    final recorder = ui.PictureRecorder();
+    final canvas = Canvas(recorder);
 
-  /// White background circle
-  canvas.drawCircle(
-    imageCenter,
-    36,
-    Paint()..color = Colors.white,
-  );
+    /// 1️⃣ Draw your marker image
+    canvas.drawImage(markerImage, Offset.zero, Paint());
 
-  /// Profile image inside circle
-  final Paint imagePaint = Paint()
-    ..shader = ImageShader(
-      profileImage,
-      TileMode.clamp,
-      TileMode.clamp,
-      Matrix4.identity().storage,
+    /// 2️⃣ Profile image center position (adjust Y if needed)
+    final Offset imageCenter = Offset(width / 2, height * 0.38);
+
+    /// White background circle
+    canvas.drawCircle(imageCenter, 36, Paint()..color = Colors.white);
+
+    /// Profile image inside circle
+    final Paint imagePaint = Paint()
+      ..shader = ImageShader(
+        profileImage,
+        TileMode.clamp,
+        TileMode.clamp,
+        Matrix4.identity().storage,
+      );
+
+    canvas.drawCircle(imageCenter, 32, imagePaint);
+
+    final ui.Image finalImage = await recorder.endRecording().toImage(
+      width.toInt(),
+      height.toInt(),
     );
 
-  canvas.drawCircle(imageCenter, 32, imagePaint);
+    final ByteData? pngBytes = await finalImage.toByteData(
+      format: ui.ImageByteFormat.png,
+    );
 
-  final ui.Image finalImage =
-      await recorder.endRecording().toImage(
-            width.toInt(),
-            height.toInt(),
-          );
-
-  final ByteData? pngBytes =
-      await finalImage.toByteData(format: ui.ImageByteFormat.png);
-
-  return BitmapDescriptor.fromBytes(pngBytes!.buffer.asUint8List());
-}
-
+    return BitmapDescriptor.fromBytes(pngBytes!.buffer.asUint8List());
+  }
 
   Set<Marker> markers = {};
-Future<void> createMarkersFromList() async {
-  Set<Marker> tempMarkers = {};
+  Future<void> createMarkersFromList() async {
+    Set<Marker> tempMarkers = {};
 
-  for (int i = 0; i < propertyList.length; i++) {
-    final LatLng? latLng = await getLatLngFromAddress(
-      propertyList[i]["location"],
-    );
-
-    if (latLng != null) {
-      final BitmapDescriptor icon =
-          await markerWithCenterImage(
-            markerAsset: "assets/Vector.png",          // 🔵 marker pin
-            profileAsset: propertyList[i]["image"],    // 🖼 center image
-          );
-
-      tempMarkers.add(
-        Marker(
-          markerId: MarkerId("property_$i"),
-          position: latLng,
-          icon: icon,
-        ),
+    for (int i = 0; i < propertyList.length; i++) {
+      final LatLng? latLng = await getLatLngFromAddress(
+        propertyList[i]["location"],
       );
-    }
-  }
 
-  if (!mounted) return;
-  setState(() => markers = tempMarkers);
-}
+      if (latLng != null) {
+        final BitmapDescriptor icon = await markerWithCenterImage(
+          markerAsset: "assets/Vector.png", // 🔵 marker pin
+          profileAsset: propertyList[i]["image"], // 🖼 center image
+        );
+
+        tempMarkers.add(
+          Marker(
+            markerId: MarkerId("property_$i"),
+            position: latLng,
+            icon: icon,
+            onTap: (){}
+          ),
+        );
+      }
+    }
+
+    if (!mounted) return;
+    setState(() => markers = tempMarkers);
+  }
 
   
-  @override
-  void initState() {
-    super.initState();
-    createMarkersFromList();
-  }
 
   bool selectedHouse = false;
   bool selectedApartment = false;
@@ -449,19 +482,22 @@ Future<void> createMarkersFromList() async {
   Widget build(BuildContext context) {
     final width = MediaQuery.of(context).size.width;
     final height = MediaQuery.of(context).size.height;
+
+    
     return Scaffold(
       body: Stack(
         children: [
           SizedBox(
             child: GoogleMap(
-              initialCameraPosition: CameraPosition(
-                target: selectedLocation,
-                zoom: 15,
-              ),
-              myLocationEnabled: false,
-              myLocationButtonEnabled: false,
-              markers: markers,
-            ),
+       markers: markers,
+        onMapCreated: (controller) {
+          mapController = controller;
+        },
+        initialCameraPosition: const CameraPosition(
+          target: LatLng(11.0168, 76.9558), // default Coimbatore
+          zoom: 12,
+        ),
+      ),
           ),
 
           Positioned(
