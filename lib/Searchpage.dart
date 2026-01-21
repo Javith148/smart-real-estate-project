@@ -1,0 +1,546 @@
+import 'package:flutter/material.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:geocoding/geocoding.dart';
+import 'package:geolocator/geolocator.dart';
+import 'package:real_esate_finder/widgets/locationContainer.dart';
+import 'dart:ui' as ui;
+import 'dart:typed_data';
+import 'package:flutter/services.dart';
+
+class Searchpage extends StatefulWidget {
+  const Searchpage({super.key});
+
+  @override
+  State<Searchpage> createState() => _SearchpageState();
+}
+
+class _SearchpageState extends State<Searchpage> {
+  LatLng selectedLocation = const LatLng(11.0168, 76.9558);
+
+  List<Map<String, dynamic>> propertyList = [
+    {
+      "image": "assets/nearby1.png",
+      "title": "Wings Tower",
+      "price": "₹30k",
+      "rating": "4.9",
+      "location": "Coimbatore, TN",
+    },
+    {
+      "image": "assets/nearby2.png",
+      "title": "Mill Sper House",
+      "price": "₹20k",
+      "rating": "4.8",
+      "location": "Peelamedu, TN",
+    },
+    {
+      "image": "assets/nearby3.png",
+      "title": "Garden Residency",
+      "price": "₹25k",
+      "rating": "4.7",
+      "location": "RS Puram, TN",
+    },
+    {
+      "image": "assets/nearby4.png",
+      "title": "Elite Apartment",
+      "price": "₹28k",
+      "rating": "4.9",
+      "location": "Saibaba Colony, TN",
+    },
+  ];
+
+
+  Future<LatLng?> getLatLngFromAddress(String address) async {
+    try {
+      List<Location> locations = await locationFromAddress(address);
+
+      if (locations.isNotEmpty) {
+        return LatLng(locations.first.latitude, locations.first.longitude);
+      }
+    } catch (e) {
+      debugPrint("Geocoding error: $e");
+    }
+    return null;
+  }
+
+  
+Future<BitmapDescriptor> markerWithCenterImage({
+  required String markerAsset, // your pin image
+  required String profileAsset, // list/profile image
+}) async {
+  /// Load marker base image
+  final ByteData markerData = await rootBundle.load(markerAsset);
+  final ui.Codec markerCodec = await ui.instantiateImageCodec(
+    markerData.buffer.asUint8List(),
+    targetWidth: 95,
+  );
+  final ui.FrameInfo markerFrame = await markerCodec.getNextFrame();
+  final ui.Image markerImage = markerFrame.image;
+
+  /// Load profile image
+  final ByteData profileData = await rootBundle.load(profileAsset);
+  final ui.Codec profileCodec = await ui.instantiateImageCodec(
+    profileData.buffer.asUint8List(),
+    targetWidth: 60,
+  );
+  final ui.FrameInfo profileFrame = await profileCodec.getNextFrame();
+  final ui.Image profileImage = profileFrame.image;
+
+  final double width = markerImage.width.toDouble();
+  final double height = markerImage.height.toDouble();
+
+  final recorder = ui.PictureRecorder();
+  final canvas = Canvas(recorder);
+
+  /// 1️⃣ Draw your marker image
+  canvas.drawImage(markerImage, Offset.zero, Paint());
+
+  /// 2️⃣ Profile image center position (adjust Y if needed)
+  final Offset imageCenter = Offset(width / 2, height * 0.38);
+
+  /// White background circle
+  canvas.drawCircle(
+    imageCenter,
+    36,
+    Paint()..color = Colors.white,
+  );
+
+  /// Profile image inside circle
+  final Paint imagePaint = Paint()
+    ..shader = ImageShader(
+      profileImage,
+      TileMode.clamp,
+      TileMode.clamp,
+      Matrix4.identity().storage,
+    );
+
+  canvas.drawCircle(imageCenter, 32, imagePaint);
+
+  final ui.Image finalImage =
+      await recorder.endRecording().toImage(
+            width.toInt(),
+            height.toInt(),
+          );
+
+  final ByteData? pngBytes =
+      await finalImage.toByteData(format: ui.ImageByteFormat.png);
+
+  return BitmapDescriptor.fromBytes(pngBytes!.buffer.asUint8List());
+}
+
+
+  Set<Marker> markers = {};
+Future<void> createMarkersFromList() async {
+  Set<Marker> tempMarkers = {};
+
+  for (int i = 0; i < propertyList.length; i++) {
+    final LatLng? latLng = await getLatLngFromAddress(
+      propertyList[i]["location"],
+    );
+
+    if (latLng != null) {
+      final BitmapDescriptor icon =
+          await markerWithCenterImage(
+            markerAsset: "assets/Vector.png",          // 🔵 marker pin
+            profileAsset: propertyList[i]["image"],    // 🖼 center image
+          );
+
+      tempMarkers.add(
+        Marker(
+          markerId: MarkerId("property_$i"),
+          position: latLng,
+          icon: icon,
+        ),
+      );
+    }
+  }
+
+  if (!mounted) return;
+  setState(() => markers = tempMarkers);
+}
+
+  
+  @override
+  void initState() {
+    super.initState();
+    createMarkersFromList();
+  }
+
+  bool selectedHouse = false;
+  bool selectedApartment = false;
+  bool selectedVilla = false;
+  String selectedPriceSort = "";
+  Future<void> openFilters() async {
+    final result = await openFilterSheet(context);
+
+    if (result != null) {
+      setState(() {
+        selectedHouse = result["house"];
+        selectedApartment = result["apartment"];
+        selectedVilla = result["villa"];
+        selectedPriceSort = result["priceSort"];
+      });
+    }
+  }
+
+  Future<Map<String, dynamic>?> openFilterSheet(BuildContext context) async {
+    final width = MediaQuery.of(context).size.width;
+    final height = MediaQuery.of(context).size.height;
+
+    bool house = selectedHouse;
+    bool apartment = selectedApartment;
+    bool villa = selectedVilla;
+    String priceSort = selectedPriceSort;
+
+    TextStyle filterItemText() {
+      return TextStyle(
+        fontSize: width * 0.038,
+        fontWeight: FontWeight.w500,
+        color: const Color(0xFF1F4C6B),
+      );
+    }
+
+    return showModalBottomSheet<Map<String, dynamic>>(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.white,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(40)),
+      ),
+      builder: (context) {
+        return StatefulBuilder(
+          builder: (context, setState) {
+            return Padding(
+              padding: EdgeInsets.only(
+                left: width * 0.07,
+                right: width * 0.06,
+                top: height * 0.03,
+                bottom: height * 0.03,
+              ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // 🔹 Drag Indicator
+                  Center(
+                    child: Container(
+                      width: width * 0.12,
+                      height: height * 0.005,
+                      decoration: BoxDecoration(
+                        color: Colors.grey[400],
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                    ),
+                  ),
+
+                  SizedBox(height: height * 0.02),
+
+                  // 🔹 Title + Clear
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        "Filters",
+                        style: TextStyle(
+                          fontSize: width * 0.05,
+                          fontWeight: FontWeight.bold,
+                          color: const Color(0xFF1F4C6B),
+                        ),
+                      ),
+                      TextButton(
+                        onPressed: () {
+                          setState(() {
+                            house = false;
+                            apartment = false;
+                            villa = false;
+                            priceSort = "";
+                          });
+                        },
+                        child: Text(
+                          "Clear",
+                          style: TextStyle(
+                            fontSize: width * 0.04,
+                            fontWeight: FontWeight.w600,
+                            color: const Color(0xFF8BC83F),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+
+                  SizedBox(height: height * 0.02),
+
+                  // 🔹 Property Type
+                  Center(
+                    child: Text(
+                      "Property Type",
+                      style: TextStyle(
+                        fontSize: width * 0.043,
+                        fontWeight: FontWeight.w600,
+                        color: const Color(0xFF1F4C6B),
+                      ),
+                    ),
+                  ),
+
+                  CheckboxListTile(
+                    contentPadding: EdgeInsets.zero,
+                    activeColor: const Color(0xFF8BC83F),
+                    title: Text("House", style: filterItemText()),
+                    value: house,
+                    onChanged: (v) => setState(() => house = v!),
+                  ),
+                  CheckboxListTile(
+                    contentPadding: EdgeInsets.zero,
+                    activeColor: const Color(0xFF8BC83F),
+                    title: Text("Apartment", style: filterItemText()),
+                    value: apartment,
+                    onChanged: (v) => setState(() => apartment = v!),
+                  ),
+                  CheckboxListTile(
+                    contentPadding: EdgeInsets.zero,
+                    activeColor: const Color(0xFF8BC83F),
+                    title: Text("Villa", style: filterItemText()),
+                    value: villa,
+                    onChanged: (v) => setState(() => villa = v!),
+                  ),
+
+                  SizedBox(height: height * 0.02),
+
+                  // 🔹 Sort by Price
+                  Center(
+                    child: Text(
+                      "Sort by Price",
+                      style: TextStyle(
+                        fontSize: width * 0.043,
+                        fontWeight: FontWeight.w600,
+                        color: const Color(0xFF1F4C6B),
+                      ),
+                    ),
+                  ),
+
+                  SizedBox(height: height * 0.015),
+
+                  Row(
+                    children: [
+                      // LOW → HIGH
+                      Expanded(
+                        child: GestureDetector(
+                          onTap: () => setState(() => priceSort = "low"),
+                          child: Container(
+                            height: height * 0.065,
+                            decoration: BoxDecoration(
+                              color: priceSort == "low"
+                                  ? const Color(0xFF1F4C6B)
+                                  : const Color(0xFFF5F7F9),
+                              borderRadius: BorderRadius.circular(15),
+                            ),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Icon(
+                                  Icons.trending_up_rounded,
+                                  color: priceSort == "low"
+                                      ? Colors.white
+                                      : const Color(0xFF1F4C6B),
+                                ),
+                                SizedBox(width: width * 0.02),
+                                Text(
+                                  "Low to High",
+                                  style: TextStyle(
+                                    fontSize: width * 0.04,
+                                    fontWeight: FontWeight.w600,
+                                    color: priceSort == "low"
+                                        ? Colors.white
+                                        : const Color(0xFF1F4C6B),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+
+                      SizedBox(width: width * 0.04),
+
+                      // HIGH → LOW
+                      Expanded(
+                        child: GestureDetector(
+                          onTap: () => setState(() => priceSort = "high"),
+                          child: Container(
+                            height: height * 0.065,
+                            decoration: BoxDecoration(
+                              color: priceSort == "high"
+                                  ? const Color(0xFF1F4C6B)
+                                  : const Color(0xFFF5F7F9),
+                              borderRadius: BorderRadius.circular(15),
+                            ),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Icon(
+                                  Icons.trending_down_rounded,
+                                  color: priceSort == "high"
+                                      ? Colors.white
+                                      : const Color(0xFF1F4C6B),
+                                ),
+                                SizedBox(width: width * 0.02),
+                                Text(
+                                  "High to Low",
+                                  style: TextStyle(
+                                    fontSize: width * 0.04,
+                                    fontWeight: FontWeight.w600,
+                                    color: priceSort == "high"
+                                        ? Colors.white
+                                        : const Color(0xFF1F4C6B),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+
+                  SizedBox(height: height * 0.04),
+
+                  // 🔹 APPLY
+                  Center(
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xFF8BC83F),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(15),
+                        ),
+                      ),
+                      onPressed: () {
+                        Navigator.pop(context, {
+                          "house": house,
+                          "apartment": apartment,
+                          "villa": villa,
+                          "priceSort": priceSort,
+                        });
+                      },
+                      child: SizedBox(
+                        width: width * 0.7,
+                        height: height * 0.065,
+                        child: Center(
+                          child: Text(
+                            "Apply Filters",
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: width * 0.042,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            );
+          },
+        );
+      },
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final width = MediaQuery.of(context).size.width;
+    final height = MediaQuery.of(context).size.height;
+    return Scaffold(
+      body: Stack(
+        children: [
+          SizedBox(
+            child: GoogleMap(
+              initialCameraPosition: CameraPosition(
+                target: selectedLocation,
+                zoom: 15,
+              ),
+              myLocationEnabled: false,
+              myLocationButtonEnabled: false,
+              markers: markers,
+            ),
+          ),
+
+          Positioned(
+            top: height * 0.05,
+            left: width * 0.05,
+            child: Locationcontainer(),
+          ),
+          Positioned(
+            top: height * 0.05,
+            right: width * 0.05,
+            child: GestureDetector(
+              onTap: () {
+                openFilters();
+              },
+              child: Container(
+                width: width * 0.12,
+                height: width * 0.12,
+                decoration: const BoxDecoration(
+                  color: Colors.white,
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(
+                  Icons.tune_rounded,
+                  size: width * 0.05,
+                  color: Color(0xFF1F4C6B),
+                ),
+              ),
+            ),
+          ),
+
+          Positioned(
+            top: height * 0.12,
+            left: width * 0.05,
+
+            child: SizedBox(
+              height: height * 0.08,
+              width: width * 0.89,
+              child: TextFormField(
+                autofocus: false,
+
+                decoration: InputDecoration(
+                  filled: true,
+                  fillColor: Colors.white,
+
+                  contentPadding: EdgeInsets.symmetric(
+                    vertical: height * 0.025,
+                    horizontal: width * 0.04,
+                  ),
+
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(25),
+                    borderSide: BorderSide.none,
+                  ),
+
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(20),
+                    borderSide: BorderSide(
+                      color: const Color(0xFF242B5C),
+                      width: 1.5,
+                    ),
+                  ),
+
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(25),
+                    borderSide: BorderSide.none,
+                  ),
+
+                  labelText: "Search Home, Apartment, etc",
+                  floatingLabelBehavior: FloatingLabelBehavior.never,
+                  suffixIcon: Padding(
+                    padding: EdgeInsets.only(right: width * 0.03),
+                    child: const Icon(Icons.search),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}

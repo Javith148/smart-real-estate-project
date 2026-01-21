@@ -47,6 +47,7 @@ class _LocationdetailState extends State<Locationdetail> {
       "location": "Saibaba Colony, TN",
     },
   ];
+  
  int get listcounter => propertyList.length;
   late FocusNode _focusNode;
   Timer? _keyboardTimer;
@@ -591,6 +592,7 @@ class _LocationdetailState extends State<Locationdetail> {
                           ],
                         ),
                       ),
+                   
                     ],
                   ),
                   SizedBox(height: height * 0.045),

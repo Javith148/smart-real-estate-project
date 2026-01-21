@@ -9,7 +9,6 @@ void main() {
   runApp(
     MultiProvider(
       providers: [ChangeNotifierProvider(create: (_) => Createprovider()),
-              ChangeNotifierProvider(create: (_) => Createprovider()),
       ],
       child: const MyApp(),
     ),
