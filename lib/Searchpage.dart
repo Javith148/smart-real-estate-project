@@ -551,6 +551,34 @@ class _SearchpageState extends State<Searchpage> {
     return count;
   }
 
+  List<Map<String, dynamic>> nearbyProperties = [];
+
+  List<Map<String, dynamic>> getNearbyPropertyDetails(LatLng cameraPosition) {
+    List<Map<String, dynamic>> result = [];
+
+    for (int i = 0; i < markers.length; i++) {
+      final marker = markers.elementAt(i);
+
+      double distance = calculateDistance(
+        cameraPosition.latitude,
+        cameraPosition.longitude,
+        marker.position.latitude,
+        marker.position.longitude,
+      );
+
+      if (distance <= 5) {
+        result.add({
+          "title": propertyList[i]["title"],
+          "price": propertyList[i]["price"],
+          "rating": propertyList[i]["rating"],
+          "image": propertyList[i]["image"],
+          "distance": distance.toStringAsFixed(1),
+        });
+      }
+    }
+    return result;
+  }
+
   @override
   Widget build(BuildContext context) {
     final width = MediaQuery.of(context).size.width;
@@ -576,6 +604,9 @@ class _SearchpageState extends State<Searchpage> {
                 nearbyPropertyCount = countNearbyMarkers(
                   currentCameraPosition,
                   getMarkerLatLngs(),
+                );
+                nearbyProperties = getNearbyPropertyDetails(
+                  currentCameraPosition,
                 );
 
                 setState(() {
@@ -800,6 +831,116 @@ class _SearchpageState extends State<Searchpage> {
                     ),
                   ),
           ),
+          if (nearbyProperties.isNotEmpty)
+            Positioned(
+              bottom: height * 0.01,
+              left: width * 0.05,
+              right: width * 0.05,
+              child: SizedBox(
+                height: height * 0.175,
+                child: ListView.builder(
+                  scrollDirection: Axis.horizontal,
+                  itemCount: nearbyProperties.length,
+                  itemBuilder: (context, index) {
+                    final item = nearbyProperties[index];
+
+                    return Container(
+                      width: width * 0.8,
+
+                      margin: const EdgeInsets.only(right: 12),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(18),
+                        boxShadow: const [
+                          BoxShadow(blurRadius: 8, color: Colors.black12),
+                        ],
+                      ),
+                      padding: EdgeInsetsDirectional.all(width * 0.03),
+                      child: Row(
+                        children: [
+                          Stack(
+                            children: [
+                              Image.asset(item["image"],width: width*0.55,fit: BoxFit.fitWidth,),
+                              Positioned(
+                                left: width * 0.03,
+                                top: height * 0.013,
+                                child: Consumer<Createprovider>(
+                                  builder: (context, cart, child) {
+                                    bool isAdded = cart.isInCart(item);
+
+                                    return InkWell(
+                                      onTap: () {
+                                        if (isAdded) {
+                                          cart.removeFromCart(item);
+
+                                          ScaffoldMessenger.of(
+                                            context,
+                                          ).showSnackBar(
+                                            SnackBar(
+                                              content: Text(
+                                                "${item['title']} removed from favorites",
+                                              ),
+                                              duration: Duration(seconds: 1),
+                                              backgroundColor: Colors.redAccent,
+                                            ),
+                                          );
+                                        } else {
+                                          cart.addToCart(item);
+
+                                          ScaffoldMessenger.of(
+                                            context,
+                                          ).showSnackBar(
+                                            SnackBar(
+                                              content: Text(
+                                                "${item['title']} added to favorites",
+                                              ),
+                                              duration: Duration(seconds: 1),
+                                              backgroundColor: Colors.green,
+                                            ),
+                                          );
+                                        }
+                                      },
+
+                                      child: AnimatedContainer(
+                                        duration: Duration(milliseconds: 250),
+                                        width: width * 0.08,
+                                        height: width * 0.08,
+                                        decoration: BoxDecoration(
+                                          color: isAdded
+                                              ? Colors.green
+                                              : Colors.white,
+                                          shape: BoxShape.circle,
+                                          boxShadow: [
+                                            BoxShadow(
+                                              color: Colors.black12,
+                                              blurRadius: 4,
+                                              spreadRadius: 1,
+                                            ),
+                                          ],
+                                        ),
+                                        child: Icon(
+                                          isAdded
+                                              ? Icons.favorite
+                                              : Icons.favorite_border,
+                                          color: isAdded
+                                              ? Colors.white
+                                              : Colors.pinkAccent,
+                                          size: height * 0.020,
+                                        ),
+                                      ),
+                                    );
+                                  },
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    );
+                  },
+                ),
+              ),
+            ),
         ],
       ),
     );
