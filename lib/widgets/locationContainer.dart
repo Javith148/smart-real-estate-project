@@ -43,28 +43,27 @@ class _LocationcontainerState extends State<Locationcontainer> {
   }
 
   Future<void> loadSavedLocations() async {
-  final savedLocations = await loadLocationsFromPrefs();
-  final savedIndex = await loadSelectedIndex();
+    final savedLocations = await loadLocationsFromPrefs();
+    final savedIndex = await loadSelectedIndex();
 
-  if (savedLocations.isNotEmpty) {
-    setState(() {
-      locations = savedLocations;
+    if (savedLocations.isNotEmpty) {
+      setState(() {
+        locations = savedLocations;
 
-      if (savedIndex < savedLocations.length) {
-        selectedIndex = savedIndex;
-      } else {
-        selectedIndex = 0;
-      }
-    });
+        if (savedIndex < savedLocations.length) {
+          selectedIndex = savedIndex;
+        } else {
+          selectedIndex = 0;
+        }
+      });
 
-    // 🔥 PASTE THIS EXACTLY HERE
-    Provider.of<Createprovider>(
-      context,
-      listen: false,
-    ).setAddress(locations[selectedIndex]);
+      // 🔥 PASTE THIS EXACTLY HERE
+      Provider.of<Createprovider>(
+        context,
+        listen: false,
+      ).setAddress(locations[selectedIndex]);
+    }
   }
-}
-
 
   String getSelectedLocationTitle() {
     if (locations.isEmpty) return "";
@@ -308,6 +307,9 @@ class _LocationcontainerState extends State<Locationcontainer> {
 
                             setModalState(() {});
                           },
+                          onLongPress: () {
+                            _showDeleteDialog(context, index, setModalState);
+                          },
 
                           child: Container(
                             padding: EdgeInsets.all(width * 0.04),
@@ -531,7 +533,7 @@ class _LocationcontainerState extends State<Locationcontainer> {
     final height = MediaQuery.of(context).size.height;
 
     return GestureDetector(
-      onTap:() {
+      onTap: () {
         openLocationBottomDrawer(context);
       },
 

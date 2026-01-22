@@ -7,6 +7,7 @@ import 'dart:typed_data';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:real_esate_finder/CreateProvider.dart';
+import 'dart:math';
 
 class Searchpage extends StatefulWidget {
   const Searchpage({super.key});
@@ -16,47 +17,49 @@ class Searchpage extends StatefulWidget {
 }
 
 class _SearchpageState extends State<Searchpage> {
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
 
-@override
-void didChangeDependencies() {
-  super.didChangeDependencies();
+    final address = context.watch<Createprovider>().address;
 
-  final address = context.watch<Createprovider>().address;
+    if (address.isEmpty) return;
 
-  if (address.isEmpty) return;
-
-  if (_lastAddress != address) {
-    _lastAddress = address;
-    moveCameraToAddress();
+    if (_lastAddress != address) {
+      _lastAddress = address;
+      moveCameraToAddress();
+    }
   }
-}
-@override
-void initState() {
-  super.initState();
-  createMarkersFromList(); // 🔥 THIS LINE IS IMPORTANT
-}
 
+  @override
+  void initState() {
+    super.initState();
+    createMarkersFromList(); // 🔥 THIS LINE IS IMPORTANT
+  }
 
-
-GoogleMapController? mapController;
+  GoogleMapController? mapController;
 
   String? _lastAddress;
 
   /// ADDRESS → LAT LNG → CAMERA MOVE
-Future<void> moveCameraToAddress() async {
-  final address = context.read<Createprovider>().address;
+  Future<void> moveCameraToAddress() async {
+    final address = context.read<Createprovider>().address;
 
-  List<Location> locations = await locationFromAddress(address);
+    List<Location> locations = await locationFromAddress(address);
 
-  final latLng = LatLng(
-    locations.first.latitude,
-    locations.first.longitude,
-  );
+    final latLng = LatLng(locations.first.latitude, locations.first.longitude);
 
-  mapController?.animateCamera(
-    CameraUpdate.newLatLngZoom(latLng, 15),
-  );
-}
+    currentCameraPosition = latLng; // 🔥 ADD THIS
+
+    mapController?.animateCamera(CameraUpdate.newLatLngZoom(latLng, 15));
+
+    // 🔥 ADD THIS ALSO (initial check)
+    final nearby = isAnyMarkerNearby(currentCameraPosition, getMarkerLatLngs());
+
+    setState(() {
+      hasNearbyProperty = nearby;
+    });
+  }
 
   LatLng selectedLocation = const LatLng(11.0168, 76.9558);
 
@@ -103,8 +106,6 @@ Future<void> moveCameraToAddress() async {
     }
     return null;
   }
-
-
 
   Future<BitmapDescriptor> markerWithCenterImage({
     required String markerAsset, // your pin image
@@ -186,7 +187,7 @@ Future<void> moveCameraToAddress() async {
             markerId: MarkerId("property_$i"),
             position: latLng,
             icon: icon,
-            onTap: (){}
+            onTap: () {},
           ),
         );
       }
@@ -194,9 +195,18 @@ Future<void> moveCameraToAddress() async {
 
     if (!mounted) return;
     setState(() => markers = tempMarkers);
-  }
 
-  
+    if (mapController != null) {
+      final nearby = isAnyMarkerNearby(
+        currentCameraPosition,
+        getMarkerLatLngs(),
+      );
+
+      setState(() {
+        hasNearbyProperty = nearby;
+      });
+    }
+  }
 
   bool selectedHouse = false;
   bool selectedApartment = false;
@@ -478,26 +488,105 @@ Future<void> moveCameraToAddress() async {
     );
   }
 
+  LatLng currentCameraPosition = const LatLng(11.0168, 76.9558);
+  bool hasNearbyProperty = true;
+
+  double calculateDistance(double lat1, double lon1, double lat2, double lon2) {
+    const double earthRadius = 6371;
+
+    double dLat = _degToRad(lat2 - lat1);
+    double dLon = _degToRad(lon2 - lon1);
+
+    double a =
+        sin(dLat / 2) * sin(dLat / 2) +
+        cos(_degToRad(lat1)) *
+            cos(_degToRad(lat2)) *
+            sin(dLon / 2) *
+            sin(dLon / 2);
+
+    double c = 2 * atan2(sqrt(a), sqrt(1 - a));
+    return earthRadius * c;
+  }
+
+  double _degToRad(double deg) {
+    return deg * (pi / 180);
+  }
+
+  bool isAnyMarkerNearby(LatLng cameraPosition, List<LatLng> markers) {
+    for (var marker in markers) {
+      double distance = calculateDistance(
+        cameraPosition.latitude,
+        cameraPosition.longitude,
+        marker.latitude,
+        marker.longitude,
+      );
+
+      if (distance <= 2) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  List<LatLng> getMarkerLatLngs() {
+    return markers.map((marker) => marker.position).toList();
+  }
+
+  int nearbyPropertyCount = 0;
+  int countNearbyMarkers(LatLng cameraPosition, List<LatLng> markers) {
+    int count = 0;
+
+    for (var marker in markers) {
+      double distance = calculateDistance(
+        cameraPosition.latitude,
+        cameraPosition.longitude,
+        marker.latitude,
+        marker.longitude,
+      );
+
+      if (distance <= 2) {
+        count++;
+      }
+    }
+    return count;
+  }
+
   @override
   Widget build(BuildContext context) {
     final width = MediaQuery.of(context).size.width;
     final height = MediaQuery.of(context).size.height;
 
-    
     return Scaffold(
       body: Stack(
         children: [
           SizedBox(
             child: GoogleMap(
-       markers: markers,
-        onMapCreated: (controller) {
-          mapController = controller;
-        },
-        initialCameraPosition: const CameraPosition(
-          target: LatLng(11.0168, 76.9558), // default Coimbatore
-          zoom: 12,
-        ),
-      ),
+              markers: markers,
+              onMapCreated: (controller) {
+                mapController = controller;
+              },
+              onCameraMove: (position) {
+                currentCameraPosition = position.target;
+              },
+              onCameraIdle: () {
+                final nearby = isAnyMarkerNearby(
+                  currentCameraPosition,
+                  getMarkerLatLngs(),
+                );
+                nearbyPropertyCount = countNearbyMarkers(
+                  currentCameraPosition,
+                  getMarkerLatLngs(),
+                );
+
+                setState(() {
+                  hasNearbyProperty = nearby;
+                });
+              },
+              initialCameraPosition: const CameraPosition(
+                target: LatLng(11.0168, 76.9558),
+                zoom: 15,
+              ),
+            ),
           ),
 
           Positioned(
@@ -574,6 +663,142 @@ Future<void> moveCameraToAddress() async {
                 ),
               ),
             ),
+          ),
+          hasNearbyProperty
+              ? Positioned(
+                  bottom: height * 0.20,
+                  left: width * 0.05,
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF234F68),
+                      borderRadius: BorderRadius.circular(30),
+                    ),
+                    child: SizedBox(
+                      width: width * 0.35,
+                      height: height * 0.06,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          SizedBox(width: width * 0.02),
+                          Container(
+                            width: width * 0.08,
+                            height: width * 0.08,
+                            decoration: const BoxDecoration(
+                              color: Colors.lightGreen,
+                              shape: BoxShape.circle,
+                            ),
+                            child: Center(
+                              child: hasNearbyProperty
+                                  ? Text(
+                                      nearbyPropertyCount.toString(),
+                                      style: const TextStyle(
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    )
+                                  : const Text(
+                                      "!",
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 18,
+                                      ),
+                                    ),
+                            ),
+                          ),
+                          SizedBox(width: width * 0.02),
+                          Text(
+                            "Nearby You",
+                            style: TextStyle(
+                              fontSize: width * 0.04,
+                              color: Colors.white,
+                              fontWeight: FontWeight.w800,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                )
+              : Positioned(
+                  bottom: height * 0.09,
+                  left: width * 0.05,
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF234F68),
+                      borderRadius: BorderRadius.circular(30),
+                    ),
+                    child: SizedBox(
+                      width: width * 0.35,
+                      height: height * 0.06,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          SizedBox(width: width * 0.02),
+                          Container(
+                            width: width * 0.08,
+                            height: width * 0.08,
+                            decoration: const BoxDecoration(
+                              color: Colors.lightGreen,
+                              shape: BoxShape.circle,
+                            ),
+                            child: Center(
+                              child: hasNearbyProperty
+                                  ? Text(
+                                      nearbyPropertyCount.toString(),
+                                      style: const TextStyle(
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    )
+                                  : const Text(
+                                      "!",
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 18,
+                                      ),
+                                    ),
+                            ),
+                          ),
+                          SizedBox(width: width * 0.02),
+                          Text(
+                            "Nearby You",
+                            style: TextStyle(
+                              fontSize: width * 0.04,
+                              color: Colors.white,
+                              fontWeight: FontWeight.w800,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+
+          Positioned(
+            bottom: height * 0.02,
+            left: width * 0.05,
+            child: hasNearbyProperty
+                ? Container()
+                : Container(
+                    padding: EdgeInsets.symmetric(
+                      horizontal: width * 0.22,
+                      vertical: height * 0.02,
+                    ),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF234F68),
+                      borderRadius: BorderRadius.circular(25),
+                    ),
+                    child: Text(
+                      "Can't found real estate nearby you",
+                      style: TextStyle(
+                        fontSize: width * 0.03,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ),
           ),
         ],
       ),
