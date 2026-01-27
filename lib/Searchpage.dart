@@ -8,6 +8,7 @@ import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:real_esate_finder/CreateProvider.dart';
 import 'dart:math';
+import 'package:google_fonts/google_fonts.dart';
 
 class Searchpage extends StatefulWidget {
   const Searchpage({super.key});
@@ -34,7 +35,7 @@ class _SearchpageState extends State<Searchpage> {
   @override
   void initState() {
     super.initState();
-    createMarkersFromList(); // 🔥 THIS LINE IS IMPORTANT
+    createFilteredMarkers(); 
   }
 
   GoogleMapController? mapController;
@@ -62,13 +63,14 @@ class _SearchpageState extends State<Searchpage> {
   }
 
   LatLng selectedLocation = const LatLng(11.0168, 76.9558);
-
+List<Map<String, dynamic>> currentFilteredList = [];
   List<Map<String, dynamic>> propertyList = [
     {
       "image": "assets/nearby1.png",
       "title": "Wings Tower",
       "price": "₹30k",
       "rating": "4.9",
+      "property-type": "Apartment",
       "location": "Coimbatore, TN",
     },
     {
@@ -76,6 +78,7 @@ class _SearchpageState extends State<Searchpage> {
       "title": "Mill Sper House",
       "price": "₹20k",
       "rating": "4.8",
+      "property-type": "House",
       "location": "Peelamedu, TN",
     },
     {
@@ -83,6 +86,7 @@ class _SearchpageState extends State<Searchpage> {
       "title": "Garden Residency",
       "price": "₹25k",
       "rating": "4.7",
+      "property-type": "Apartment",
       "location": "RS Puram, TN",
     },
     {
@@ -90,22 +94,41 @@ class _SearchpageState extends State<Searchpage> {
       "title": "Elite Apartment",
       "price": "₹28k",
       "rating": "4.9",
+      "property-type": "Apartment",
       "location": "Saibaba Colony, TN",
     },
   ];
 
-  Future<LatLng?> getLatLngFromAddress(String address) async {
-    try {
-      List<Location> locations = await locationFromAddress(address);
+ List<Map<String, dynamic>> getNearbyPropertyDetails(LatLng cameraPosition) {
+  List<Map<String, dynamic>> result = [];
 
-      if (locations.isNotEmpty) {
-        return LatLng(locations.first.latitude, locations.first.longitude);
-      }
-    } catch (e) {
-      debugPrint("Geocoding error: $e");
+  for (int i = 0; i < markers.length; i++) {
+    final marker = markers.elementAt(i);
+
+    double distance = calculateDistance(
+      cameraPosition.latitude,
+      cameraPosition.longitude,
+      marker.position.latitude,
+      marker.position.longitude,
+    );
+
+    if (distance <= 2) {
+      final item = currentFilteredList[i];
+
+      result.add({
+        "title": item["title"],
+        "price": item["price"],
+        "rating": item["rating"],
+        "image": item["image"],
+        "location": item["location"],
+        "property-type": item["property-type"],
+        "distance": distance.toStringAsFixed(1),
+      });
     }
-    return null;
   }
+  return result;
+}
+
 
   Future<BitmapDescriptor> markerWithCenterImage({
     required String markerAsset, // your pin image
@@ -168,50 +191,104 @@ class _SearchpageState extends State<Searchpage> {
   }
 
   Set<Marker> markers = {};
-  Future<void> createMarkersFromList() async {
-    Set<Marker> tempMarkers = {};
 
-    for (int i = 0; i < propertyList.length; i++) {
-      final LatLng? latLng = await getLatLngFromAddress(
-        propertyList[i]["location"],
+  Future<LatLng?> getLatLngFromAddress(String address) async {
+  try {
+    List<Location> locations = await locationFromAddress(address);
+
+    if (locations.isNotEmpty) {
+      return LatLng(
+        locations.first.latitude,
+        locations.first.longitude,
       );
-
-      if (latLng != null) {
-        final BitmapDescriptor icon = await markerWithCenterImage(
-          markerAsset: "assets/Vector.png", // 🔵 marker pin
-          profileAsset: propertyList[i]["image"], // 🖼 center image
-        );
-
-        tempMarkers.add(
-          Marker(
-            markerId: MarkerId("property_$i"),
-            position: latLng,
-            icon: icon,
-            onTap: () {},
-          ),
-        );
-      }
     }
+  } catch (e) {
+    debugPrint("Geocoding failed for $address : $e");
+  }
+  return null;
+}
 
-    if (!mounted) return;
-    setState(() => markers = tempMarkers);
 
-    if (mapController != null) {
-      final nearby = isAnyMarkerNearby(
-        currentCameraPosition,
-        getMarkerLatLngs(),
+  Future<void> createFilteredMarkers() async {
+  Set<Marker> tempMarkers = {};
+  final filteredList = getFilteredProperties();
+
+
+  currentFilteredList = filteredList;
+  for (int i = 0; i < filteredList.length; i++) {
+    final LatLng? latLng =
+        await getLatLngFromAddress(filteredList[i]["location"]);
+
+    if (latLng != null) {
+      final icon = await markerWithCenterImage(
+        markerAsset: "assets/Vector.png",
+        profileAsset: filteredList[i]["image"],
       );
 
-      setState(() {
-        hasNearbyProperty = nearby;
-      });
+      tempMarkers.add(
+        Marker(
+          markerId: MarkerId("property_$i"),
+          position: latLng,
+          icon: icon,
+        ),
+      );
     }
   }
+
+  if (!mounted) return;
+  setState(() {
+    markers = tempMarkers;
+  });
+}
 
   bool selectedHouse = false;
   bool selectedApartment = false;
   bool selectedVilla = false;
   String selectedPriceSort = "";
+
+
+  
+  // 🔹 ADD THIS FUNCTION
+  int parsePrice(String price) {
+    final cleaned = price
+        .replaceAll("₹", "")
+        .replaceAll("k", "")
+        .replaceAll("K", "")
+        .trim();
+
+    return int.tryParse(cleaned)! * 1000;
+  }
+
+  List<Map<String, dynamic>> getFilteredProperties() {
+  List<Map<String, dynamic>> filtered = [...propertyList];
+
+  // 🔹 PROPERTY TYPE FILTER
+  filtered = filtered.where((item) {
+    if (selectedHouse && item["property-type"] == "House") return true;
+    if (selectedApartment && item["property-type"] == "Apartment") return true;
+    if (selectedVilla && item["property-type"] == "Villa") return true;
+
+    if (!selectedHouse && !selectedApartment && !selectedVilla) return true;
+    return false;
+  }).toList();
+
+  // 🔹 PRICE SORT
+  if (selectedPriceSort == "low") {
+    filtered.sort(
+      (a, b) => parsePrice(a["price"])
+          .compareTo(parsePrice(b["price"])),
+    );
+  } else if (selectedPriceSort == "high") {
+    filtered.sort(
+      (a, b) => parsePrice(b["price"])
+          .compareTo(parsePrice(a["price"])),
+    );
+  }
+
+  return filtered;
+}
+
+
   Future<void> openFilters() async {
     final result = await openFilterSheet(context);
 
@@ -222,6 +299,7 @@ class _SearchpageState extends State<Searchpage> {
         selectedVilla = result["villa"];
         selectedPriceSort = result["priceSort"];
       });
+         await createFilteredMarkers();
     }
   }
 
@@ -553,32 +631,6 @@ class _SearchpageState extends State<Searchpage> {
 
   List<Map<String, dynamic>> nearbyProperties = [];
 
-  List<Map<String, dynamic>> getNearbyPropertyDetails(LatLng cameraPosition) {
-    List<Map<String, dynamic>> result = [];
-
-    for (int i = 0; i < markers.length; i++) {
-      final marker = markers.elementAt(i);
-
-      double distance = calculateDistance(
-        cameraPosition.latitude,
-        cameraPosition.longitude,
-        marker.position.latitude,
-        marker.position.longitude,
-      );
-
-      if (distance <= 5) {
-        result.add({
-          "title": propertyList[i]["title"],
-          "price": propertyList[i]["price"],
-          "rating": propertyList[i]["rating"],
-          "image": propertyList[i]["image"],
-          "distance": distance.toStringAsFixed(1),
-        });
-      }
-    }
-    return result;
-  }
-
   @override
   Widget build(BuildContext context) {
     final width = MediaQuery.of(context).size.width;
@@ -834,8 +886,8 @@ class _SearchpageState extends State<Searchpage> {
           if (nearbyProperties.isNotEmpty)
             Positioned(
               bottom: height * 0.01,
-              left: width * 0.05,
-              right: width * 0.05,
+              left: width * 0.0,
+              right: width * 0.0,
               child: SizedBox(
                 height: height * 0.175,
                 child: ListView.builder(
@@ -843,11 +895,13 @@ class _SearchpageState extends State<Searchpage> {
                   itemCount: nearbyProperties.length,
                   itemBuilder: (context, index) {
                     final item = nearbyProperties[index];
+                    final width = MediaQuery.of(context).size.width;
+                    final height = MediaQuery.of(context).size.height;
 
                     return Container(
                       width: width * 0.8,
 
-                      margin: const EdgeInsets.only(right: 12),
+                      margin: const EdgeInsets.only(left: 15),
                       decoration: BoxDecoration(
                         color: Colors.white,
                         borderRadius: BorderRadius.circular(18),
@@ -860,10 +914,17 @@ class _SearchpageState extends State<Searchpage> {
                         children: [
                           Stack(
                             children: [
-                              Image.asset(item["image"],width: width*0.55,fit: BoxFit.fitWidth,),
+                              ClipRRect(
+                                borderRadius: BorderRadius.circular(16),
+                                child: Image.asset(
+                                  item["image"],
+                                  fit: BoxFit.contain,
+                                ),
+                              ),
+
                               Positioned(
-                                left: width * 0.03,
-                                top: height * 0.013,
+                                left: width * 0.02,
+                                top: height * 0.01,
                                 child: Consumer<Createprovider>(
                                   builder: (context, cart, child) {
                                     bool isAdded = cart.isInCart(item);
@@ -872,7 +933,6 @@ class _SearchpageState extends State<Searchpage> {
                                       onTap: () {
                                         if (isAdded) {
                                           cart.removeFromCart(item);
-
                                           ScaffoldMessenger.of(
                                             context,
                                           ).showSnackBar(
@@ -886,7 +946,6 @@ class _SearchpageState extends State<Searchpage> {
                                           );
                                         } else {
                                           cart.addToCart(item);
-
                                           ScaffoldMessenger.of(
                                             context,
                                           ).showSnackBar(
@@ -900,11 +959,10 @@ class _SearchpageState extends State<Searchpage> {
                                           );
                                         }
                                       },
-
                                       child: AnimatedContainer(
                                         duration: Duration(milliseconds: 250),
-                                        width: width * 0.08,
-                                        height: width * 0.08,
+                                        width: width * 0.06,
+                                        height: width * 0.06,
                                         decoration: BoxDecoration(
                                           color: isAdded
                                               ? Colors.green
@@ -925,14 +983,127 @@ class _SearchpageState extends State<Searchpage> {
                                           color: isAdded
                                               ? Colors.white
                                               : Colors.pinkAccent,
-                                          size: height * 0.020,
+                                          size: height * 0.015,
                                         ),
                                       ),
                                     );
                                   },
                                 ),
                               ),
+                              Positioned(
+                                left: width * 0.02,
+                                top: height * 0.11,
+                                child: Container(
+                                  padding: EdgeInsets.symmetric(
+                                    horizontal: width * 0.035,
+                                    vertical: height * 0.009,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    gradient: const LinearGradient(
+                                      colors: [
+                                        Color(0xFF234F68),
+                                        Color(0xFF1B3A4B),
+                                      ],
+                                    ),
+                                    borderRadius: BorderRadius.circular(30),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: Colors.black.withOpacity(0.15),
+                                        blurRadius: 6,
+                                        offset: const Offset(0, 3),
+                                      ),
+                                    ],
+                                  ),
+                                  child: Text(
+                                    item["property-type"]
+                                        .toString()
+                                        .toUpperCase(),
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: GoogleFonts.raleway(
+                                      color: Colors.white,
+                                      fontSize: width * 0.02,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                ),
+                              ),
                             ],
+                          ),
+                          Padding(
+                            padding: EdgeInsetsGeometry.directional(
+                              start: width * 0.055,
+                            ),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+
+                              children: [
+                                Text(
+                                  item["title"],
+                                  style: GoogleFonts.raleway(
+                                    color: const Color(0xFF234F68),
+                                    fontSize: width * 0.05,
+                                    fontWeight: FontWeight.w800,
+                                    letterSpacing: 0.54,
+                                  ),
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+
+                                SizedBox(height: height * 0.01),
+                                Row(
+                                  children: [
+                                    Icon(
+                                      Icons.star,
+                                      color: Colors.amber,
+                                      size: height * 0.015,
+                                    ),
+                                    SizedBox(width: width * 0.01),
+                                    Text(
+                                      item["rating"],
+                                      style: GoogleFonts.montserrat(
+                                        color: Colors.grey,
+                                        fontSize: width * 0.03,
+                                        fontWeight: FontWeight.w700,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                SizedBox(height: height * 0.01),
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  children: [
+                                    Icon(
+                                      Icons.location_on,
+                                      size: height * 0.020,
+                                      color: const Color(0xFF1F4C6B),
+                                    ),
+                                    SizedBox(width: width * 0.01),
+                                    Text(
+                                      item["location"],
+                                      style: GoogleFonts.raleway(
+                                        fontSize: width * 0.035,
+                                        fontWeight: FontWeight.bold,
+                                        color: const Color(0xFF1F4C6B),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                SizedBox(height: height * 0.01),
+                                Padding(
+                                  padding: EdgeInsetsGeometry.directional(
+                                    start: width * 0.01,
+                                  ),
+                                  child: Text(
+                                    "${item["distance"]} km away",
+                                    style: GoogleFonts.raleway(
+                                      fontSize: width * 0.035,
+                                      fontWeight: FontWeight.bold,
+                                      color: const Color(0xFF1F4C6B),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
                           ),
                         ],
                       ),
