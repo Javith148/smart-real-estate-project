@@ -18,6 +18,25 @@ class Searchpage extends StatefulWidget {
 }
 
 class _SearchpageState extends State<Searchpage> {
+  // variable declartaion
+
+  LatLng selectedLocation = const LatLng(11.0168, 76.9558);
+  List<Map<String, dynamic>> currentFilteredList = [];
+  Set<Marker> markers = {};
+  bool selectedHouse = false;
+  bool selectedApartment = false;
+  bool selectedVilla = false;
+  String selectedPriceSort = "";
+  LatLng currentCameraPosition = const LatLng(11.0168, 76.9558);
+  bool hasNearbyProperty = true;
+  int nearbyPropertyCount = 0;
+  List<Map<String, dynamic>> nearbyProperties = [];
+
+  GoogleMapController? mapController;
+  TextEditingController searchController = TextEditingController();
+
+  String? _lastAddress;
+
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
@@ -35,35 +54,9 @@ class _SearchpageState extends State<Searchpage> {
   @override
   void initState() {
     super.initState();
-    createFilteredMarkers(); 
+    createFilteredMarkers();
   }
 
-  GoogleMapController? mapController;
-
-  String? _lastAddress;
-
-  /// ADDRESS → LAT LNG → CAMERA MOVE
-  Future<void> moveCameraToAddress() async {
-    final address = context.read<Createprovider>().address;
-
-    List<Location> locations = await locationFromAddress(address);
-
-    final latLng = LatLng(locations.first.latitude, locations.first.longitude);
-
-    currentCameraPosition = latLng; // 🔥 ADD THIS
-
-    mapController?.animateCamera(CameraUpdate.newLatLngZoom(latLng, 15));
-
-    // 🔥 ADD THIS ALSO (initial check)
-    final nearby = isAnyMarkerNearby(currentCameraPosition, getMarkerLatLngs());
-
-    setState(() {
-      hasNearbyProperty = nearby;
-    });
-  }
-
-  LatLng selectedLocation = const LatLng(11.0168, 76.9558);
-List<Map<String, dynamic>> currentFilteredList = [];
   List<Map<String, dynamic>> propertyList = [
     {
       "image": "assets/nearby1.png",
@@ -99,36 +92,59 @@ List<Map<String, dynamic>> currentFilteredList = [];
     },
   ];
 
- List<Map<String, dynamic>> getNearbyPropertyDetails(LatLng cameraPosition) {
-  List<Map<String, dynamic>> result = [];
+  /// ADDRESS → LAT LNG → CAMERA MOVE
+  Future<void> moveCameraToAddress() async {
+    final address = context.read<Createprovider>().address;
 
-  for (int i = 0; i < markers.length; i++) {
-    final marker = markers.elementAt(i);
+    List<Location> locations = await locationFromAddress(address);
 
-    double distance = calculateDistance(
-      cameraPosition.latitude,
-      cameraPosition.longitude,
-      marker.position.latitude,
-      marker.position.longitude,
-    );
+    final latLng = LatLng(locations.first.latitude, locations.first.longitude);
 
-    if (distance <= 2) {
-      final item = currentFilteredList[i];
+    currentCameraPosition = latLng; // 🔥 ADD THIS
 
-      result.add({
-        "title": item["title"],
-        "price": item["price"],
-        "rating": item["rating"],
-        "image": item["image"],
-        "location": item["location"],
-        "property-type": item["property-type"],
-        "distance": distance.toStringAsFixed(1),
-      });
-    }
+    mapController?.animateCamera(CameraUpdate.newLatLngZoom(latLng, 15));
+
+    // 🔥 ADD THIS ALSO (initial check)
+    final nearby = isAnyMarkerNearby(currentCameraPosition, getMarkerLatLngs());
+
+    setState(() {
+      hasNearbyProperty = nearby;
+    });
   }
-  return result;
-}
 
+  List<Map<String, dynamic>> getNearbyPropertyDetails(LatLng cameraPosition) {
+    List<Map<String, dynamic>> result = [];
+
+    for (final marker in markers) {
+      double distance = calculateDistance(
+        cameraPosition.latitude,
+        cameraPosition.longitude,
+        marker.position.latitude,
+        marker.position.longitude,
+      );
+
+      if (distance <= 2) {
+        final matchedItem = currentFilteredList.firstWhere(
+          (item) => item["title"] == marker.infoWindow.title,
+          orElse: () => {},
+        );
+
+        if (matchedItem.isNotEmpty) {
+          result.add({
+            "title": matchedItem["title"],
+            "price": matchedItem["price"],
+            "rating": matchedItem["rating"],
+            "image": matchedItem["image"],
+            "location": matchedItem["location"],
+            "property-type": matchedItem["property-type"],
+            "distance": distance.toStringAsFixed(1),
+          });
+        }
+      }
+    }
+
+    return result;
+  }
 
   Future<BitmapDescriptor> markerWithCenterImage({
     required String markerAsset, // your pin image
@@ -190,65 +206,54 @@ List<Map<String, dynamic>> currentFilteredList = [];
     return BitmapDescriptor.fromBytes(pngBytes!.buffer.asUint8List());
   }
 
-  Set<Marker> markers = {};
-
   Future<LatLng?> getLatLngFromAddress(String address) async {
-  try {
-    List<Location> locations = await locationFromAddress(address);
+    try {
+      List<Location> locations = await locationFromAddress(address);
 
-    if (locations.isNotEmpty) {
-      return LatLng(
-        locations.first.latitude,
-        locations.first.longitude,
-      );
+      if (locations.isNotEmpty) {
+        return LatLng(locations.first.latitude, locations.first.longitude);
+      }
+    } catch (e) {
+      debugPrint("Geocoding failed for $address : $e");
     }
-  } catch (e) {
-    debugPrint("Geocoding failed for $address : $e");
+    return null;
   }
-  return null;
-}
-
 
   Future<void> createFilteredMarkers() async {
-  Set<Marker> tempMarkers = {};
-  final filteredList = getFilteredProperties();
+    Set<Marker> tempMarkers = {};
+    final filteredList = getFilteredProperties();
 
-
-  currentFilteredList = filteredList;
-  for (int i = 0; i < filteredList.length; i++) {
-    final LatLng? latLng =
-        await getLatLngFromAddress(filteredList[i]["location"]);
-
-    if (latLng != null) {
-      final icon = await markerWithCenterImage(
-        markerAsset: "assets/Vector.png",
-        profileAsset: filteredList[i]["image"],
+    currentFilteredList = filteredList;
+    for (int i = 0; i < filteredList.length; i++) {
+      final LatLng? latLng = await getLatLngFromAddress(
+        filteredList[i]["location"],
       );
 
-      tempMarkers.add(
-        Marker(
-          markerId: MarkerId("property_$i"),
-          position: latLng,
-          icon: icon,
-        ),
-      );
+      if (latLng != null) {
+        final icon = await markerWithCenterImage(
+          markerAsset: "assets/Vector.png",
+          profileAsset: filteredList[i]["image"],
+        );
+
+        tempMarkers.add(
+          Marker(
+            markerId: MarkerId("property_$i"),
+            position: latLng,
+            icon: icon,
+            infoWindow: InfoWindow(
+              title: filteredList[i]["title"], // 🔥 LINK
+            ),
+          ),
+        );
+      }
     }
+
+    if (!mounted) return;
+    setState(() {
+      markers = tempMarkers;
+    });
   }
 
-  if (!mounted) return;
-  setState(() {
-    markers = tempMarkers;
-  });
-}
-
-  bool selectedHouse = false;
-  bool selectedApartment = false;
-  bool selectedVilla = false;
-  String selectedPriceSort = "";
-
-
-  
-  // 🔹 ADD THIS FUNCTION
   int parsePrice(String price) {
     final cleaned = price
         .replaceAll("₹", "")
@@ -260,34 +265,32 @@ List<Map<String, dynamic>> currentFilteredList = [];
   }
 
   List<Map<String, dynamic>> getFilteredProperties() {
-  List<Map<String, dynamic>> filtered = [...propertyList];
+    List<Map<String, dynamic>> filtered = [...propertyList];
 
-  // 🔹 PROPERTY TYPE FILTER
-  filtered = filtered.where((item) {
-    if (selectedHouse && item["property-type"] == "House") return true;
-    if (selectedApartment && item["property-type"] == "Apartment") return true;
-    if (selectedVilla && item["property-type"] == "Villa") return true;
+    // 🔹 PROPERTY TYPE FILTER
+    filtered = filtered.where((item) {
+      if (selectedHouse && item["property-type"] == "House") return true;
+      if (selectedApartment && item["property-type"] == "Apartment")
+        return true;
+      if (selectedVilla && item["property-type"] == "Villa") return true;
 
-    if (!selectedHouse && !selectedApartment && !selectedVilla) return true;
-    return false;
-  }).toList();
+      if (!selectedHouse && !selectedApartment && !selectedVilla) return true;
+      return false;
+    }).toList();
 
-  // 🔹 PRICE SORT
-  if (selectedPriceSort == "low") {
-    filtered.sort(
-      (a, b) => parsePrice(a["price"])
-          .compareTo(parsePrice(b["price"])),
-    );
-  } else if (selectedPriceSort == "high") {
-    filtered.sort(
-      (a, b) => parsePrice(b["price"])
-          .compareTo(parsePrice(a["price"])),
-    );
+    // 🔹 PRICE SORT
+    if (selectedPriceSort == "low") {
+      filtered.sort(
+        (a, b) => parsePrice(a["price"]).compareTo(parsePrice(b["price"])),
+      );
+    } else if (selectedPriceSort == "high") {
+      filtered.sort(
+        (a, b) => parsePrice(b["price"]).compareTo(parsePrice(a["price"])),
+      );
+    }
+
+    return filtered;
   }
-
-  return filtered;
-}
-
 
   Future<void> openFilters() async {
     final result = await openFilterSheet(context);
@@ -299,7 +302,7 @@ List<Map<String, dynamic>> currentFilteredList = [];
         selectedVilla = result["villa"];
         selectedPriceSort = result["priceSort"];
       });
-         await createFilteredMarkers();
+      await createFilteredMarkers();
     }
   }
 
@@ -566,9 +569,6 @@ List<Map<String, dynamic>> currentFilteredList = [];
     );
   }
 
-  LatLng currentCameraPosition = const LatLng(11.0168, 76.9558);
-  bool hasNearbyProperty = true;
-
   double calculateDistance(double lat1, double lon1, double lat2, double lon2) {
     const double earthRadius = 6371;
 
@@ -610,7 +610,6 @@ List<Map<String, dynamic>> currentFilteredList = [];
     return markers.map((marker) => marker.position).toList();
   }
 
-  int nearbyPropertyCount = 0;
   int countNearbyMarkers(LatLng cameraPosition, List<LatLng> markers) {
     int count = 0;
 
@@ -629,7 +628,92 @@ List<Map<String, dynamic>> currentFilteredList = [];
     return count;
   }
 
-  List<Map<String, dynamic>> nearbyProperties = [];
+  Future<void> applySearch(String query) async {
+   if (query.isEmpty) {
+  // 🔥 RESET TO NORMAL MODE
+  currentFilteredList = getFilteredProperties();
+
+  await createFilteredMarkers();
+
+  final nearbyList = getNearbyPropertyDetails(currentCameraPosition);
+
+  setState(() {
+    nearbyProperties = nearbyList;
+    hasNearbyProperty = nearbyList.isNotEmpty;
+    nearbyPropertyCount = nearbyList.length;
+  });
+
+  return;
+}
+
+    
+
+    final searchedList = propertyList.where((item) {
+      final title = item["title"].toString().toLowerCase();
+      final location = item["location"].toString().toLowerCase();
+      final type = item["property-type"].toString().toLowerCase();
+
+      return title.contains(query.toLowerCase()) ||
+          location.contains(query.toLowerCase()) ||
+          type.contains(query.toLowerCase());
+    }).toList();
+
+    currentFilteredList = searchedList;
+
+    Set<Marker> tempMarkers = {};
+
+    for (int i = 0; i < searchedList.length; i++) {
+      final latLng = await getLatLngFromAddress(searchedList[i]["location"]);
+      if (latLng == null) continue;
+
+      final icon = await markerWithCenterImage(
+        markerAsset: "assets/Vector.png",
+        profileAsset: searchedList[i]["image"],
+      );
+
+      tempMarkers.add(
+        Marker(
+          markerId: MarkerId("search_$i"),
+          position: latLng,
+          icon: icon,
+          infoWindow: InfoWindow(
+            title: searchedList[i]["title"], // 🔥 MUST
+          ),
+        ),
+      );
+
+      // 🔥 MOVE CAMERA TO FIRST SEARCH RESULT
+      if (i == 0) {
+        mapController?.animateCamera(CameraUpdate.newLatLngZoom(latLng, 15));
+        currentCameraPosition = latLng;
+
+        // 🔥 FORCE UPDATE NEARBY DATA
+        nearbyProperties = getNearbyPropertyDetails(latLng);
+
+        final nearby = isAnyMarkerNearby(
+          currentCameraPosition,
+          tempMarkers.map((m) => m.position).toList(),
+        );
+
+        final count = countNearbyMarkers(
+          currentCameraPosition,
+          tempMarkers.map((m) => m.position).toList(),
+        );
+
+        final List<Map<String, dynamic>> nearbyList = getNearbyPropertyDetails(
+          currentCameraPosition,
+        );
+
+        setState(() {
+          markers = tempMarkers;
+
+          nearbyProperties = nearbyList; // 🔥 VERY IMPORTANT
+          hasNearbyProperty = nearbyList.isNotEmpty; // 🔥 FIX
+          nearbyPropertyCount = nearbyList.length; // 🔥 FIX
+        });
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -708,7 +792,17 @@ List<Map<String, dynamic>> currentFilteredList = [];
               height: height * 0.08,
               width: width * 0.89,
               child: TextFormField(
+                controller: searchController,
                 autofocus: false,
+                onFieldSubmitted: (value) {
+                  applySearch(value);
+
+                  // 🔥 CLEAR SEARCH TEXT
+                  searchController.clear();
+
+                  // 🔥 KEYBOARD CLOSE
+                  FocusScope.of(context).unfocus();
+                },
 
                 decoration: InputDecoration(
                   filled: true,
