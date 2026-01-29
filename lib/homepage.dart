@@ -11,6 +11,7 @@ import 'package:real_esate_finder/userprofile.dart';
 import 'package:real_esate_finder/widgets/locationContainer.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:provider/provider.dart';
+import 'package:real_esate_finder/widgets/serachresult.dart';
 
 // MAIN PAGE
 class HomePage extends StatefulWidget {
@@ -142,7 +143,28 @@ class HomeBody extends StatefulWidget {
 }
 
 class _HomeBodyState extends State<HomeBody> {
- 
+
+   @override
+  void dispose() {
+    searchController.dispose();
+    super.dispose();
+  }
+  TextEditingController searchController = TextEditingController();
+  bool navigated = false;
+
+  Widget _tab(String text) {
+    return Tab(
+      child: Container(
+        alignment: Alignment.center,
+        decoration: BoxDecoration(
+          border: Border.all(color: const Color(0xFF234F68), width: 1.2),
+          borderRadius: BorderRadius.circular(20),
+        ),
+        child: Text(text),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final width = MediaQuery.of(context).size.width;
@@ -244,19 +266,39 @@ class _HomeBodyState extends State<HomeBody> {
                     ),
 
                     Positioned(
-                      top: height * 0.27,
+                      top: height * 0.26,
                       left: width * 0.065,
                       right: width * 0.065,
                       child: TextFormField(
+                        controller: searchController,
+                        onChanged: (value) {
+                          if (value.isNotEmpty && !navigated) {
+                            navigated = true;
+
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) =>
+                                    Searchresult(controller: searchController),
+                              ),
+                            ).then((_) {
+                              navigated = false;
+                            });
+                          }
+                        },
                         decoration: InputDecoration(
                           filled: true,
                           fillColor: Colors.white,
+                          contentPadding: EdgeInsets.symmetric(
+                            vertical: height * 0.022,
+                            horizontal: width * 0.03,
+                          ),
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(10),
                             borderSide: BorderSide.none,
                           ),
-                          prefixIcon: Icon(Icons.search),
-                          suffixIcon: Icon(
+                          prefixIcon: const Icon(Icons.search),
+                          suffixIcon: const Icon(
                             Icons.mic_none_outlined,
                             color: Colors.grey,
                           ),
@@ -274,7 +316,7 @@ class _HomeBodyState extends State<HomeBody> {
             SliverToBoxAdapter(
               child: Container(
                 color: Colors.white,
-                padding: EdgeInsets.only(top: 10, bottom: 10),
+                padding: const EdgeInsets.only(top: 10, bottom: 10),
                 child: TabBar(
                   indicator: BoxDecoration(
                     color: const Color(0xFF234F68),
@@ -298,11 +340,11 @@ class _HomeBodyState extends State<HomeBody> {
                   labelColor: Colors.white,
                   unselectedLabelColor: const Color(0xFF242B5C),
 
-                  tabs: const [
-                    Tab(text: "All"),
-                    Tab(text: "House"),
-                    Tab(text: "Apartment"),
-                    Tab(text: "Villa"),
+                  tabs: [
+                    _tab("All"),
+                    _tab("House"),
+                    _tab("Apartment"),
+                    _tab("Villa"),
                   ],
                 ),
               ),

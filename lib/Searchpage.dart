@@ -57,6 +57,7 @@ class _SearchpageState extends State<Searchpage> {
     createFilteredMarkers();
   }
 
+
   List<Map<String, dynamic>> propertyList = [
     {
       "image": "assets/nearby1.png",
@@ -89,6 +90,14 @@ class _SearchpageState extends State<Searchpage> {
       "rating": "4.9",
       "property-type": "Apartment",
       "location": "Saibaba Colony, TN",
+    },
+    {
+      "image": "assets/nearby4.png",
+      "title": "Elite Apartment",
+      "price": "₹28k",
+      "rating": "4.9",
+      "property-type": "Apartment",
+      "location": "Selvapuram, TN",
     },
   ];
 
