@@ -174,7 +174,14 @@ class _HomeBodyState extends State<HomeBody> {
 
     return Scaffold(
       backgroundColor: Colors.white,
-      body: DefaultTabController(
+      body:GestureDetector(
+  onTap: () {
+    FocusScope.of(context).unfocus(); 
+  },onVerticalDragDown: (_) {
+    FocusScope.of(context).unfocus();
+  },
+  child: 
+       DefaultTabController(
         length: 4,
         child: NestedScrollView(
           headerSliverBuilder: (context, innerBoxIsScrolled) => [
@@ -355,7 +362,7 @@ class _HomeBodyState extends State<HomeBody> {
             children: [Alltab(), HouseTab(), ApartmentTab(), VillaTab()],
           ),
         ),
-      ),
+        )  ),
       drawer: DrawerButton(),
     );
   }

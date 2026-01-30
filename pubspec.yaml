@@ -144,6 +144,7 @@ flutter:
       
       - assets/fav_icon.png
       - assets/Vector.png
+      - assets/resultnotfound.png
 
 
   # An image asset can refer to one or more resolution-specific "variants", see
