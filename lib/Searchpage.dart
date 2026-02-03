@@ -699,15 +699,15 @@ class _SearchpageState extends State<Searchpage> {
         // 🔥 FORCE UPDATE NEARBY DATA
         nearbyProperties = getNearbyPropertyDetails(latLng);
 
-        final nearby = isAnyMarkerNearby(
-          currentCameraPosition,
-          tempMarkers.map((m) => m.position).toList(),
-        );
+        // final nearby = isAnyMarkerNearby(
+        //   currentCameraPosition,
+        //   tempMarkers.map((m) => m.position).toList(),
+        // );
 
-        final count = countNearbyMarkers(
-          currentCameraPosition,
-          tempMarkers.map((m) => m.position).toList(),
-        );
+        // final count = countNearbyMarkers(
+        //   currentCameraPosition,
+        //   tempMarkers.map((m) => m.position).toList(),
+        // );
 
         final List<Map<String, dynamic>> nearbyList = getNearbyPropertyDetails(
           currentCameraPosition,

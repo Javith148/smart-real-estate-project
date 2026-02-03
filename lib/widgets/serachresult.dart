@@ -4,6 +4,9 @@ import 'package:real_esate_finder/CreateProvider.dart';
 import 'package:provider/provider.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geocoding/geocoding.dart';
+import 'dart:ui' as ui;
+import 'package:flutter/services.dart';
+
 
 class Searchresult extends StatefulWidget {
   final TextEditingController controller;
@@ -65,17 +68,23 @@ class _SearchresultState extends State<Searchresult> {
   late FocusNode _focusNode;
   Set<Marker> markers = {};
 
-  @override
-  void initState() {
-    super.initState();
-    loadCustomMarker();
-    result = propertyList;
-    _focusNode = FocusNode();
+ @override
+void initState() {
+  super.initState();
 
-    _focusNode.addListener(() {
-      setState(() {});
+  _focusNode = FocusNode();
+  result = propertyList;
+
+  markerWithCenterImage(
+    markerAsset: 'assets/Vector.png',
+    profileAsset: 'assets/user.png',
+  ).then((icon) {
+    setState(() {
+      customMarker = icon;
     });
-  }
+  });
+}
+
 
   @override
   void dispose() {
@@ -109,45 +118,117 @@ class _SearchresultState extends State<Searchresult> {
     });
   }
 
-Future<void> loadCustomMarker() async {
-  customMarker = await BitmapDescriptor.fromAssetImage(
-    const ImageConfiguration(size: Size(48, 48)),
-    'assets/Vector.png',
+
+
+
+Future<BitmapDescriptor> markerWithCenterImage({
+  required String markerAsset,
+  required String profileAsset,
+}) async {
+  // 🔹 Marker image
+  final ByteData markerData = await rootBundle.load(markerAsset);
+  final ui.Codec markerCodec = await ui.instantiateImageCodec(
+    markerData.buffer.asUint8List(),
+    targetWidth: 65, // ✅ marker size kammi
   );
+  final ui.FrameInfo markerFrame = await markerCodec.getNextFrame();
+  final ui.Image markerImage = markerFrame.image;
+
+  // 🔹 Profile image
+  final ByteData profileData = await rootBundle.load(profileAsset);
+  final ui.Codec profileCodec = await ui.instantiateImageCodec(
+    profileData.buffer.asUint8List(),
+    targetWidth: 40, // ✅ center image size
+  );
+  final ui.FrameInfo profileFrame = await profileCodec.getNextFrame();
+  final ui.Image profileImage = profileFrame.image;
+
+  final double width = markerImage.width.toDouble();
+  final double height = markerImage.height.toDouble();
+
+  final recorder = ui.PictureRecorder();
+  final canvas = Canvas(recorder);
+
+  // 🔹 Draw marker
+  canvas.drawImage(markerImage, Offset.zero, Paint());
+
+
+  final Offset imageCenter = Offset(
+    width / 2,
+    height * 0.45,
+  );
+
+  // 🔹 White border
+  canvas.drawCircle(
+    imageCenter,
+    22,
+    Paint()..color = Colors.white,
+  );
+
+  // 🔹 Profile image paint
+  final Paint imagePaint = Paint()
+    ..shader = ImageShader(
+      profileImage,
+      TileMode.clamp,
+      TileMode.clamp,
+      Matrix4.identity().storage,
+    );
+
+  
+  canvas.drawCircle(
+    imageCenter,
+    20,
+    imagePaint,
+  );
+
+  final ui.Image finalImage =
+      await recorder.endRecording().toImage(
+        width.toInt(),
+        height.toInt(),
+      );
+
+  final ByteData? pngBytes =
+      await finalImage.toByteData(format: ui.ImageByteFormat.png);
+
+  return BitmapDescriptor.fromBytes(pngBytes!.buffer.asUint8List());
 }
 
-  void searchAndMoveLocation(String location) async {
-    try {
-      List<Location> locations = await locationFromAddress(location);
 
-      if (locations.isNotEmpty) {
-        final lat = locations.first.latitude;
-        final lng = locations.first.longitude;
+void searchAndMoveLocation(String location) async {
+  if (location.trim().isEmpty) return;
 
-        final LatLng position = LatLng(lat, lng);
+  try {
+    final locations = await locationFromAddress(location);
 
-        // 👇 Marker add
-        markers.clear();
+    if (locations.isNotEmpty) {
+      final position = LatLng(
+        locations.first.latitude,
+        locations.first.longitude,
+      );
+
+      setState(() {
+        markers.clear(); 
         markers.add(
           Marker(
-            markerId: const MarkerId("searched_location"),
+            markerId: const MarkerId("single_location"),
             position: position,
             icon: customMarker ?? BitmapDescriptor.defaultMarker,
             infoWindow: InfoWindow(title: location),
           ),
         );
+      });
 
-        setState(() {});
-
-        // 👇 Move map
-        mapController?.animateCamera(CameraUpdate.newLatLngZoom(position, 15));
-      }
-    } catch (e) {
-      debugPrint("Location not found");
+      mapController?.animateCamera(
+        CameraUpdate.newLatLngZoom(position, 15),
+      );
     }
+  } catch (e) {
+    debugPrint("Location not found");
   }
+}
 
-  final Set<int> selectedItems = {}; // multi-select
+
+  final Set<int> selectedItems = {}; 
   final List<String> propertyTypes = ["All", "House", "Villa", "Apartment"];
 
   void filter_drawer(BuildContext context) {
@@ -266,7 +347,7 @@ Future<void> loadCustomMarker() async {
                         return GestureDetector(
                           onTap: () {
                             setModalState(() {
-                              // Optional logic: "All" exclusive
+                              
                               if (index == 0) {
                                 selectedItems.clear();
                                 selectedItems.add(0);
@@ -333,13 +414,18 @@ Future<void> loadCustomMarker() async {
                           ),
                         ),
 
-                        suffixIcon: Padding(
-                          padding: const EdgeInsets.only(right: 25, left: 8),
-                          child: const Icon(
-                            Icons.search,
-                            color: Color(0xFF1F4C6B),
-                          ),
-                        ),
+                       suffixIcon: Padding(
+  padding: const EdgeInsets.only(right: 25, left: 8),
+  child: GestureDetector(
+    onTap: () {
+      searchAndMoveLocation(locationController.text);
+    },
+    child: const Icon(
+      Icons.search,
+      color: Color(0xFF1F4C6B),
+    ),
+  ),
+),
 
                         prefixIconConstraints: const BoxConstraints(
                           minWidth: 0,
@@ -371,16 +457,17 @@ Future<void> loadCustomMarker() async {
                       child: ClipRRect(
                         borderRadius: BorderRadius.circular(20),
                         child: GoogleMap(
-                          onMapCreated: (controller) {
-                            mapController = controller;
-                          },
-                          initialCameraPosition: const CameraPosition(
-                            target: LatLng(11.0168, 76.9558),
-                            zoom: 12,
-                          ),
-                          markers: markers, 
-                          zoomControlsEnabled: false,
-                        ),
+  onMapCreated: (controller) {
+    mapController = controller;
+  },
+  initialCameraPosition: const CameraPosition(
+    target: LatLng(11.0168, 76.9558),
+    zoom: 12,
+  ),
+  markers: markers, 
+  zoomControlsEnabled: false,
+)
+
                       ),
                     ),
 
@@ -396,14 +483,15 @@ Future<void> loadCustomMarker() async {
                           ),
                         ),
                         onPressed: () {
-                          // Selected values
+                          
                           final selectedTypes = selectedItems
                               .map((i) => propertyTypes[i])
                               .toList();
 
                           debugPrint("Selected Filters: $selectedTypes");
 
-                          Navigator.pop(context);
+                          setState(() {});   // 🔥 map refresh guarantee
+                           Navigator.pop(context);
                         },
                         child: const Text(
                           "Apply Filter",
