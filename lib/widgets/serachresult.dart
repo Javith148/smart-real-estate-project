@@ -20,6 +20,9 @@ class _SearchresultState extends State<Searchresult> {
   final TextEditingController locationController = TextEditingController();
   GoogleMapController? mapController;
   BitmapDescriptor? customMarker;
+  List<String> appliedFilters = [];
+String? selectedLocation;
+
 
   List<Map<String, dynamic>> propertyList = [
     {
@@ -118,6 +121,38 @@ void initState() {
     });
   }
 
+void applyFiltersToResult() {
+  List<Map<String, dynamic>> filtered = propertyList;
+
+  // 🔹 Property Type filter
+  if (selectedItems.isNotEmpty && !selectedItems.contains(0)) {
+    final selectedTypes = selectedItems
+        .map((i) => propertyTypes[i])
+        .toList();
+
+    filtered = filtered.where((item) {
+      return selectedTypes.contains(item['property-type']);
+    }).toList();
+  }
+
+  // 🔹 Location filter
+  if (locationController.text.isNotEmpty) {
+    final location = locationController.text.toLowerCase();
+
+    filtered = filtered.where((item) {
+      return item['location']
+          .toString()
+          .toLowerCase()
+          .contains(location);
+    }).toList();
+  }
+
+  // 🔹 Update result list
+  setState(() {
+    result = filtered;
+    resultnotfound = result.isEmpty;
+  });
+}
 
 
 
@@ -125,20 +160,20 @@ Future<BitmapDescriptor> markerWithCenterImage({
   required String markerAsset,
   required String profileAsset,
 }) async {
-  // 🔹 Marker image
+  // 🔹 Load marker image
   final ByteData markerData = await rootBundle.load(markerAsset);
   final ui.Codec markerCodec = await ui.instantiateImageCodec(
     markerData.buffer.asUint8List(),
-    targetWidth: 65, // ✅ marker size kammi
+    targetWidth: 65,
   );
   final ui.FrameInfo markerFrame = await markerCodec.getNextFrame();
   final ui.Image markerImage = markerFrame.image;
 
-  // 🔹 Profile image
+  // 🔹 Load profile image
   final ByteData profileData = await rootBundle.load(profileAsset);
   final ui.Codec profileCodec = await ui.instantiateImageCodec(
     profileData.buffer.asUint8List(),
-    targetWidth: 40, // ✅ center image size
+    targetWidth: 40,
   );
   final ui.FrameInfo profileFrame = await profileCodec.getNextFrame();
   final ui.Image profileImage = profileFrame.image;
@@ -149,38 +184,50 @@ Future<BitmapDescriptor> markerWithCenterImage({
   final recorder = ui.PictureRecorder();
   final canvas = Canvas(recorder);
 
-  // 🔹 Draw marker
+  // 🔹 Draw marker base
   canvas.drawImage(markerImage, Offset.zero, Paint());
 
-
+  // 🔹 PERFECT CENTER POSITION
   final Offset imageCenter = Offset(
     width / 2,
-    height * 0.45,
+    height / 2.5,
   );
 
-  // 🔹 White border
+  // 🔹 White outer circle
   canvas.drawCircle(
     imageCenter,
     22,
     Paint()..color = Colors.white,
   );
 
-  // 🔹 Profile image paint
+  // 🔹 Profile image shader (CENTER FIX)
+  const double imageSize = 40;
+
   final Paint imagePaint = Paint()
     ..shader = ImageShader(
       profileImage,
       TileMode.clamp,
       TileMode.clamp,
-      Matrix4.identity().storage,
+      (Matrix4.identity()
+            ..translate(
+              imageCenter.dx - imageSize / 2,
+              imageCenter.dy - imageSize / 2,
+            )
+            ..scale(
+              imageSize / profileImage.width,
+              imageSize / profileImage.height,
+            ))
+          .storage,
     );
 
-  
+  // 🔹 Draw profile image circle
   canvas.drawCircle(
     imageCenter,
     20,
     imagePaint,
   );
 
+  // 🔹 Convert to PNG
   final ui.Image finalImage =
       await recorder.endRecording().toImage(
         width.toInt(),
@@ -193,26 +240,28 @@ Future<BitmapDescriptor> markerWithCenterImage({
   return BitmapDescriptor.fromBytes(pngBytes!.buffer.asUint8List());
 }
 
-
-void searchAndMoveLocation(String location) async {
+void searchAndMoveLocation(
+  String location,
+  void Function(void Function()) setModalState,
+) async {
   if (location.trim().isEmpty) return;
 
   try {
     final locations = await locationFromAddress(location);
 
-    if (locations.isNotEmpty) {
+    if (locations.isNotEmpty && customMarker != null) {
       final position = LatLng(
         locations.first.latitude,
         locations.first.longitude,
       );
 
-      setState(() {
-        markers.clear(); 
+      setModalState(() {
+        markers.clear();
         markers.add(
           Marker(
             markerId: const MarkerId("single_location"),
             position: position,
-            icon: customMarker ?? BitmapDescriptor.defaultMarker,
+            icon: customMarker!,
             infoWindow: InfoWindow(title: location),
           ),
         );
@@ -293,7 +342,25 @@ void searchAndMoveLocation(String location) async {
                                 borderRadius: BorderRadius.circular(25),
                               ),
                             ),
-                            onPressed: () {},
+                            onPressed: () {
+  setModalState(() {
+   
+    selectedItems.clear();
+
+ 
+    locationController.clear();
+
+    markers.clear();
+  });
+
+  
+ setState(() {
+  result = propertyList;
+  resultnotfound = false;
+});
+
+},
+
 
                             child: Text(
                               "Reset",
@@ -400,9 +467,10 @@ void searchAndMoveLocation(String location) async {
                     TextField(
                       controller: locationController,
                       textInputAction: TextInputAction.search,
-                      onSubmitted: (value) {
-                        searchAndMoveLocation(value);
-                      },
+                     onSubmitted: (value) {
+  searchAndMoveLocation(value, setModalState);
+},
+
                       decoration: InputDecoration(
                         hintText: "Search location",
 
@@ -417,9 +485,13 @@ void searchAndMoveLocation(String location) async {
                        suffixIcon: Padding(
   padding: const EdgeInsets.only(right: 25, left: 8),
   child: GestureDetector(
-    onTap: () {
-      searchAndMoveLocation(locationController.text);
+     onTap: () {
+      searchAndMoveLocation(
+        locationController.text,
+        setModalState,
+      );
     },
+
     child: const Icon(
       Icons.search,
       color: Color(0xFF1F4C6B),
@@ -482,17 +554,31 @@ void searchAndMoveLocation(String location) async {
                             borderRadius: BorderRadius.circular(30),
                           ),
                         ),
-                        onPressed: () {
-                          
-                          final selectedTypes = selectedItems
-                              .map((i) => propertyTypes[i])
-                              .toList();
+                     onPressed: () {
+  // 🔹 Update applied filter chips
+  setState(() {
+    appliedFilters.clear();
 
-                          debugPrint("Selected Filters: $selectedTypes");
+    for (int i in selectedItems) {
+      if (propertyTypes[i] != "All") {
+        appliedFilters.add(propertyTypes[i]);
+      }
+    }
 
-                          setState(() {});   // 🔥 map refresh guarantee
-                           Navigator.pop(context);
-                        },
+    if (locationController.text.isNotEmpty) {
+      selectedLocation = locationController.text;
+      appliedFilters.add(selectedLocation!);
+    }
+  });
+
+  // 🔹 APPLY FILTER TO RESULT LIST (🔥 MAIN LINE)
+  applyFiltersToResult();
+
+  Navigator.pop(context);
+},
+
+
+
                         child: const Text(
                           "Apply Filter",
                           style: TextStyle(
@@ -511,6 +597,52 @@ void searchAndMoveLocation(String location) async {
       },
     );
   }
+
+  Widget filterChip(String text, VoidCallback onRemove) {
+  final width = MediaQuery.of(context).size.width;
+  final height = MediaQuery.of(context).size.height;
+
+  return Container(
+    margin: const EdgeInsets.only(right: 8),
+    padding: const EdgeInsets.symmetric(horizontal: 10),
+    height: height * 0.06,
+    decoration: BoxDecoration(
+      color: const Color.fromARGB(135, 194, 193, 193),
+      borderRadius: BorderRadius.circular(40),
+    ),
+    child: Row(
+      children: [
+        GestureDetector(
+          onTap: onRemove,
+          child: Container(
+            width: width * 0.09,
+            height: width * 0.09,
+            decoration: const BoxDecoration(
+              color: Color(0xFF8BC83F),
+              shape: BoxShape.circle,
+            ),
+            child: Icon(
+              Icons.close_rounded,
+              color: Colors.white,
+              size: width * 0.045,
+            ),
+          ),
+        ),
+        const SizedBox(width: 7),
+        Text(
+          text,
+          style: GoogleFonts.raleway(
+            color: const Color(0xFF242B5C),
+            fontSize: width * 0.038,
+            fontWeight: FontWeight.w500,
+          ),
+        ),
+        const SizedBox(width: 7),
+      ],
+    ),
+  );
+}
+
 
   @override
   Widget build(BuildContext context) {
@@ -624,6 +756,7 @@ void searchAndMoveLocation(String location) async {
                         ],
                       ),
                     ),
+ 
                     SizedBox(width: width * 0.52),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.end,
@@ -651,6 +784,48 @@ void searchAndMoveLocation(String location) async {
                   ],
                 ),
               ),
+                       Padding(
+  padding: EdgeInsetsDirectional.only(
+    start: width * 0.05,
+    
+  ),
+  child: Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+
+      /// 🔹 Applied Filters Chips
+      if (appliedFilters.isNotEmpty)
+        Padding(
+          padding: EdgeInsets.only(top: height * 0.015),
+          child: SizedBox(
+            height: height * 0.065,
+            child: ListView.builder(
+              scrollDirection: Axis.horizontal,
+              itemCount: appliedFilters.length,
+              itemBuilder: (context, index) {
+                return filterChip(
+                  appliedFilters[index],
+                  () {
+                    setState(() {
+                      appliedFilters.removeAt(index);
+
+                      // 🔹 if location chip removed
+                      if (appliedFilters.isEmpty) {
+                        locationController.clear();
+                      }
+                    });
+                  },
+                );
+              },
+            ),
+          ),
+        ),
+    ],
+  ),
+),
+ SizedBox(height: height * 0.02),
+
+
 
               Padding(
                 padding: EdgeInsets.symmetric(horizontal: width * 0.02),
@@ -1185,3 +1360,7 @@ void searchAndMoveLocation(String location) async {
     );
   }
 }
+
+
+
+
