@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:real_esate_finder/CreateProvider.dart';
 import 'package:provider/provider.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class PropertyDetails extends StatefulWidget {
   final Map<String, dynamic> property;
@@ -21,20 +22,26 @@ class _PropertyDetailsState extends State<PropertyDetails> {
     return Scaffold(
       backgroundColor: Colors.white,
 
-      body: Column(
+      body:SingleChildScrollView(child: 
+       Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Padding(
             padding: EdgeInsetsGeometry.all(width * 0.03),
             child: Stack(
               children: [
-                Image.asset(
-                  widget.property['image'],
-                  height: height * 0.5,
-                  width: double.infinity,
-                  fit: BoxFit.fitWidth,
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(50),
+                  child: Image.asset(
+                    widget.property['image'],
+                    height: height * 0.55,
+                    width: double.infinity,
+                    fit: BoxFit.cover,
+                  ),
                 ),
+
                 Positioned(
-                  top: height * 0.03,
+                  top: height * 0.02,
                   left: width * 0.03,
                   child: GestureDetector(
                     onTap: () {
@@ -56,7 +63,7 @@ class _PropertyDetailsState extends State<PropertyDetails> {
                   ),
                 ),
                 Positioned(
-                  top: height * 0.03,
+                  top: height * 0.02,
                   right: width * 0.2,
                   child: GestureDetector(
                     onTap: () {
@@ -79,7 +86,7 @@ class _PropertyDetailsState extends State<PropertyDetails> {
                 ),
 
                 Positioned(
-                  top: height * 0.03,
+                  top: height * 0.02,
                   right: width * 0.05,
                   child: Consumer<Createprovider>(
                     builder: (context, cart, child) {
@@ -123,25 +130,138 @@ class _PropertyDetailsState extends State<PropertyDetails> {
                   ),
                 ),
                 Positioned(
-                  bottom: height * 0.025,
-                  right: width * 0.03,
+                  bottom: height * 0.02,
+                  left: width * 0.04,
                   child: Container(
-                    height: height * 0.045,
-                    width: width * 0.18,
+                    height: height * 0.053,
+                    width: width * 0.23,
                     decoration: ShapeDecoration(
                       color: Color.fromARGB(214, 35, 79, 104),
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
+                        borderRadius: BorderRadius.circular(30),
                       ),
                     ),
-                    child: Center(child: Text("")),
+                    child: Center(
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(Icons.star, color: Colors.amber),
+                          SizedBox(width: width * 0.01),
+                          Text(
+                            widget.property['rating'],
+                            style: GoogleFonts.montserrat(
+                              color: Colors.white,
+                              fontSize: height * 0.02,
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+                Positioned(
+                  bottom: height * 0.02,
+                  left: width * 0.3,
+                  child: Container(
+                    height: height * 0.055,
+                    width: width * 0.25,
+                    decoration: ShapeDecoration(
+                      color: Color.fromARGB(214, 35, 79, 104),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(30),
+                      ),
+                    ),
+                    child: Center(
+                      child: Text(
+                        widget.property['property-type'],
+                        style: GoogleFonts.raleway(
+                          color: Colors.white,
+                          fontSize: height * 0.011,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ),
                   ),
                 ),
               ],
             ),
           ),
+          Padding(
+            padding: EdgeInsetsGeometry.directional(
+              top: height * 0.02,
+              start: width * 0.06,
+              end: width * 0.04,
+            ),
+            child: Row(
+              children: [
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      widget.property['title'],
+                      style: GoogleFonts.lato(
+                        color: Color(0xFF1F4C6B),
+                        fontSize: height * 0.04,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                    SizedBox(height: height * 0.01),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: [
+                        Icon(
+                          Icons.location_on,
+                          size: height * 0.02,
+                          color: Color(0xFF1F4C6B),
+                        ),
+
+                        SizedBox(width: width * 0.005),
+
+                        Text(
+                          widget.property["location"],
+                          style: TextStyle(
+                            fontSize: width * 0.035,
+                            fontWeight: FontWeight.bold,
+                            color: Color(0xFF1F4C6B),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+
+                const Spacer(),
+                Column(
+              
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Text(
+                      '${widget.property['price']}',
+                      style: GoogleFonts.lato(
+                        color: Color(0xFF1F4C6B),
+                        fontSize: height * 0.04,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                   
+
+                    Text(
+                      'per month',
+                      style: GoogleFonts.lato(
+                        color: Color(0xFF1F4C6B),
+                        fontSize: height * 0.02,
+                        fontWeight: FontWeight.w300,
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
         ],
-      ),
+       ) ),
     );
   }
 }

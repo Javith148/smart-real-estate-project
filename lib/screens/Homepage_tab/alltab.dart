@@ -190,34 +190,46 @@ class Alltab extends StatelessWidget {
     final height = MediaQuery.of(context).size.height;
 
     final List<Map<String, dynamic>> propertyList = [
-      {
-        "image": "assets/nearby1.png",
-        "title": "Wings Tower",
-        "price": "₹30k",
-        "rating": "4.9",
-        "location": "Coimbatore, TN",
-      },
-      {
-        "image": "assets/nearby2.png",
-        "title": "Mill Sper House",
-        "price": "₹20k",
-        "rating": "4.8",
-        "location": "Peelamedu, TN",
-      },
-      {
-        "image": "assets/nearby3.png",
-        "title": "Garden Residency",
-        "price": "₹25k",
-        "rating": "4.7",
-        "location": "RS Puram, TN",
-      },
-      {
-        "image": "assets/nearby4.png",
-        "title": "Elite Apartment",
-        "price": "₹28k",
-        "rating": "4.9",
-        "location": "Saibaba Colony, TN",
-      },
+ {
+      "image": "assets/nearby1.png",
+      "title": "Wings Tower",
+      "price": "₹ 30k",
+      "rating": "4.9",
+      "property-type": "Apartment",
+      "location": "Coimbatore, TN",
+    },
+    {
+      "image": "assets/nearby2.png",
+      "title": "Mill Sper House",
+      "price": "₹ 20k",
+      "rating": "4.8",
+      "property-type": "House",
+      "location": "Peelamedu, TN",
+    },
+    {
+      "image": "assets/nearby3.png",
+      "title": "Garden Residency",
+      "price": "₹ 25k",
+      "rating": "4.7",
+      "property-type": "Apartment",
+      "location": "RS Puram, TN",
+    },
+    {
+      "image": "assets/nearby4.png",
+      "title": "Elite Apartment",
+      "price": "₹ 28k",
+      "rating": "4.9",
+      "property-type": "Apartment",
+      "location": "Saibaba Colony, TN",
+    },
+    {
+      "image": "assets/nearby4.png",
+      "title": "Elite Apartment",
+      "price": "₹ 28k",
+      "rating": "4.9",
+      "property-type": "Apartment",
+      "location": "Selvapuram, TN",
+    },
     ];
 
     List<Map<String, dynamic>> loaction = [
