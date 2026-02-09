@@ -197,6 +197,15 @@ class Alltab extends StatelessWidget {
       "rating": "4.9",
       "property-type": "Apartment",
       "location": "Coimbatore, TN",
+      "agent": {
+        "name": "Javi",
+        "mail id": "javithjavi@gmail.com",
+        "image": "assets/person_javi.jpeg",
+        "rating": "5",
+        "sold": "500",
+        "reviews": "1000",
+        
+      },
     },
     {
       "image": "assets/nearby2.png",
@@ -205,6 +214,14 @@ class Alltab extends StatelessWidget {
       "rating": "4.8",
       "property-type": "House",
       "location": "Peelamedu, TN",
+      "agent": {
+        "name": "Amanda",
+        "mail id": "javithjavi@gmail.com",
+        "image": "assets/person1.png",
+        "rating": "4.5",
+        "sold": "124",
+        "reviews": "400",
+      },
     },
     {
       "image": "assets/nearby3.png",
@@ -213,6 +230,14 @@ class Alltab extends StatelessWidget {
       "rating": "4.7",
       "property-type": "Apartment",
       "location": "RS Puram, TN",
+      "agent":  {
+        "name": "Anderson",
+        "mail id": "javithjavi@gmail.com",
+        "image": "assets/person2.png",
+        "rating": "4",
+        "sold": "124",
+        "reviews": "180",
+      },
     },
     {
       "image": "assets/nearby4.png",
@@ -221,6 +246,15 @@ class Alltab extends StatelessWidget {
       "rating": "4.9",
       "property-type": "Apartment",
       "location": "Saibaba Colony, TN",
+      "agent":
+       {
+        "name": "Samantha",
+        "mail id": "javithjavi@gmail.com",
+        "image": "assets/person3.png",
+        "rating": "4",
+        "sold": "124",
+        "reviews": "440",
+      },
     },
     {
       "image": "assets/nearby4.png",
@@ -229,6 +263,14 @@ class Alltab extends StatelessWidget {
       "rating": "4.9",
       "property-type": "Apartment",
       "location": "Selvapuram, TN",
+      "agent":{
+        "name": "Michael",
+        "mail id": "javithjavi@gmail.com",
+        "image": "assets/person5.png",
+        "rating": "4",
+        "sold": "124",
+        "reviews": "340",
+      },
     },
     ];
 
@@ -279,6 +321,7 @@ class Alltab extends StatelessWidget {
         "rating": "5",
         "sold": "500",
         "reviews": "1000",
+        
       },
       {
         "name": "Amanda",
