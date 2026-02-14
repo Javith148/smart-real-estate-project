@@ -4,6 +4,8 @@ import 'package:provider/provider.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'dart:math';
+import 'package:url_launcher/url_launcher.dart';
 
 class PropertyDetails extends StatefulWidget {
   final Map<String, dynamic> property;
@@ -47,6 +49,23 @@ class _PropertyDetailsState extends State<PropertyDetails> {
     return null;
   }
 
+  double calculateDistance(double lat1, double lon1, double lat2, double lon2) {
+    const R = 6371; // earth radius in km
+    final dLat = (lat2 - lat1) * (pi / 180);
+    final dLon = (lon2 - lon1) * (pi / 180);
+
+    final a =
+        sin(dLat / 2) * sin(dLat / 2) +
+        cos(lat1 * (pi / 180)) *
+            cos(lat2 * (pi / 180)) *
+            sin(dLon / 2) *
+            sin(dLon / 2);
+
+    final c = 2 * atan2(sqrt(a), sqrt(1 - a));
+
+    return R * c;
+  }
+
   Future<List<String>> getNearbyPlaces(double lat, double lng) async {
     String query =
         """
@@ -60,21 +79,33 @@ class _PropertyDetailsState extends State<PropertyDetails> {
   """;
 
     final url = Uri.parse("https://overpass-api.de/api/interpreter");
-
     final response = await http.post(url, body: {"data": query});
 
-    List<String> results = [];
+    List<Map<String, dynamic>> results = [];
 
     if (response.statusCode == 200) {
       final data = json.decode(response.body);
 
       for (var element in data["elements"]) {
-        String name = element["tags"]?["name"] ?? "Unknown";
-        results.add(name);
+        String? name = element["tags"]?["name"];
+        double? placeLat = element["lat"];
+        double? placeLng = element["lon"];
+
+        if (name != null &&
+            name.trim().isNotEmpty &&
+            placeLat != null &&
+            placeLng != null) {
+          double distance = calculateDistance(lat, lng, placeLat, placeLng);
+
+          results.add({"name": name.trim(), "distance": distance});
+        }
       }
     }
 
-    return results;
+    // 🔥 sort by nearest
+    results.sort((a, b) => a["distance"].compareTo(b["distance"]));
+
+    return results.take(3).map((e) => e["name"] as String).toList();
   }
 
   Future<List<String>> fetchNearbyFacilities(String location) async {
@@ -83,6 +114,20 @@ class _PropertyDetailsState extends State<PropertyDetails> {
     if (coords == null) return [];
 
     return await getNearbyPlaces(coords["lat"]!, coords["lng"]!);
+  }
+
+  Future<void> openGoogleMaps(String address) async {
+    final encodedAddress = Uri.encodeComponent(address);
+
+    final Uri googleMapUrl = Uri.parse(
+      "https://www.google.com/maps/dir/?api=1&destination=$encodedAddress&travelmode=driving",
+    );
+
+    if (await canLaunchUrl(googleMapUrl)) {
+      await launchUrl(googleMapUrl, mode: LaunchMode.externalApplication);
+    } else {
+      throw 'Could not open Google Maps';
+    }
   }
 
   @override
@@ -335,33 +380,6 @@ class _PropertyDetailsState extends State<PropertyDetails> {
                               fontWeight: FontWeight.w300,
                             ),
                           ),
-                          FutureBuilder<List<String>>(
-                            future: fetchNearbyFacilities(
-                              widget.property["location"],
-                            ),
-                            builder: (context, snapshot) {
-                              if (!snapshot.hasData) {
-                                return CircularProgressIndicator();
-                              }
-
-                              final places = snapshot.data!;
-
-                              return Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: places.map((place) {
-                                  return Padding(
-                                    padding: const EdgeInsets.symmetric(
-                                      vertical: 6,
-                                    ),
-                                    child: Text(
-                                      place,
-                                      style: TextStyle(fontSize: 16),
-                                    ),
-                                  );
-                                }).toList(),
-                              );
-                            },
-                          ),
                         ],
                       ),
                     ],
@@ -606,6 +624,76 @@ class _PropertyDetailsState extends State<PropertyDetails> {
                     ),
                   ),
                 ),
+                FutureBuilder<List<String>>(
+                  future: nearbyFuture,
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return SizedBox(
+                        height: 40,
+                        width: 40,
+                        child: CircularProgressIndicator(),
+                      );
+                    }
+
+                    if (snapshot.hasError) {
+                      return Text("Error loading facilities");
+                    }
+
+                    if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                      return Text("No nearby facilities found");
+                    }
+
+                    final places = snapshot.data!;
+
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: places.take(5).map((place) {
+                        return Padding(
+                          padding: EdgeInsetsGeometry.directional(
+                            start: width * 0.04,
+                            top: width * 0.04,
+                          ),
+                          child: GestureDetector(
+                            onTap: () {
+                              openGoogleMaps(widget.property["location"]);
+                            },
+
+                            child: Row(
+                              children: [
+                                Container(
+                                  width: width * 0.12,
+                                  height: width * 0.12,
+                                  decoration: const BoxDecoration(
+                                    color: Color.fromARGB(94, 219, 219, 219),
+                                    shape: BoxShape.circle,
+                                  ),
+                                  child: Icon(
+                                    Icons.location_on_outlined,
+                                    size: height * 0.025,
+                                    color: Color(0xFF1F4C6B),
+                                  ),
+                                ),
+                                SizedBox(width: width * 0.02),
+                                Expanded(
+                                  child: Text(
+                                    " $place",
+                                    style: TextStyle(
+                                      fontSize: height * 0.02,
+                                      color: Color(0xFF1F4C6B),
+                                    ),
+                                    softWrap: true,
+                                    overflow: TextOverflow.visible,
+                                    maxLines: null,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        );
+                      }).toList(),
+                    );
+                  },
+                ),
 
                 SizedBox(height: height * 0.2),
               ],
@@ -623,8 +711,8 @@ class _PropertyDetailsState extends State<PropertyDetails> {
                   begin: Alignment.bottomCenter,
                   end: Alignment.topCenter,
                   colors: [
-                    Colors.white, // 100% white
-                    Colors.white, // stronger white
+                    Colors.white, 
+                    Colors.white, 
                     Colors.white.withOpacity(0.4), // mid fade
                     Colors.white.withOpacity(0), // fully transparent
                   ],
