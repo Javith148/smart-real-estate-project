@@ -6,6 +6,8 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'dart:math';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:flutter_map/flutter_map.dart';
+import 'package:latlong2/latlong.dart';
 
 class PropertyDetails extends StatefulWidget {
   final Map<String, dynamic> property;
@@ -19,11 +21,24 @@ class PropertyDetails extends StatefulWidget {
 class _PropertyDetailsState extends State<PropertyDetails> {
   bool isAdded = false;
   bool? buyOrRent;
-  late Future<List<String>> nearbyFuture;
+  late Future<List<Map<String, dynamic>>> nearbyFuture;
+  double? straightDistance;
+
+  LatLng? propertyLatLng; // from latlong2
+  LatLng? destinationLatLng;
+
+  List<LatLng> routePoints = [];
+  bool showRoute = false;
+
+  Set<Polyline> polylines = {};
+  Set<Marker> markers = {};
+  String? selectedPlaceType;
+  late final MapController mapController;
 
   @override
   void initState() {
     super.initState();
+    mapController = MapController();
     nearbyFuture = fetchNearbyFacilities(widget.property["location"]);
   }
 
@@ -66,68 +81,71 @@ class _PropertyDetailsState extends State<PropertyDetails> {
     return R * c;
   }
 
-  Future<List<String>> getNearbyPlaces(double lat, double lng) async {
-    String query =
-        """
-  [out:json];
-  (
-    node["amenity"="fuel"](around:5000,$lat,$lng);
-    node["amenity"="school"](around:5000,$lat,$lng);
-    node["amenity"="hospital"](around:5000,$lat,$lng);
-  );
-  out body;
-  """;
+  Future<List<Map<String, dynamic>>> getNearbyPlaces(
+    double lat,
+    double lng,
+  ) async {
+    List<Map<String, dynamic>> finalResults = [];
+    List<String> amenities = ["hospital", "school", "fuel"];
 
-    final url = Uri.parse("https://overpass-api.de/api/interpreter");
-    final response = await http.post(url, body: {"data": query});
+    for (String amenity in amenities) {
+      String query =
+          """
+    [out:json];
+    node["amenity"="$amenity"](around:5000,$lat,$lng);
+    out body;
+    """;
 
-    List<Map<String, dynamic>> results = [];
+      final url = Uri.parse("https://overpass-api.de/api/interpreter");
 
-    if (response.statusCode == 200) {
-      final data = json.decode(response.body);
+      final response = await http.post(url, body: {"data": query});
 
-      for (var element in data["elements"]) {
-        String? name = element["tags"]?["name"];
-        double? placeLat = element["lat"];
-        double? placeLng = element["lon"];
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
 
-        if (name != null &&
-            name.trim().isNotEmpty &&
-            placeLat != null &&
-            placeLng != null) {
-          double distance = calculateDistance(lat, lng, placeLat, placeLng);
+        List<Map<String, dynamic>> results = [];
 
-          results.add({"name": name.trim(), "distance": distance});
+        for (var element in data["elements"]) {
+          String? name = element["tags"]?["name"];
+          double? placeLat = element["lat"];
+          double? placeLng = element["lon"];
+
+          if (name != null &&
+              name.trim().isNotEmpty &&
+              placeLat != null &&
+              placeLng != null) {
+            double distance = calculateDistance(lat, lng, placeLat, placeLng);
+
+            results.add({
+              "name": name.trim(),
+              "lat": placeLat,
+              "lng": placeLng,
+              "distance": distance,
+              "type": amenity,
+            });
+          }
+        }
+
+        if (results.isNotEmpty) {
+          results.sort((a, b) => a["distance"].compareTo(b["distance"]));
+
+          finalResults.add(results.first);
         }
       }
     }
 
-    // 🔥 sort by nearest
-    results.sort((a, b) => a["distance"].compareTo(b["distance"]));
-
-    return results.take(3).map((e) => e["name"] as String).toList();
+    return finalResults;
   }
 
-  Future<List<String>> fetchNearbyFacilities(String location) async {
+  Future<List<Map<String, dynamic>>> fetchNearbyFacilities(
+    String location,
+  ) async {
     var coords = await getLatLngFromAddress(location);
-
     if (coords == null) return [];
 
+    propertyLatLng = LatLng(coords["lat"]!, coords["lng"]!);
+
     return await getNearbyPlaces(coords["lat"]!, coords["lng"]!);
-  }
-
-  Future<void> openGoogleMaps(String address) async {
-    final encodedAddress = Uri.encodeComponent(address);
-
-    final Uri googleMapUrl = Uri.parse(
-      "https://www.google.com/maps/dir/?api=1&destination=$encodedAddress&travelmode=driving",
-    );
-
-    if (await canLaunchUrl(googleMapUrl)) {
-      await launchUrl(googleMapUrl, mode: LaunchMode.externalApplication);
-    } else {
-      throw 'Could not open Google Maps';
-    }
   }
 
   @override
@@ -430,7 +448,7 @@ class _PropertyDetailsState extends State<PropertyDetails> {
                             style: ElevatedButton.styleFrom(
                               backgroundColor: buyOrRent == true
                                   ? const Color(0xFF8BC83F)
-                                  : Color(0xFF1F4C6B),
+                                  : Colors.white,
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(25),
                               ),
@@ -444,7 +462,7 @@ class _PropertyDetailsState extends State<PropertyDetails> {
                             child: Text(
                               "Buy",
                               style: TextStyle(
-                                color: Colors.white,
+                                color: Colors.black,
                                 fontSize: width * 0.035,
                                 fontWeight: FontWeight.w500,
                               ),
@@ -624,30 +642,49 @@ class _PropertyDetailsState extends State<PropertyDetails> {
                     ),
                   ),
                 ),
-                FutureBuilder<List<String>>(
+                FutureBuilder<List<Map<String, dynamic>>>(
                   future: nearbyFuture,
                   builder: (context, snapshot) {
                     if (snapshot.connectionState == ConnectionState.waiting) {
-                      return SizedBox(
-                        height: 40,
-                        width: 40,
-                        child: CircularProgressIndicator(),
+                      return Padding(
+                        padding: EdgeInsets.all(16),
+                        child: Center(child: CircularProgressIndicator()),
                       );
                     }
 
                     if (snapshot.hasError) {
-                      return Text("Error loading facilities");
+                      return Padding(
+                        padding: EdgeInsets.all(16),
+                        child: Text(
+                          "Error loading facilities",
+                          style: TextStyle(color: Colors.red),
+                        ),
+                      );
                     }
 
                     if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                      return Text("No nearby facilities found");
+                      return Padding(
+                        padding: EdgeInsets.all(16),
+                        child: Text("No nearby facilities found"),
+                      );
                     }
 
-                    final places = snapshot.data!;
+                    final places =
+                        snapshot.data!; // This already contains 3 items only
 
                     return Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
-                      children: places.take(5).map((place) {
+                      children: places.map((place) {
+                        IconData icon;
+
+                        if (place["type"] == "hospital") {
+                          icon = Icons.local_hospital;
+                        } else if (place["type"] == "school") {
+                          icon = Icons.school;
+                        } else {
+                          icon = Icons.local_gas_station;
+                        }
+
                         return Padding(
                           padding: EdgeInsetsGeometry.directional(
                             start: width * 0.04,
@@ -655,7 +692,34 @@ class _PropertyDetailsState extends State<PropertyDetails> {
                           ),
                           child: GestureDetector(
                             onTap: () {
-                              openGoogleMaps(widget.property["location"]);
+                              if (propertyLatLng == null) return;
+
+                              final LatLng destination = LatLng(
+                                place["lat"],
+                                place["lng"],
+                              );
+
+                              setState(() {
+                                destinationLatLng = destination;
+                                routePoints = [
+                                  propertyLatLng!,
+                                  destinationLatLng!,
+                                ];
+                                showRoute = true;
+                                selectedPlaceType = place["type"];
+                              });
+
+                              // Fit map to show both property and destination
+                              LatLngBounds bounds = LatLngBounds(
+                                propertyLatLng!,
+                                destinationLatLng!,
+                              );
+                              mapController.fitBounds(
+                                bounds,
+                                options: FitBoundsOptions(
+                                  padding: EdgeInsets.all(50),
+                                ),
+                              );
                             },
 
                             child: Row(
@@ -668,22 +732,27 @@ class _PropertyDetailsState extends State<PropertyDetails> {
                                     shape: BoxShape.circle,
                                   ),
                                   child: Icon(
-                                    Icons.location_on_outlined,
+                                    icon,
                                     size: height * 0.025,
                                     color: Color(0xFF1F4C6B),
                                   ),
                                 ),
-                                SizedBox(width: width * 0.02),
+                                SizedBox(width: width * 0.03),
                                 Expanded(
-                                  child: Text(
-                                    " $place",
-                                    style: TextStyle(
-                                      fontSize: height * 0.02,
-                                      color: Color(0xFF1F4C6B),
-                                    ),
-                                    softWrap: true,
-                                    overflow: TextOverflow.visible,
-                                    maxLines: null,
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        place["name"],
+                                        style: TextStyle(
+                                          fontSize: height * 0.02,
+                                          color: Color(0xFF1F4C6B),
+                                          fontWeight: FontWeight.w600,
+                                        ),
+                                      ),
+                                      SizedBox(height: 4),
+                                    ],
                                   ),
                                 ),
                               ],
@@ -694,6 +763,138 @@ class _PropertyDetailsState extends State<PropertyDetails> {
                     );
                   },
                 ),
+
+                if (propertyLatLng != null)
+                  Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 30,
+                      vertical: 30,
+                    ),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(20),
+                      child: Container(
+                        height: 300,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(20),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black26,
+                              blurRadius: 6,
+                              offset: Offset(0, 4),
+                            ),
+                          ],
+                        ),
+                        child: FlutterMap(
+                          mapController: mapController,
+                          options: MapOptions(
+                            initialCenter: propertyLatLng!,
+                            initialZoom: 15,
+                          ),
+                          children: [
+                            TileLayer(
+                              urlTemplate:
+                                  "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
+                              userAgentPackageName: 'com.example.realestate',
+                            ),
+                            if (showRoute)
+                              PolylineLayer(
+                                polylines: [
+                                  Polyline(
+                                    points: routePoints,
+                                    strokeWidth: 4,
+                                    color: Colors.blue,
+                                  ),
+                                ],
+                              ),
+                            // 📍 Markers
+                            MarkerLayer(
+                              markers: [
+                                if (propertyLatLng != null)
+                                  Marker(
+                                    point: propertyLatLng!,
+                                    width: 80,
+                                    height: 80,
+                                    child: Stack(
+                                      alignment: Alignment.center,
+                                      children: [
+                                        // Marker background shape
+                                        Image.asset(
+                                          'assets/Vector.png', // your marker pin image
+                                          width: 80,
+                                          height: 80,
+                                        ),
+
+                                        // Center property image
+                                        Positioned(
+                                          top: 22,
+                                          child: ClipOval(
+                                            child: Image.asset(
+                                              widget.property['image'],
+                                              width: 25,
+                                              height: 25,
+                                              fit: BoxFit.cover,
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+
+                                Marker(
+                                  point: destinationLatLng!,
+                                  width: 80,
+                                  height: 80,
+                                  alignment: Alignment.center,
+                                  child: Stack(
+                                    alignment: Alignment.center,
+                                    children: [
+                                      // Marker Image
+                                      Image.asset(
+                                        'assets/Vector.png',
+                                        width: 40,
+                                        height: 40,
+                                        fit: BoxFit.contain,
+                                      ),
+
+                                      Positioned(
+                                        top: 25,
+                                        child: Container(
+                                          width: 23,
+                                          height: 23,
+                                          decoration: BoxDecoration(
+                                            color: Colors.white,
+                                            shape: BoxShape.circle,
+                                            boxShadow: [
+                                              BoxShadow(
+                                                color: Colors.black26,
+                                                blurRadius: 4,
+                                              ),
+                                            ],
+                                          ),
+                                          child: Center(
+                                            child: Icon(
+                                              selectedPlaceType == "hospital"
+                                                  ? Icons.local_hospital
+                                                  : selectedPlaceType ==
+                                                        "school"
+                                                  ? Icons.school
+                                                  : Icons.local_gas_station,
+                                              color: Colors.red,
+                                              size: 20,
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
 
                 SizedBox(height: height * 0.2),
               ],
@@ -711,8 +912,8 @@ class _PropertyDetailsState extends State<PropertyDetails> {
                   begin: Alignment.bottomCenter,
                   end: Alignment.topCenter,
                   colors: [
-                    Colors.white, 
-                    Colors.white, 
+                    Colors.white,
+                    Colors.white,
                     Colors.white.withOpacity(0.4), // mid fade
                     Colors.white.withOpacity(0), // fully transparent
                   ],
