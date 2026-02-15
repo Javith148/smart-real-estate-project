@@ -197,6 +197,7 @@ class Alltab extends StatelessWidget {
         "rating": "4.9",
         "property-type": "Apartment",
         "location": "Coimbatore, TN",
+        "cost_of_living": "5000",
         "agent": {
           "name": "Javi",
           "mail id": "javithjavi@gmail.com",
@@ -212,6 +213,7 @@ class Alltab extends StatelessWidget {
           "store_room": '1',
           "balcony": '2',
         },
+
       },
       {
         "image": "assets/nearby2.png",
@@ -219,7 +221,8 @@ class Alltab extends StatelessWidget {
         "price": "₹ 20k",
         "rating": "4.8",
         "property-type": "House",
-        "location": "Peelamedu, TN",
+        "location": "Peelamedu,TN",
+        "cost_of_living": "9000",
         "agent": {
           "name": "Amanda",
           "mail id": "javithjavi@gmail.com",
@@ -243,6 +246,7 @@ class Alltab extends StatelessWidget {
         "rating": "4.7",
         "property-type": "Apartment",
         "location": "RS Puram, TN",
+        "cost_of_living": "10000",
         "agent": {
           "name": "Anderson",
           "mail id": "javithjavi@gmail.com",
@@ -266,6 +270,7 @@ class Alltab extends StatelessWidget {
         "rating": "4.9",
         "property-type": "Apartment",
         "location": "Saibaba Colony, TN",
+        "cost_of_living": "7000",
         "agent": {
           "name": "Samantha",
           "mail id": "javithjavi@gmail.com",
@@ -289,6 +294,7 @@ class Alltab extends StatelessWidget {
         "rating": "4.9",
         "property-type": "Apartment",
         "location": "Selvapuram, TN",
+        "cost_of_living": "9000",
         "agent": {
           "name": "Michael",
           "mail id": "javithjavi@gmail.com",

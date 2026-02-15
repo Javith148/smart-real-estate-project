@@ -126,10 +126,9 @@ class _PropertyDetailsState extends State<PropertyDetails> {
           }
         }
 
-        if (results.isNotEmpty) {
-          results.sort((a, b) => a["distance"].compareTo(b["distance"]));
-
-          finalResults.add(results.first);
+        for (var r in results) {
+          if (r['distance'] <= 5.0) {
+          }
         }
       }
     }
@@ -669,97 +668,138 @@ class _PropertyDetailsState extends State<PropertyDetails> {
                       );
                     }
 
-                    final places =
-                        snapshot.data!; // This already contains 3 items only
+                    final places = snapshot.data!;
+
+                    // Get nearest of each type
+                    Map<String, Map<String, dynamic>> nearest = {};
+                    for (var p in places) {
+                      String type = p['type'];
+                      if (!nearest.containsKey(type) ||
+                          p['distance'] < nearest[type]!['distance']) {
+                        nearest[type] = p;
+                      }
+                    }
 
                     return Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
-                      children: places.map((place) {
-                        IconData icon;
+                      children: [
+                        // Show only nearest hospital, school, bunk
+                        ...nearest.values.map((place) {
+                          IconData icon;
+                          if (place["type"] == "hospital") {
+                            icon = Icons.local_hospital;
+                          } else if (place["type"] == "school") {
+                            icon = Icons.school;
+                          } else {
+                            icon = Icons.local_gas_station;
+                          }
 
-                        if (place["type"] == "hospital") {
-                          icon = Icons.local_hospital;
-                        } else if (place["type"] == "school") {
-                          icon = Icons.school;
-                        } else {
-                          icon = Icons.local_gas_station;
-                        }
-
-                        return Padding(
-                          padding: EdgeInsetsGeometry.directional(
-                            start: width * 0.04,
-                            top: width * 0.04,
-                          ),
-                          child: GestureDetector(
-                            onTap: () {
-                              if (propertyLatLng == null) return;
-
-                              final LatLng destination = LatLng(
-                                place["lat"],
-                                place["lng"],
-                              );
-
-                              setState(() {
-                                destinationLatLng = destination;
-                                routePoints = [
+                          return Padding(
+                            padding: EdgeInsetsDirectional.only(
+                              start: width * 0.04,
+                              top: width * 0.04,
+                            ),
+                            child: GestureDetector(
+                              onTap: () {
+                                if (propertyLatLng == null) return;
+                                final LatLng destination = LatLng(
+                                  place["lat"],
+                                  place["lng"],
+                                );
+                                setState(() {
+                                  destinationLatLng = destination;
+                                  routePoints = [
+                                    propertyLatLng!,
+                                    destinationLatLng!,
+                                  ];
+                                  showRoute = true;
+                                  selectedPlaceType = place["type"];
+                                });
+                                LatLngBounds bounds = LatLngBounds(
                                   propertyLatLng!,
                                   destinationLatLng!,
-                                ];
-                                showRoute = true;
-                                selectedPlaceType = place["type"];
-                              });
-
-                              // Fit map to show both property and destination
-                              LatLngBounds bounds = LatLngBounds(
-                                propertyLatLng!,
-                                destinationLatLng!,
-                              );
-                              mapController.fitBounds(
-                                bounds,
-                                options: FitBoundsOptions(
-                                  padding: EdgeInsets.all(50),
-                                ),
-                              );
-                            },
-
-                            child: Row(
-                              children: [
-                                Container(
-                                  width: width * 0.12,
-                                  height: width * 0.12,
-                                  decoration: const BoxDecoration(
-                                    color: Color.fromARGB(94, 219, 219, 219),
-                                    shape: BoxShape.circle,
+                                );
+                                mapController.fitBounds(
+                                  bounds,
+                                  options: FitBoundsOptions(
+                                    padding: EdgeInsets.all(50),
                                   ),
-                                  child: Icon(
-                                    icon,
-                                    size: height * 0.025,
-                                    color: Color(0xFF1F4C6B),
+                                );
+                              },
+                              child: Row(
+                                children: [
+                                  Container(
+                                    width: width * 0.12,
+                                    height: width * 0.12,
+                                    decoration: const BoxDecoration(
+                                      color: Color.fromARGB(94, 219, 219, 219),
+                                      shape: BoxShape.circle,
+                                    ),
+                                    child: Icon(
+                                      icon,
+                                      size: height * 0.025,
+                                      color: Color(0xFF1F4C6B),
+                                    ),
                                   ),
-                                ),
-                                SizedBox(width: width * 0.03),
-                                Expanded(
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        place["name"],
-                                        style: TextStyle(
-                                          fontSize: height * 0.02,
-                                          color: Color(0xFF1F4C6B),
-                                          fontWeight: FontWeight.w600,
+                                  SizedBox(width: width * 0.03),
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          place["name"],
+                                          style: TextStyle(
+                                            fontSize: height * 0.02,
+                                            color: Color(0xFF1F4C6B),
+                                            fontWeight: FontWeight.w600,
+                                          ),
                                         ),
-                                      ),
-                                      SizedBox(height: 4),
-                                    ],
+                                        SizedBox(height: 4),
+                                      ],
+                                    ),
                                   ),
-                                ),
-                              ],
+                                ],
+                              ),
                             ),
+                          );
+                        }).toList(),
+                         SizedBox(height: height*0.03),
+
+                        // Show counts of all nearby facilities
+                        Padding(
+                          padding: EdgeInsets.symmetric(
+                            horizontal: width * 0.04,
+                            vertical: 12,
                           ),
-                        );
-                      }).toList(),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceAround,
+                            children: [
+                              Text(
+                                ' ${places.where((p) => p["type"] == "hospital").length} Hospitals ',
+                                style: GoogleFonts.raleway(
+                                  fontSize: 16,
+                                 
+                                ),
+                              ),
+                              Text(
+                                '${places.where((p) => p["type"] == "school").length} Schools',
+                                style: GoogleFonts.raleway(
+                                  fontSize: 16,
+                                
+                                ),
+                              ),
+                              Text(
+                                '${places.where((p) => p["type"] == "fuel").length} Gas Stations',
+                                style: GoogleFonts.raleway(
+                                  fontSize: 16,
+                                  
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
                     );
                   },
                 ),
@@ -896,6 +936,23 @@ class _PropertyDetailsState extends State<PropertyDetails> {
                     ),
                   ),
 
+ Padding(
+                  padding: EdgeInsetsGeometry.directional(
+                    top: height * 0.02,
+                    start: width * 0.05,
+                  ),
+                  child: Text(
+                    'Cost of Living',
+                    style: GoogleFonts.raleway(
+                      color: const Color(0xFF242B5C),
+                      fontSize: width * 0.065,
+
+                      fontWeight: FontWeight.w600,
+                      letterSpacing: 0.54,
+                    ),
+                  ),
+                ),
+                Text('₹ ${widget.property['cost_of_living']}/month'),
                 SizedBox(height: height * 0.2),
               ],
             ),
