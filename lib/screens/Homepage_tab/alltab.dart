@@ -219,7 +219,7 @@ class Alltab extends StatelessWidget {
         "image": "assets/nearby2.png",
         "title": "Mill Sper House",
         "price": "₹ 20k",
-        "rating": "4.8",
+        "rating": "2.5",
         "property-type": "House",
         "location": "Peelamedu,TN",
         "cost_of_living": "9000",

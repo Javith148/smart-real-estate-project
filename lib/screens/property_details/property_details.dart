@@ -128,6 +128,7 @@ class _PropertyDetailsState extends State<PropertyDetails> {
 
         for (var r in results) {
           if (r['distance'] <= 5.0) {
+            finalResults.add(r);
           }
         }
       }
@@ -151,6 +152,8 @@ class _PropertyDetailsState extends State<PropertyDetails> {
   Widget build(BuildContext context) {
     final width = MediaQuery.of(context).size.width;
     final height = MediaQuery.of(context).size.height;
+    final double rating =
+        double.tryParse(widget.property["rating"] ?? "0") ?? 0;
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -636,7 +639,7 @@ class _PropertyDetailsState extends State<PropertyDetails> {
                       color: const Color(0xFF242B5C),
                       fontSize: width * 0.065,
 
-                      fontWeight: FontWeight.w600,
+                      fontWeight: FontWeight.w700,
                       letterSpacing: 0.54,
                     ),
                   ),
@@ -702,23 +705,24 @@ class _PropertyDetailsState extends State<PropertyDetails> {
                             child: GestureDetector(
                               onTap: () {
                                 if (propertyLatLng == null) return;
+
                                 final LatLng destination = LatLng(
                                   place["lat"],
                                   place["lng"],
                                 );
+
                                 setState(() {
                                   destinationLatLng = destination;
-                                  routePoints = [
-                                    propertyLatLng!,
-                                    destinationLatLng!,
-                                  ];
+                                  routePoints = [propertyLatLng!, destination];
                                   showRoute = true;
                                   selectedPlaceType = place["type"];
                                 });
+
                                 LatLngBounds bounds = LatLngBounds(
                                   propertyLatLng!,
-                                  destinationLatLng!,
+                                  destination,
                                 );
+
                                 mapController.fitBounds(
                                   bounds,
                                   options: FitBoundsOptions(
@@ -726,6 +730,7 @@ class _PropertyDetailsState extends State<PropertyDetails> {
                                   ),
                                 );
                               },
+
                               child: Row(
                                 children: [
                                   Container(
@@ -764,7 +769,7 @@ class _PropertyDetailsState extends State<PropertyDetails> {
                             ),
                           );
                         }).toList(),
-                         SizedBox(height: height*0.03),
+                        SizedBox(height: height * 0.03),
 
                         // Show counts of all nearby facilities
                         Padding(
@@ -777,24 +782,15 @@ class _PropertyDetailsState extends State<PropertyDetails> {
                             children: [
                               Text(
                                 ' ${places.where((p) => p["type"] == "hospital").length} Hospitals ',
-                                style: GoogleFonts.raleway(
-                                  fontSize: 16,
-                                 
-                                ),
+                                style: GoogleFonts.raleway(fontSize: 16),
                               ),
                               Text(
                                 '${places.where((p) => p["type"] == "school").length} Schools',
-                                style: GoogleFonts.raleway(
-                                  fontSize: 16,
-                                
-                                ),
+                                style: GoogleFonts.raleway(fontSize: 16),
                               ),
                               Text(
                                 '${places.where((p) => p["type"] == "fuel").length} Gas Stations',
-                                style: GoogleFonts.raleway(
-                                  fontSize: 16,
-                                  
-                                ),
+                                style: GoogleFonts.raleway(fontSize: 16),
                               ),
                             ],
                           ),
@@ -879,55 +875,55 @@ class _PropertyDetailsState extends State<PropertyDetails> {
                                       ],
                                     ),
                                   ),
-
-                                Marker(
-                                  point: destinationLatLng!,
-                                  width: 80,
-                                  height: 80,
-                                  alignment: Alignment.center,
-                                  child: Stack(
+                                if (destinationLatLng != null)
+                                  Marker(
+                                    point: destinationLatLng!,
+                                    width: 80,
+                                    height: 80,
                                     alignment: Alignment.center,
-                                    children: [
-                                      // Marker Image
-                                      Image.asset(
-                                        'assets/Vector.png',
-                                        width: 40,
-                                        height: 40,
-                                        fit: BoxFit.contain,
-                                      ),
+                                    child: Stack(
+                                      alignment: Alignment.center,
+                                      children: [
+                                        // Marker Image
+                                        Image.asset(
+                                          'assets/Vector.png',
+                                          width: 40,
+                                          height: 40,
+                                          fit: BoxFit.contain,
+                                        ),
 
-                                      Positioned(
-                                        top: 25,
-                                        child: Container(
-                                          width: 23,
-                                          height: 23,
-                                          decoration: BoxDecoration(
-                                            color: Colors.white,
-                                            shape: BoxShape.circle,
-                                            boxShadow: [
-                                              BoxShadow(
-                                                color: Colors.black26,
-                                                blurRadius: 4,
+                                        Positioned(
+                                          top: 25,
+                                          child: Container(
+                                            width: 23,
+                                            height: 23,
+                                            decoration: BoxDecoration(
+                                              color: Colors.white,
+                                              shape: BoxShape.circle,
+                                              boxShadow: [
+                                                BoxShadow(
+                                                  color: Colors.black26,
+                                                  blurRadius: 4,
+                                                ),
+                                              ],
+                                            ),
+                                            child: Center(
+                                              child: Icon(
+                                                selectedPlaceType == "hospital"
+                                                    ? Icons.local_hospital
+                                                    : selectedPlaceType ==
+                                                          "school"
+                                                    ? Icons.school
+                                                    : Icons.local_gas_station,
+                                                color: Colors.red,
+                                                size: 20,
                                               ),
-                                            ],
-                                          ),
-                                          child: Center(
-                                            child: Icon(
-                                              selectedPlaceType == "hospital"
-                                                  ? Icons.local_hospital
-                                                  : selectedPlaceType ==
-                                                        "school"
-                                                  ? Icons.school
-                                                  : Icons.local_gas_station,
-                                              color: Colors.red,
-                                              size: 20,
                                             ),
                                           ),
                                         ),
-                                      ),
-                                    ],
+                                      ],
+                                    ),
                                   ),
-                                ),
                               ],
                             ),
                           ],
@@ -936,7 +932,7 @@ class _PropertyDetailsState extends State<PropertyDetails> {
                     ),
                   ),
 
- Padding(
+                Padding(
                   padding: EdgeInsetsGeometry.directional(
                     top: height * 0.02,
                     start: width * 0.05,
@@ -947,12 +943,118 @@ class _PropertyDetailsState extends State<PropertyDetails> {
                       color: const Color(0xFF242B5C),
                       fontSize: width * 0.065,
 
-                      fontWeight: FontWeight.w600,
+                      fontWeight: FontWeight.w700,
                       letterSpacing: 0.54,
                     ),
                   ),
                 ),
-                Text('₹ ${widget.property['cost_of_living']}/month'),
+                Padding(
+                  padding: EdgeInsetsGeometry.directional(
+                    top: height * 0.03,
+                    start: width * 0.09,
+                  ),
+                  child: Row(
+                    children: [
+                      Text(
+                        '₹ ${widget.property['cost_of_living']} ',
+                        style: GoogleFonts.montserrat(
+                          color: const Color(0xFF242B5C),
+                          fontSize: width * 0.06,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                      Padding(
+                        padding: EdgeInsets.only(top: height * 0.005),
+                        child: Text(
+                          "/month",
+                          style: GoogleFonts.montserrat(
+                            color: const Color(0xFF242B5C),
+                            fontSize: width * 0.04,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                Padding(
+                  padding: EdgeInsetsGeometry.directional(start: width * 0.09),
+                  child: Text(
+                    "From average citizen spend around this location",
+                    style: GoogleFonts.raleway(
+                      color: const Color(0xFF242B5C),
+                      fontSize: width * 0.03,
+                    ),
+                  ),
+                ),
+                Padding(
+                  padding: EdgeInsetsGeometry.directional(
+                    top: height * 0.07,
+                    start: width * 0.05,
+                  ),
+                  child: Text(
+                    'Reviews',
+                    style: GoogleFonts.raleway(
+                      color: const Color(0xFF242B5C),
+                      fontSize: width * 0.065,
+                      fontWeight: FontWeight.w700,
+                      letterSpacing: 0.54,
+                    ),
+                  ),
+                ),
+                Padding(
+                  padding: EdgeInsetsGeometry.directional(
+                    top: height * 0.04,
+                    start: width * 0.09,
+                  ),
+                  child: Row(
+                    children: [
+                      Container(
+                        width: width * 0.15,
+                        height: width * 0.15,
+                        decoration: BoxDecoration(
+                          color: Color.fromARGB(193, 195, 202, 204),
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        child: Image.asset('assets/star.png'),
+                      ),
+
+                      SizedBox(width: width * 0.04),
+
+                      LayoutBuilder(
+                        builder: (context, constraints) {
+                          final double starSize = constraints.maxWidth * 0.035;
+
+                          return Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: List.generate(5, (index) {
+                              if (rating >= index + 1) {
+                                return Icon(
+                                  Icons.star,
+                                  color: Colors.amber,
+                                  size: starSize,
+                                );
+                              } else if (rating > index && rating < index + 1) {
+                                return Icon(
+                                  Icons.star_half,
+                                  color: Colors.amber,
+                                  size: starSize,
+                                );
+                              } else {
+                                return Icon(
+                                  Icons.star_border,
+                                  color: Colors.amber,
+                                  size: starSize,
+                                );
+                              }
+                            }),
+                          );
+                        },
+                      ),
+                    ],
+                  ),
+                ),
+
                 SizedBox(height: height * 0.2),
               ],
             ),
