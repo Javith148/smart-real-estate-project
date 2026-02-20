@@ -1051,6 +1051,14 @@ class _PropertyDetailsState extends State<PropertyDetails> {
                           );
                         },
                       ),
+                      Text(
+                        widget.property['rating'],
+                        style: GoogleFonts.montserrat(
+                          color: const Color(0xFF242B5C),
+                          fontSize: width * 0.04,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
                     ],
                   ),
                 ),
