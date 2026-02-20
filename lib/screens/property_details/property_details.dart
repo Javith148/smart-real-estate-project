@@ -1240,7 +1240,7 @@ class _PropertyDetailsState extends State<PropertyDetails> {
                     ],
                   ),
                 ),
-                
+
                 Padding(
                   padding: EdgeInsetsGeometry.directional(
                     top: height * 0.05,
@@ -1324,8 +1324,7 @@ class _PropertyDetailsState extends State<PropertyDetails> {
                   ),
                 ),
 
-
-  Padding(
+                Padding(
                   padding: EdgeInsetsGeometry.directional(
                     top: height * 0.05,
                     start: width * 0.09,
@@ -1407,9 +1406,8 @@ class _PropertyDetailsState extends State<PropertyDetails> {
                     ],
                   ),
                 ),
- 
 
-    Padding(
+                Padding(
                   padding: EdgeInsetsGeometry.directional(
                     top: height * 0.05,
                     start: width * 0.09,
@@ -1491,9 +1489,6 @@ class _PropertyDetailsState extends State<PropertyDetails> {
                     ],
                   ),
                 ),
-
-
-                SizedBox(height: height * 0.2),
               ],
             ),
           ),
@@ -1530,14 +1525,23 @@ class _PropertyDetailsState extends State<PropertyDetails> {
                     width: width * 0.59,
                     height: height * 0.07,
                     child: Center(
-                      child: Text(
-                        "Start Chat",
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: height * 0.02,
-                          fontWeight: FontWeight.w900,
-                        ),
-                      ),
+                      child: buyOrRent == false
+                          ? Text(
+                              "Rent",
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: height * 0.02,
+                                fontWeight: FontWeight.w900,
+                              ),
+                            )
+                          : Text(
+                              "Buy",
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: height * 0.02,
+                                fontWeight: FontWeight.w900,
+                              ),
+                            ),
                     ),
                   ),
                 ),
