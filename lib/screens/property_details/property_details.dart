@@ -152,8 +152,8 @@ class _PropertyDetailsState extends State<PropertyDetails> {
   Widget build(BuildContext context) {
     final width = MediaQuery.of(context).size.width;
     final height = MediaQuery.of(context).size.height;
-    final double rating =
-        double.tryParse(widget.property["rating"] ?? "0") ?? 0;
+    double widt = MediaQuery.of(context).size.width;
+    double rating = double.parse(widget.property['rating'].toString());
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -1008,6 +1008,7 @@ class _PropertyDetailsState extends State<PropertyDetails> {
                     start: width * 0.09,
                   ),
                   child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       Container(
                         width: width * 0.15,
@@ -1021,47 +1022,476 @@ class _PropertyDetailsState extends State<PropertyDetails> {
 
                       SizedBox(width: width * 0.04),
 
-                      LayoutBuilder(
-                        builder: (context, constraints) {
-                          final double starSize = constraints.maxWidth * 0.035;
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Row(
+                            children: [
+                              Row(
+                                children: List.generate(5, (index) {
+                                  if (index < rating.floor()) {
+                                    return Icon(
+                                      Icons.star,
+                                      color: Colors.amber,
+                                      size: width * 0.035,
+                                    );
+                                  } else if (index < rating &&
+                                      rating % 1 >= 0.5) {
+                                    return Icon(
+                                      Icons.star_half,
+                                      color: Colors.amber,
+                                      size: width * 0.035,
+                                    );
+                                  } else {
+                                    return Icon(
+                                      Icons.star_border,
+                                      color: Colors.amber,
+                                      size: width * 0.035,
+                                    );
+                                  }
+                                }),
+                              ),
+                              SizedBox(width: width * 0.02),
+                              Text(
+                                widget.property['rating'],
+                                style: GoogleFonts.montserrat(
+                                  color: const Color(0xFF242B5C),
+                                  fontSize: width * 0.05,
+                                  fontWeight: FontWeight.w700,
+                                  letterSpacing: 0.54,
+                                ),
+                              ),
+                            ],
+                          ),
 
-                          return Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: List.generate(5, (index) {
-                              if (rating >= index + 1) {
-                                return Icon(
-                                  Icons.star,
-                                  color: Colors.amber,
-                                  size: starSize,
-                                );
-                              } else if (rating > index && rating < index + 1) {
-                                return Icon(
-                                  Icons.star_half,
-                                  color: Colors.amber,
-                                  size: starSize,
-                                );
-                              } else {
-                                return Icon(
-                                  Icons.star_border,
-                                  color: Colors.amber,
-                                  size: starSize,
-                                );
-                              }
-                            }),
-                          );
-                        },
+                          Text(
+                            "From ${widget.property['agent']['reviews']} reviews",
+                            style: GoogleFonts.montserrat(
+                              color: Colors.grey,
+                              fontSize: width * 0.03,
+                              fontWeight: FontWeight.w700,
+                              letterSpacing: 0.54,
+                            ),
+                          ),
+                        ],
                       ),
-                      Text(
-                        widget.property['rating'],
-                        style: GoogleFonts.montserrat(
-                          color: const Color(0xFF242B5C),
-                          fontSize: width * 0.04,
-                          fontWeight: FontWeight.w600,
+                      SizedBox(width: width * 0.2),
+                      Stack(
+                        children: [
+                          SizedBox(
+                            width: width * 0.18,
+                            height: width * 0.08,
+                            child: Stack(
+                              children: [
+                                // First Image
+                                Positioned(
+                                  left: 0,
+                                  child: Container(
+                                    decoration: BoxDecoration(
+                                      shape: BoxShape.circle,
+                                      border: Border.all(
+                                        color: Colors.white,
+                                        width: 2,
+                                      ),
+                                    ),
+                                    child: ClipOval(
+                                      child: Image.asset(
+                                        'assets/person1.png',
+                                        width: width * 0.08,
+                                        height: width * 0.08,
+                                        fit: BoxFit.cover,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+
+                                // Second Image
+                                Positioned(
+                                  left: width * 0.05,
+                                  child: Container(
+                                    decoration: BoxDecoration(
+                                      shape: BoxShape.circle,
+                                      border: Border.all(
+                                        color: Colors.white,
+                                        width: 2,
+                                      ),
+                                    ),
+                                    child: ClipOval(
+                                      child: Image.asset(
+                                        'assets/person2.png',
+                                        width: width * 0.08,
+                                        height: width * 0.08,
+                                        fit: BoxFit.cover,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+
+                                // Third Image
+                                Positioned(
+                                  left: width * 0.10,
+                                  child: Container(
+                                    decoration: BoxDecoration(
+                                      shape: BoxShape.circle,
+                                      border: Border.all(
+                                        color: Colors.white,
+                                        width: 2,
+                                      ),
+                                    ),
+                                    child: ClipOval(
+                                      child: Image.asset(
+                                        'assets/person3.png',
+                                        width: width * 0.08,
+                                        height: width * 0.08,
+                                        fit: BoxFit.cover,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+
+                      SizedBox(width: width * 0.05),
+                    ],
+                  ),
+                ),
+                Padding(
+                  padding: EdgeInsetsGeometry.directional(
+                    top: height * 0.05,
+                    start: width * 0.09,
+                  ),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      ClipOval(
+                        child: Image.asset(
+                          'assets/person4.png',
+                          width: width * 0.15,
+                          height: width * 0.15,
+                          fit: BoxFit.cover,
                         ),
+                      ),
+                      SizedBox(width: width * 0.03),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            children: [
+                              Text(
+                                "Kurt Mullins",
+                                style: GoogleFonts.montserrat(
+                                  color: Colors.black,
+                                  fontSize: width * 0.045,
+                                  fontWeight: FontWeight.w700,
+                                  letterSpacing: 0.54,
+                                ),
+                              ),
+                              SizedBox(width: width * 0.21),
+                              Row(
+                                children: [
+                                  for (int i = 0; i < 5; i++)
+                                    if (i < rating.floor())
+                                      Icon(
+                                        Icons.star,
+                                        color: Colors.amber,
+                                        size: 18,
+                                      )
+                                    else if (i < rating && rating % 1 >= 0.5)
+                                      Icon(
+                                        Icons.star_half,
+                                        color: Colors.amber,
+                                        size: 18,
+                                      )
+                                    else
+                                      Icon(
+                                        Icons.star_border,
+                                        color: Colors.amber,
+                                        size: 18,
+                                      ),
+                                ],
+                              ),
+                            ],
+                          ),
+                          SizedBox(height: height * 0.01),
+                          Text(
+                            "Lorem ipsum dolor sit amet, consectetur \nadipiscing elit, sed do eiusmod tempor \nincididunt ut labore et dolore magna aliqua.",
+                            style: GoogleFonts.montserrat(
+                              color: Colors.grey,
+                              fontSize: width * 0.03,
+                              fontWeight: FontWeight.w600,
+                              letterSpacing: 0.54,
+                            ),
+                          ),
+                          SizedBox(height: height * 0.01),
+                          Text(
+                            "8 Days ago",
+                            style: GoogleFonts.raleway(
+                              color: Colors.grey,
+                              fontSize: width * 0.03,
+                              fontWeight: FontWeight.w500,
+                              letterSpacing: 0.54,
+                            ),
+                          ),
+                        ],
                       ),
                     ],
                   ),
                 ),
+                
+                Padding(
+                  padding: EdgeInsetsGeometry.directional(
+                    top: height * 0.05,
+                    start: width * 0.09,
+                  ),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      ClipOval(
+                        child: Image.asset(
+                          'assets/reviews_img1.png',
+                          width: width * 0.15,
+                          height: width * 0.15,
+                          fit: BoxFit.cover,
+                        ),
+                      ),
+                      SizedBox(width: width * 0.03),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            children: [
+                              Text(
+                                "Kay Swanson",
+                                style: GoogleFonts.montserrat(
+                                  color: Colors.black,
+                                  fontSize: width * 0.045,
+                                  fontWeight: FontWeight.w700,
+                                  letterSpacing: 0.54,
+                                ),
+                              ),
+                              SizedBox(width: width * 0.21),
+                              Row(
+                                children: [
+                                  for (int i = 0; i < 5; i++)
+                                    if (i < rating.floor())
+                                      Icon(
+                                        Icons.star,
+                                        color: Colors.amber,
+                                        size: 18,
+                                      )
+                                    else if (i < rating && rating % 1 >= 0.5)
+                                      Icon(
+                                        Icons.star_half,
+                                        color: Colors.amber,
+                                        size: 18,
+                                      )
+                                    else
+                                      Icon(
+                                        Icons.star_border,
+                                        color: Colors.amber,
+                                        size: 18,
+                                      ),
+                                ],
+                              ),
+                            ],
+                          ),
+                          SizedBox(height: height * 0.01),
+                          Text(
+                            "Sed ut perspiciatis unde omnis iste natus \nerror sit voluptatem accusantium doloremque \nlaudantium, totam rem aperia.",
+                            style: GoogleFonts.montserrat(
+                              color: Colors.grey,
+                              fontSize: width * 0.03,
+                              fontWeight: FontWeight.w600,
+                              letterSpacing: 0.54,
+                            ),
+                          ),
+                          SizedBox(height: height * 0.01),
+                          Text(
+                            "12 Days ago",
+                            style: GoogleFonts.raleway(
+                              color: Colors.grey,
+                              fontSize: width * 0.03,
+                              fontWeight: FontWeight.w500,
+                              letterSpacing: 0.54,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+
+
+  Padding(
+                  padding: EdgeInsetsGeometry.directional(
+                    top: height * 0.05,
+                    start: width * 0.09,
+                  ),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      ClipOval(
+                        child: Image.asset(
+                          'assets/person4.png',
+                          width: width * 0.15,
+                          height: width * 0.15,
+                          fit: BoxFit.cover,
+                        ),
+                      ),
+                      SizedBox(width: width * 0.03),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            children: [
+                              Text(
+                                "Kurt Mullins",
+                                style: GoogleFonts.montserrat(
+                                  color: Colors.black,
+                                  fontSize: width * 0.045,
+                                  fontWeight: FontWeight.w700,
+                                  letterSpacing: 0.54,
+                                ),
+                              ),
+                              SizedBox(width: width * 0.21),
+                              Row(
+                                children: [
+                                  for (int i = 0; i < 5; i++)
+                                    if (i < rating.floor())
+                                      Icon(
+                                        Icons.star,
+                                        color: Colors.amber,
+                                        size: 18,
+                                      )
+                                    else if (i < rating && rating % 1 >= 0.5)
+                                      Icon(
+                                        Icons.star_half,
+                                        color: Colors.amber,
+                                        size: 18,
+                                      )
+                                    else
+                                      Icon(
+                                        Icons.star_border,
+                                        color: Colors.amber,
+                                        size: 18,
+                                      ),
+                                ],
+                              ),
+                            ],
+                          ),
+                          SizedBox(height: height * 0.01),
+                          Text(
+                            "Lorem ipsum dolor sit amet, consectetur \nadipiscing elit, sed do eiusmod tempor \nincididunt ut labore et dolore magna aliqua.",
+                            style: GoogleFonts.montserrat(
+                              color: Colors.grey,
+                              fontSize: width * 0.03,
+                              fontWeight: FontWeight.w600,
+                              letterSpacing: 0.54,
+                            ),
+                          ),
+                          SizedBox(height: height * 0.01),
+                          Text(
+                            "8 Days ago",
+                            style: GoogleFonts.raleway(
+                              color: Colors.grey,
+                              fontSize: width * 0.03,
+                              fontWeight: FontWeight.w500,
+                              letterSpacing: 0.54,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+ 
+
+    Padding(
+                  padding: EdgeInsetsGeometry.directional(
+                    top: height * 0.05,
+                    start: width * 0.09,
+                  ),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      ClipOval(
+                        child: Image.asset(
+                          'assets/reviews_img1.png',
+                          width: width * 0.15,
+                          height: width * 0.15,
+                          fit: BoxFit.cover,
+                        ),
+                      ),
+                      SizedBox(width: width * 0.03),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            children: [
+                              Text(
+                                "Kay Swanson",
+                                style: GoogleFonts.montserrat(
+                                  color: Colors.black,
+                                  fontSize: width * 0.045,
+                                  fontWeight: FontWeight.w700,
+                                  letterSpacing: 0.54,
+                                ),
+                              ),
+                              SizedBox(width: width * 0.21),
+                              Row(
+                                children: [
+                                  for (int i = 0; i < 5; i++)
+                                    if (i < rating.floor())
+                                      Icon(
+                                        Icons.star,
+                                        color: Colors.amber,
+                                        size: 18,
+                                      )
+                                    else if (i < rating && rating % 1 >= 0.5)
+                                      Icon(
+                                        Icons.star_half,
+                                        color: Colors.amber,
+                                        size: 18,
+                                      )
+                                    else
+                                      Icon(
+                                        Icons.star_border,
+                                        color: Colors.amber,
+                                        size: 18,
+                                      ),
+                                ],
+                              ),
+                            ],
+                          ),
+                          SizedBox(height: height * 0.01),
+                          Text(
+                            "Sed ut perspiciatis unde omnis iste natus \nerror sit voluptatem accusantium doloremque \nlaudantium, totam rem aperia.",
+                            style: GoogleFonts.montserrat(
+                              color: Colors.grey,
+                              fontSize: width * 0.03,
+                              fontWeight: FontWeight.w600,
+                              letterSpacing: 0.54,
+                            ),
+                          ),
+                          SizedBox(height: height * 0.01),
+                          Text(
+                            "17 Days ago",
+                            style: GoogleFonts.raleway(
+                              color: Colors.grey,
+                              fontSize: width * 0.03,
+                              fontWeight: FontWeight.w500,
+                              letterSpacing: 0.54,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+
 
                 SizedBox(height: height * 0.2),
               ],
