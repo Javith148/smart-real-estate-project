@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:real_esate_finder/screens/payment_page/payment.dart';
 import 'dart:math';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter_map/flutter_map.dart';
@@ -20,11 +21,11 @@ class PropertyDetails extends StatefulWidget {
 
 class _PropertyDetailsState extends State<PropertyDetails> {
   bool isAdded = false;
-  bool? buyOrRent;
+  bool buyOrRent = false;
   late Future<List<Map<String, dynamic>>> nearbyFuture;
   double? straightDistance;
 
-  LatLng? propertyLatLng; // from latlong2
+  LatLng? propertyLatLng;
   LatLng? destinationLatLng;
 
   List<LatLng> routePoints = [];
@@ -152,7 +153,7 @@ class _PropertyDetailsState extends State<PropertyDetails> {
   Widget build(BuildContext context) {
     final width = MediaQuery.of(context).size.width;
     final height = MediaQuery.of(context).size.height;
-    double widt = MediaQuery.of(context).size.width;
+
     double rating = double.parse(widget.property['rating'].toString());
 
     return Scaffold(
@@ -335,67 +336,78 @@ class _PropertyDetailsState extends State<PropertyDetails> {
                   ),
                 ),
                 Padding(
-                  padding: EdgeInsetsGeometry.directional(
+                  padding: EdgeInsetsDirectional.only(
                     top: height * 0.02,
                     start: width * 0.06,
                     end: width * 0.05,
                   ),
                   child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            widget.property['title'],
-                            style: GoogleFonts.lato(
-                              color: Color(0xFF1F4C6B),
-                              fontSize: height * 0.04,
-                              fontWeight: FontWeight.w700,
+                      /// LEFT SIDE (Title + Location)
+                      Expanded(
+                        // ✅ IMPORTANT
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              widget.property['title'],
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                              style: GoogleFonts.lato(
+                                color: const Color(0xFF1F4C6B),
+                                fontSize: height * 0.04,
+                                fontWeight: FontWeight.w700,
+                              ),
                             ),
-                          ),
-                          SizedBox(height: height * 0.01),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.end,
-                            crossAxisAlignment: CrossAxisAlignment.end,
-                            children: [
-                              Icon(
-                                Icons.location_on,
-                                size: height * 0.02,
-                                color: Color(0xFF1F4C6B),
-                              ),
 
-                              SizedBox(width: width * 0.005),
+                            SizedBox(height: height * 0.01),
 
-                              Text(
-                                widget.property["location"],
-                                style: TextStyle(
-                                  fontSize: width * 0.035,
-                                  fontWeight: FontWeight.bold,
-                                  color: Color(0xFF1F4C6B),
+                            Row(
+                              children: [
+                                Icon(
+                                  Icons.location_on,
+                                  size: height * 0.02,
+                                  color: const Color(0xFF1F4C6B),
                                 ),
-                              ),
-                            ],
-                          ),
-                        ],
+
+                                SizedBox(width: width * 0.01),
+
+                                Expanded(
+                                  // ✅ prevents location overflow
+                                  child: Text(
+                                    widget.property["location"],
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: TextStyle(
+                                      fontSize: width * 0.035,
+                                      fontWeight: FontWeight.bold,
+                                      color: const Color(0xFF1F4C6B),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
                       ),
 
-                      const Spacer(),
+                      /// RIGHT SIDE (Price)
                       Column(
-                        crossAxisAlignment: CrossAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.end,
                         children: [
                           Text(
                             '${widget.property['price']}',
                             style: GoogleFonts.lato(
-                              color: Color(0xFF1F4C6B),
+                              color: const Color(0xFF1F4C6B),
                               fontSize: height * 0.04,
                               fontWeight: FontWeight.w700,
                             ),
                           ),
-
                           Text(
                             'per month',
                             style: GoogleFonts.lato(
-                              color: Color(0xFF1F4C6B),
+                              color: const Color(0xFF1F4C6B),
                               fontSize: height * 0.02,
                               fontWeight: FontWeight.w300,
                             ),
@@ -534,100 +546,7 @@ class _PropertyDetailsState extends State<PropertyDetails> {
                   ),
                 ),
                 SizedBox(height: height * 0.05),
-                SingleChildScrollView(
-                  scrollDirection: Axis.horizontal,
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      SizedBox(width: width * 0.05),
 
-                      Icon(
-                        Icons.bed,
-                        color: const Color(0xFF8BC83F),
-                        size: height * 0.035,
-                      ),
-
-                      SizedBox(width: width * 0.02),
-
-                      Text(
-                        '${widget.property['property-rooms']['bedrooms']}  Bedrooms',
-                        style: GoogleFonts.raleway(
-                          color: const Color(0xFF234F68),
-                          fontSize: width * 0.045,
-                        ),
-                      ),
-                      SizedBox(width: width * 0.1),
-
-                      Icon(
-                        Icons.bathtub,
-                        color: const Color(0xFF8BC83F),
-                        size: height * 0.035,
-                      ),
-
-                      SizedBox(width: width * 0.02),
-
-                      Text(
-                        '${widget.property['property-rooms']['bathroom']}  Bathroom',
-                        style: GoogleFonts.raleway(
-                          color: const Color(0xFF234F68),
-                          fontSize: width * 0.045,
-                        ),
-                      ),
-                      SizedBox(width: width * 0.1),
-
-                      Icon(
-                        Icons.kitchen,
-                        color: const Color(0xFF8BC83F),
-                        size: height * 0.035,
-                      ),
-
-                      SizedBox(width: width * 0.02),
-
-                      Text(
-                        '${widget.property['property-rooms']['kitchen']}  Kitchen',
-                        style: GoogleFonts.raleway(
-                          color: const Color(0xFF234F68),
-                          fontSize: width * 0.045,
-                        ),
-                      ),
-                      SizedBox(width: width * 0.1),
-
-                      Icon(
-                        Icons.store,
-                        color: const Color(0xFF8BC83F),
-                        size: height * 0.035,
-                      ),
-
-                      SizedBox(width: width * 0.02),
-
-                      Text(
-                        '${widget.property['property-rooms']['store_room']}  Store Room',
-                        style: GoogleFonts.raleway(
-                          color: const Color(0xFF234F68),
-                          fontSize: width * 0.045,
-                        ),
-                      ),
-                      SizedBox(width: width * 0.1),
-
-                      Icon(
-                        Icons.balcony,
-                        color: const Color(0xFF8BC83F),
-                        size: height * 0.035,
-                      ),
-
-                      SizedBox(width: width * 0.02),
-
-                      Text(
-                        '${widget.property['property-rooms']['balcony']}  Balcony',
-                        style: GoogleFonts.raleway(
-                          color: const Color(0xFF234F68),
-                          fontSize: width * 0.045,
-                        ),
-                      ),
-                      SizedBox(width: width * 0.02),
-                    ],
-                  ),
-                ),
                 Padding(
                   padding: EdgeInsetsGeometry.directional(
                     top: height * 0.04,
@@ -1513,28 +1432,59 @@ class _PropertyDetailsState extends State<PropertyDetails> {
                 ),
               ),
               child: Center(
-                child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF8BC83F),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                  ),
-                  onPressed: () {},
-                  child: SizedBox(
-                    width: width * 0.59,
-                    height: height * 0.07,
-                    child: Center(
-                      child: buyOrRent == false
-                          ? Text(
+                child: buyOrRent == false
+                    ? ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xFF8BC83F),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                        ),
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) =>
+                                  PaymentPage(property: widget.property),
+                            ),
+                          );
+                        },
+                        child: SizedBox(
+                          width: width * 0.59,
+                          height: height * 0.07,
+                          child: Center(
+                            child: Text(
                               "Rent",
                               style: TextStyle(
                                 color: Colors.white,
                                 fontSize: height * 0.02,
                                 fontWeight: FontWeight.w900,
                               ),
-                            )
-                          : Text(
+                            ),
+                          ),
+                        ),
+                      )
+                    : ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xFF8BC83F),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                        ),
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) =>
+                                  PaymentPage(property: widget.property),
+                            ),
+                          );
+                        },
+                        child: SizedBox(
+                          width: width * 0.59,
+                          height: height * 0.07,
+                          child: Center(
+                            child: Text(
                               "Buy",
                               style: TextStyle(
                                 color: Colors.white,
@@ -1542,9 +1492,9 @@ class _PropertyDetailsState extends State<PropertyDetails> {
                                 fontWeight: FontWeight.w900,
                               ),
                             ),
-                    ),
-                  ),
-                ),
+                          ),
+                        ),
+                      ),
               ),
             ),
           ),

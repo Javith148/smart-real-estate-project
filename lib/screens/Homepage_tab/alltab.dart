@@ -192,7 +192,7 @@ class Alltab extends StatelessWidget {
     final List<Map<String, dynamic>> propertyList = [
       {
         "image": "assets/nearby1.png",
-        "title": "Wings Tower",
+        "title": "Wings Tower coimbatore",
         "price": "₹ 30k",
         "rating": "4.9",
         "property-type": "Apartment",
