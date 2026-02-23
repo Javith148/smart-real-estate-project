@@ -54,6 +54,7 @@ class _PaymentPageState extends State<PaymentPage> {
 
       body: SingleChildScrollView(
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             SizedBox(height: height * 0.02),
             Center(
@@ -82,9 +83,9 @@ class _PaymentPageState extends State<PaymentPage> {
                               fit: BoxFit.fill,
                             ),
                           ),
-                          
+
                           Positioned(
-                            bottom: height *0.03,
+                            bottom: height * 0.03,
                             left: width * 0.058,
                             child: Container(
                               width: width * 0.24,
@@ -111,7 +112,6 @@ class _PaymentPageState extends State<PaymentPage> {
                       ),
                       SizedBox(width: width * 0.02),
                       Expanded(
-                        
                         child: Padding(
                           padding: EdgeInsets.only(
                             top: height * 0.03,
@@ -122,7 +122,7 @@ class _PaymentPageState extends State<PaymentPage> {
                             children: [
                               Text(
                                 widget.property['title'],
-                                maxLines: 2, 
+                                maxLines: 2,
                                 overflow: TextOverflow.ellipsis,
                                 style: GoogleFonts.raleway(
                                   color: const Color(0xFF234F68),
@@ -143,9 +143,8 @@ class _PaymentPageState extends State<PaymentPage> {
                                   ),
                                   SizedBox(width: width * 0.01),
                                   Expanded(
-                                    
                                     child: Text(
-                                       widget.property['location'],
+                                      widget.property['location'],
                                       maxLines: 1,
                                       overflow: TextOverflow.ellipsis,
                                       style: TextStyle(
@@ -155,34 +154,48 @@ class _PaymentPageState extends State<PaymentPage> {
                                       ),
                                     ),
                                   ),
-                                  
                                 ],
                               ),
-Spacer(),
-                             
-                            Padding(padding: EdgeInsetsGeometry.directional(end: width*0.02,bottom: height*0.02),child: 
-                             Row(
-                              mainAxisAlignment: MainAxisAlignment.end,
-                              children: [
-                                  Container(
-                          height: height * 0.038,
-                          width: width * 0.18,
-                          decoration: ShapeDecoration(
-                            color: Color.fromARGB(213, 189, 193, 196),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(30),
-                            ),
-                          ),
-                          child: 
-                          Center(child: 
-                          Text("Rent", style: GoogleFonts.lato(
-                                    color: Colors.black,
-                                    fontSize: width * 0.035,
-                                    fontWeight: FontWeight.w600,
-                                  ),)
-                          ))
-                              ],
-                                  )     )
+                              Spacer(),
+
+                              Padding(
+                                padding: EdgeInsetsGeometry.directional(
+                                  end: width * 0.02,
+                                  bottom: height * 0.02,
+                                ),
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.end,
+                                  children: [
+                                    Container(
+                                      height: height * 0.038,
+                                      width: width * 0.18,
+                                      decoration: ShapeDecoration(
+                                        color: Color.fromARGB(
+                                          213,
+                                          189,
+                                          193,
+                                          196,
+                                        ),
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.circular(
+                                            30,
+                                          ),
+                                        ),
+                                      ),
+                                      child: Center(
+                                        child: Text(
+                                          "Rent",
+                                          style: GoogleFonts.lato(
+                                            color: Colors.black,
+                                            fontSize: width * 0.035,
+                                            fontWeight: FontWeight.w600,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
                             ],
                           ),
                         ),
@@ -191,6 +204,79 @@ Spacer(),
                   ),
                 ),
               ),
+            ),
+            SizedBox(height: height * 0.05),
+            Padding(
+              padding: EdgeInsetsGeometry.directional(
+                top: height * 0.01,
+                start: width * 0.05,
+              ),
+              child: Text(
+                'Period',
+                style: GoogleFonts.raleway(
+                  color: const Color(0xFF242B5C),
+                  fontSize: width * 0.06,
+                  fontWeight: FontWeight.w700,
+                  letterSpacing: 0.54,
+                ),
+              ),
+            ),
+            SizedBox(height: height * 0.03),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Container(
+                  height: height * 0.068,
+                  width: width * 0.38,
+                  decoration: ShapeDecoration(
+                    color: const Color.fromARGB(255, 241, 239, 239),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(25),
+                    ),
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(Icons.calendar_month, size: height * 0.025),
+                      SizedBox(width: width * 0.015),
+                      Text(
+                        "check in",
+                        style: GoogleFonts.lato(
+                          color: Colors.grey,
+                          fontSize: width * 0.04,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+
+                SizedBox(width: width * 0.08),
+
+                Container(
+                  height: height * 0.068,
+                  width: width * 0.38,
+                  decoration: ShapeDecoration(
+                    color: const Color.fromARGB(255, 241, 239, 239),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(25),
+                    ),
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(Icons.calendar_month, size: height * 0.025),
+                      SizedBox(width: width * 0.015),
+                      Text(
+                        "check Out",
+                        style: GoogleFonts.lato(
+                          color: Colors.grey,
+                          fontSize: width * 0.04,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
             ),
           ],
         ),
