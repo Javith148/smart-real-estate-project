@@ -10,40 +10,23 @@ class PaymentPage extends StatefulWidget {
 }
 
 class _PaymentPageState extends State<PaymentPage> {
-
-
   DateTime? checkInDate;
   DateTime? checkOutDate;
   int selectedIndex = 0;
   String? selectedPaymentMethod;
 
-
-  
   String formatDate(DateTime date) {
     return "${date.day.toString().padLeft(2, '0')}/"
         "${date.month.toString().padLeft(2, '0')}/"
         "${date.year}";
   }
 
-
   final List<Map<String, String>> paymentMethods = [
-  {
-    "name": "Google Pay",
-    "image": "assets/gpay.png",
-  },
-  {
-    "name": "PayPal",
-    "image": "assets/paypal.png",
-  },
-  {
-    "name": "Apple Pay",
-    "image": "assets/apple pay.png",
-  },
-  {
-    "name": "upi",
-    "image": "assets/upi.png",
-  },
-];
+    {"name": "Google Pay", "image": "assets/gpay.png"},
+    {"name": "PayPal", "image": "assets/paypal.png"},
+    {"name": "Apple Pay", "image": "assets/apple pay.png"},
+    {"name": "upi", "image": "assets/upi.png"},
+  ];
 
   Future<void> selectCheckIn() async {
     final today = DateTime.now();
@@ -87,6 +70,80 @@ class _PaymentPageState extends State<PaymentPage> {
       });
     }
   }
+
+void openVoucherBottomDrawer(BuildContext context) {
+  final width = MediaQuery.of(context).size.width;
+  final height = MediaQuery.of(context).size.height;
+
+  showModalBottomSheet(
+    context: context,
+    backgroundColor: Colors.white,
+    isScrollControlled: true,
+    shape: const RoundedRectangleBorder(
+      borderRadius: BorderRadius.vertical(top: Radius.circular(40)),
+    ),
+    builder: (context) {
+      return Padding(
+        padding: EdgeInsets.all(width * 0.08),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            // 🔹 Top indicator line
+            Container(
+              width: width * 0.15,
+              height: height * 0.006,
+              decoration: BoxDecoration(
+                color: Colors.grey[400],
+                borderRadius: BorderRadius.circular(20),
+              ),
+            ),
+
+            SizedBox(height: height * 0.03),
+
+            Text(
+              "Available Vouchers",
+              style: TextStyle(
+                fontSize: width * 0.05,
+                fontWeight: FontWeight.bold,
+                color: const Color(0xFF1F4C6B),
+              ),
+            ),
+
+            SizedBox(height: height * 0.04),
+
+            // 🔹 Voucher List Example
+            ListTile(
+              leading: const Icon(Icons.local_offer),
+              title: const Text("Flat ₹500 OFF"),
+              subtitle: const Text("Valid till Dec 31"),
+              trailing: TextButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+                child: const Text("Apply"),
+              ),
+            ),
+
+            ListTile(
+              leading: const Icon(Icons.local_offer),
+              title: const Text("10% Cashback"),
+              subtitle: const Text("On UPI Payments"),
+              trailing: TextButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+                child: const Text("Apply"),
+              ),
+            ),
+
+            SizedBox(height: height * 0.02),
+          ],
+        ),
+      );
+    },
+  );
+}
+
 
   @override
   Widget build(BuildContext context) {
@@ -434,88 +491,152 @@ class _PaymentPageState extends State<PaymentPage> {
                 ),
               ),
             ),
-Padding(
-  padding: EdgeInsets.symmetric(vertical: height * 0.02,horizontal: width * 0.05),
-  child: GridView.builder(
-    shrinkWrap: true,
-    physics: const NeverScrollableScrollPhysics(),
-    itemCount: paymentMethods.length,
-    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-      crossAxisCount: 2,
-      crossAxisSpacing: width * 0.05,
-      mainAxisSpacing: height * 0.02,
-      childAspectRatio: 1.2,
-    ),
-    itemBuilder: (context, index) {
-      return GestureDetector(
-       onTap: () {
-  setState(() {
-    selectedIndex = index;
-    selectedPaymentMethod = paymentMethods[index]["name"];
-  });
-
-  print("Selected Payment: $selectedPaymentMethod");
-},
-        child: Container(
-          decoration: BoxDecoration(
-            color: const Color(0xFFEDEDED),
-            borderRadius: BorderRadius.circular(20),
-            border: Border.all(
-              color: selectedIndex == index
-                  ? Colors.green
-                  : Colors.transparent,
-              width: 2,
-            ),
-          ),
-          child: Column(
-            children: [
-
-             Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                SizedBox(height: height * 0.05,),
-              if (selectedIndex == index)
-                 CircleAvatar(
-                    radius: 12,
-                    backgroundColor: Colors.green,
-                    child: const Icon(
-                      Icons.check,
-                      size: 16,
-                      color: Colors.white,
-                    ),
-                  ),
-                  SizedBox(width: width * 0.04),
-                  ]
-                  
+            Padding(
+              padding: EdgeInsets.symmetric(
+                vertical: height * 0.02,
+                horizontal: width * 0.05,
+              ),
+              child: GridView.builder(
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                itemCount: paymentMethods.length,
+                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 2,
+                  crossAxisSpacing: width * 0.05,
+                  mainAxisSpacing: height * 0.02,
+                  childAspectRatio: 1.2,
                 ),
+                itemBuilder: (context, index) {
+                  return GestureDetector(
+                    onTap: () {
+                      setState(() {
+                        selectedIndex = index;
+                        selectedPaymentMethod = paymentMethods[index]["name"];
+                      });
 
+                      print("Selected Payment: $selectedPaymentMethod");
+                    },
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFEDEDED),
+                        borderRadius: BorderRadius.circular(20),
+                        border: Border.all(
+                          color: selectedIndex == index
+                              ? Colors.green
+                              : Colors.transparent,
+                          width: 2,
+                        ),
+                      ),
+                      child: Column(
+                        children: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            children: [
+                              SizedBox(height: height * 0.05),
+                              if (selectedIndex == index)
+                                CircleAvatar(
+                                  radius: 12,
+                                  backgroundColor: Colors.green,
+                                  child: const Icon(
+                                    Icons.check,
+                                    size: 16,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                              SizedBox(width: width * 0.04),
+                            ],
+                          ),
 
-              Expanded(child: 
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                  Image.asset(
-                    paymentMethods[index]["image"]!,
-                    height: height * 0.05,
-                    fit: BoxFit.contain,
-                  ),
-                  SizedBox(height: height * 0.01),
-                  Text(
-                    paymentMethods[index]["name"]!,
-                    style: TextStyle(
-                      fontSize: width * 0.035,
-                      fontWeight: FontWeight.w500,
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                Image.asset(
+                                  paymentMethods[index]["image"]!,
+                                  height: height * 0.05,
+                                  fit: BoxFit.contain,
+                                ),
+                                SizedBox(height: height * 0.01),
+                                Text(
+                                  paymentMethods[index]["name"]!,
+                                  style: TextStyle(
+                                    fontSize: width * 0.035,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
+                  );
+                },
+              ),
+            ),
+            Padding(
+              padding: EdgeInsetsGeometry.directional(
+                start: width * 0.07,
+                end: width * 0.04,
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    'Have a Voucher?',
+                    style: TextStyle(
+                      color: const Color(0xFF242B5C),
+                      fontSize: width * 0.060,
+                      fontFamily: 'Lato',
+                      fontWeight: FontWeight.w700,
+                      letterSpacing: 0.54,
+                    ),
+                  ),
+                  Column(
+                    children: [
+                      SizedBox(height: height * 0.005),
+                      TextButton(
+                    onPressed: () {
+  openVoucherBottomDrawer(context);
+},
+                        child: Text(
+                          'view all',
+                          style: GoogleFonts.raleway(
+                            color: const Color(0xFF242B5C),
+                            fontSize: width * 0.039,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                 ],
-              ),)
-            ],
-          ),
-        ),
-      );
-    },
-  ),
-),
+              ),
+            ),
+            SizedBox(height: height * 0.05),
+            Center(
+              child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFF8BC83F),
+                  minimumSize: Size(width * 0.6, height * 0.07),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                ),
+                onPressed: () {},
+                child: Text(
+                  "Next",
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: width * 0.045,
+                    fontFamily: 'Lato',
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+              ),
+            ),
+            SizedBox(height: height * 0.02),
           ],
         ),
       ),
