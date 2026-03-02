@@ -162,6 +162,11 @@ flutter:
       - assets/reviews_img1.png
 
       
+      - assets/paypal.png
+      - assets/upi.png
+      - assets/apple pay.png
+      - assets/gpay.png
+
 
 
   # An image asset can refer to one or more resolution-specific "variants", see

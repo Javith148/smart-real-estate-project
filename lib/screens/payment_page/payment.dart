@@ -15,6 +15,7 @@ class _PaymentPageState extends State<PaymentPage> {
   DateTime? checkInDate;
   DateTime? checkOutDate;
   int selectedIndex = 0;
+  String? selectedPaymentMethod;
 
 
   
@@ -23,6 +24,26 @@ class _PaymentPageState extends State<PaymentPage> {
         "${date.month.toString().padLeft(2, '0')}/"
         "${date.year}";
   }
+
+
+  final List<Map<String, String>> paymentMethods = [
+  {
+    "name": "Google Pay",
+    "image": "assets/gpay.png",
+  },
+  {
+    "name": "PayPal",
+    "image": "assets/paypal.png",
+  },
+  {
+    "name": "Apple Pay",
+    "image": "assets/apple pay.png",
+  },
+  {
+    "name": "upi",
+    "image": "assets/upi.png",
+  },
+];
 
   Future<void> selectCheckIn() async {
     final today = DateTime.now();
@@ -413,245 +434,88 @@ class _PaymentPageState extends State<PaymentPage> {
                 ),
               ),
             ),
-Column(
-  children: [
-
-    /// 🔹 TOP ROW
-    Row(
-      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-      children: [
-
-        /// Google Pay
-        GestureDetector(
-          onTap: () {
-            setState(() {
-              selectedIndex = 0;
-            });
-          },
-          child: Container(
-            width: width * 0.42,
-            height: height * 0.14,
-            decoration: BoxDecoration(
-              color: const Color(0xFFEDEDED),
-              borderRadius: BorderRadius.circular(20),
-              border: Border.all(
-                color: selectedIndex == 0
-                    ? Colors.green
-                    : Colors.transparent,
-                width: 2,
-              ),
-            ),
-            child: Stack(
-              children: [
-
-                /// Tick Icon
-                if (selectedIndex == 0)
-                  Positioned(
-                    top: 8,
-                    right: 8,
-                    child: CircleAvatar(
-                      radius: 12,
-                      backgroundColor: Colors.green,
-                      child: Icon(
-                        Icons.check,
-                        size: 16,
-                        color: Colors.white,
-                      ),
-                    ),
-                  ),
-
-                /// Content
-                Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(Icons.account_balance_wallet,
-                        size: width * 0.09),
-                    SizedBox(height: 8),
-                    Text(
-                      "Google Pay",
-                      style: TextStyle(
-                        fontSize: width * 0.035,
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ),
-        ),
-
-        /// PayPal
-        GestureDetector(
-          onTap: () {
-            setState(() {
-              selectedIndex = 1;
-            });
-          },
-          child: Container(
-            width: width * 0.42,
-            height: height * 0.14,
-            decoration: BoxDecoration(
-              color: const Color(0xFFEDEDED),
-              borderRadius: BorderRadius.circular(20),
-              border: Border.all(
-                color: selectedIndex == 1
-                    ? Colors.green
-                    : Colors.transparent,
-                width: 2,
-              ),
-            ),
-            child: Stack(
-              children: [
-
-                if (selectedIndex == 1)
-                  Positioned(
-                    top: 8,
-                    right: 8,
-                    child: CircleAvatar(
-                      radius: 12,
-                      backgroundColor: Colors.green,
-                      child: Icon(Icons.check,
-                          size: 16, color: Colors.white),
-                    ),
-                  ),
-
-                Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(Icons.payment, size: width * 0.09),
-                    SizedBox(height: 8),
-                    Text(
-                      "PayPal",
-                      style: TextStyle(
-                        fontSize: width * 0.035,
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ),
-        ),
-      ],
+Padding(
+  padding: EdgeInsets.symmetric(vertical: height * 0.02,horizontal: width * 0.05),
+  child: GridView.builder(
+    shrinkWrap: true,
+    physics: const NeverScrollableScrollPhysics(),
+    itemCount: paymentMethods.length,
+    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+      crossAxisCount: 2,
+      crossAxisSpacing: width * 0.05,
+      mainAxisSpacing: height * 0.02,
+      childAspectRatio: 1.2,
     ),
+    itemBuilder: (context, index) {
+      return GestureDetector(
+       onTap: () {
+  setState(() {
+    selectedIndex = index;
+    selectedPaymentMethod = paymentMethods[index]["name"];
+  });
 
-    SizedBox(height: height * 0.025),
-
-    /// 🔹 BOTTOM ROW
-    Row(
-      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-      children: [
-
-        /// Apple Pay
-        GestureDetector(
-          onTap: () {
-            setState(() {
-              selectedIndex = 2;
-            });
-          },
-          child: Container(
-            width: width * 0.42,
-            height: height * 0.14,
-            decoration: BoxDecoration(
-              color: const Color(0xFFEDEDED),
-              borderRadius: BorderRadius.circular(20),
-              border: Border.all(
-                color: selectedIndex == 2
-                    ? Colors.green
-                    : Colors.transparent,
-                width: 2,
-              ),
-            ),
-            child: Stack(
-              children: [
-
-                if (selectedIndex == 2)
-                  Positioned(
-                    top: 8,
-                    right: 8,
-                    child: CircleAvatar(
-                      radius: 12,
-                      backgroundColor: Colors.green,
-                      child: Icon(Icons.check,
-                          size: 16, color: Colors.white),
-                    ),
-                  ),
-
-                Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(Icons.apple, size: width * 0.09),
-                    SizedBox(height: 8),
-                    Text(
-                      "Apple Pay",
-                      style: TextStyle(
-                        fontSize: width * 0.035,
-                      ),
-                    ),
-                  ],
-                ),
-              ],
+  print("Selected Payment: $selectedPaymentMethod");
+},
+        child: Container(
+          decoration: BoxDecoration(
+            color: const Color(0xFFEDEDED),
+            borderRadius: BorderRadius.circular(20),
+            border: Border.all(
+              color: selectedIndex == index
+                  ? Colors.green
+                  : Colors.transparent,
+              width: 2,
             ),
           ),
-        ),
+          child: Column(
+            children: [
 
-        /// Venmo
-        GestureDetector(
-          onTap: () {
-            setState(() {
-              selectedIndex = 3;
-            });
-          },
-          child: Container(
-            width: width * 0.42,
-            height: height * 0.14,
-            decoration: BoxDecoration(
-              color: const Color(0xFFEDEDED),
-              borderRadius: BorderRadius.circular(20),
-              border: Border.all(
-                color: selectedIndex == 3
-                    ? Colors.green
-                    : Colors.transparent,
-                width: 2,
-              ),
-            ),
-            child: Stack(
+             Row(
+              mainAxisAlignment: MainAxisAlignment.end,
               children: [
-
-                if (selectedIndex == 3)
-                  Positioned(
-                    top: 8,
-                    right: 8,
-                    child: CircleAvatar(
-                      radius: 12,
-                      backgroundColor: Colors.green,
-                      child: Icon(Icons.check,
-                          size: 16, color: Colors.white),
+                SizedBox(height: height * 0.05,),
+              if (selectedIndex == index)
+                 CircleAvatar(
+                    radius: 12,
+                    backgroundColor: Colors.green,
+                    child: const Icon(
+                      Icons.check,
+                      size: 16,
+                      color: Colors.white,
                     ),
                   ),
-
-                Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(Icons.wallet, size: width * 0.09),
-                    SizedBox(height: 8),
-                    Text(
-                      "Venmo",
-                      style: TextStyle(
-                        fontSize: width * 0.035,
-                      ),
-                    ),
-                  ],
+                  SizedBox(width: width * 0.04),
+                  ]
+                  
                 ),
-              ],
-            ),
+
+
+              Expanded(child: 
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                  Image.asset(
+                    paymentMethods[index]["image"]!,
+                    height: height * 0.05,
+                    fit: BoxFit.contain,
+                  ),
+                  SizedBox(height: height * 0.01),
+                  Text(
+                    paymentMethods[index]["name"]!,
+                    style: TextStyle(
+                      fontSize: width * 0.035,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ],
+              ),)
+            ],
           ),
         ),
-      ],
-    ),
-  ],
-)
-
+      );
+    },
+  ),
+),
           ],
         ),
       ),
