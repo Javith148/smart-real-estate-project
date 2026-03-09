@@ -1,5 +1,6 @@
 import "package:flutter/material.dart";
 import 'package:google_fonts/google_fonts.dart';
+import 'payment_deatail.dart';
 
 class PaymentPage extends StatefulWidget {
   final Map<String, dynamic> property;
@@ -17,7 +18,10 @@ class _PaymentPageState extends State<PaymentPage> {
  Map<String,String>? appliedVoucher;
  Map<String,String>? selectedVoucher;
  List<Map<String, String>> filteredVouchers = [];
+   String? dateError; 
 
+ 
+   TextEditingController noteController = TextEditingController(); 
 
 
 
@@ -595,9 +599,21 @@ final isSelected = voucher["code"] == selectedVoucher?["code"];
                     ),
                   ),
                 ),
+       
               ],
             ),
-
+         if (dateError != null)
+  Padding(
+    padding: EdgeInsets.only(left: width * 0.06, top: height * 0.01),
+    child: Text(
+      dateError!,
+      style: TextStyle(
+        color: Colors.red,
+        fontSize: width * 0.035,
+        fontWeight: FontWeight.w500,
+      ),
+    ),
+  ),
             Padding(
               padding: EdgeInsetsGeometry.directional(
                 top: height * 0.03,
@@ -637,17 +653,19 @@ final isSelected = voucher["code"] == selectedVoucher?["code"];
 
                       Expanded(
                         child: TextField(
-                          style: TextStyle(fontSize: width * 0.04),
-                          decoration: InputDecoration(
-                            hintText: "Write your note in here",
-                            hintStyle: TextStyle(
-                              fontSize: width * 0.038,
-                              color: Colors.grey,
-                            ),
-                            border: InputBorder.none,
-                            isCollapsed: true,
-                          ),
-                        ),
+  controller: noteController,
+  style: TextStyle(fontSize: width * 0.04),
+  decoration: InputDecoration(
+    hintText: "Write your note in here",
+    hintStyle: TextStyle(
+      fontSize: width * 0.038,
+      color: Colors.grey,
+    ),
+    border: InputBorder.none,
+    isCollapsed: true,
+  ),
+),
+
                       ),
                     ],
                   ),
@@ -863,7 +881,32 @@ final isSelected = voucher["code"] == selectedVoucher?["code"];
                     borderRadius: BorderRadius.circular(10),
                   ),
                 ),
-                onPressed: () {},
+                onPressed: () {
+
+  if (checkInDate == null || checkOutDate == null) {
+    setState(() {
+      dateError = "Please select check-in and check-out date";
+    });
+    return;
+  }
+
+  setState(() {
+    dateError = null;
+  });
+
+  Navigator.push(
+    context,
+    MaterialPageRoute(
+      builder: (context) => PaymentDeatail(
+        property: widget.property,
+        checkIn: checkInDate!,
+        checkOut: checkOutDate!,
+        selectedPaymentMethod: selectedPaymentMethod,
+        note: noteController.text
+      ),
+    ),
+  );
+},
                 child: Text(
                   "Next",
                   textAlign: TextAlign.center,
