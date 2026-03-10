@@ -7,6 +7,7 @@ class PaymentDeatail extends StatefulWidget {
   final DateTime checkOut;
   final String? selectedPaymentMethod;
   final String? note;
+  final Map<String,String>? appliedVoucher;
 
   const PaymentDeatail({
     super.key,
@@ -15,6 +16,7 @@ class PaymentDeatail extends StatefulWidget {
     required this.checkOut,
     required this.selectedPaymentMethod,
     required this.note,
+    required this.appliedVoucher
   }
   
  
@@ -48,6 +50,28 @@ double get dailyRent {
 
 double get totalRent {
   return dailyRent * numberOfDays;
+}
+
+
+double get discountAmount {
+  if (widget.appliedVoucher == null) return 0;
+
+  String discountStr = widget.appliedVoucher!["discount"] ?? "0/0";
+
+  List<String> parts = discountStr.split("/");
+
+  if (parts.length == 2) {
+    double percent = double.tryParse(parts[1]) ?? 0;
+   
+    return totalRent *   percent / 100 ;
+  }
+
+  return 0;
+}
+
+
+double get finalAmount {
+  return totalRent - discountAmount;
 }
 
 
@@ -87,7 +111,7 @@ double get totalRent {
         title: Padding(
           padding: EdgeInsetsGeometry.directional(top: height * 0.02),
           child: Text(
-            price.toStringAsFixed(0),
+           "Transaction review",
             style: GoogleFonts.lato(fontWeight: FontWeight.w700),
           ),
         ),
@@ -282,7 +306,7 @@ double get totalRent {
                   ),
                   Spacer(),
                   Text(
-                  "${numberOfDays} / day", // 20 days
+                  "$numberOfDays / day", 
                     style: TextStyle(
                       color: const Color(0xFF242B5C),
                       fontSize: width * 0.045,
@@ -312,7 +336,7 @@ double get totalRent {
                   ),
                   Spacer(),
                   Text(
-                  widget.property['price']?? "",//28k
+                  widget.property['price']?? "",
                     style: TextStyle(
                       color: const Color(0xFF242B5C),
                       fontSize: width * 0.045,
@@ -332,7 +356,7 @@ double get totalRent {
               child: Row(
                 children: [
                   Text(
-                    "Rent for your check in  days",
+                    "Rent",
                     style: GoogleFonts.raleway(
                       color: const Color(0xFF242B5C),
                       fontSize: width * 0.045,
@@ -342,7 +366,37 @@ double get totalRent {
                   ),
                   Spacer(),
                   Text(
-                  "₹${totalRent.toStringAsFixed(0)}" ,// answer 1400 varnum 
+                  "₹${totalRent.toStringAsFixed(0)}" ,
+                    style: TextStyle(
+                      color: const Color(0xFF242B5C),
+                      fontSize: width * 0.045,
+                      fontWeight: FontWeight.w400,
+                      letterSpacing: 0.54,
+                    ),
+                  ),
+                ],
+              )
+           ),
+           Padding(
+              padding: EdgeInsetsGeometry.directional(
+                top: height * 0.01,
+                start: width * 0.05,
+                end: width * 0.05,
+              ),
+              child: Row(
+                children: [
+                  Text(
+                    "discount",
+                    style: GoogleFonts.raleway(
+                      color: const Color(0xFF242B5C),
+                      fontSize: width * 0.045,
+                      fontWeight: FontWeight.w600,
+                      letterSpacing: 0.54,
+                    ),
+                  ),
+                  Spacer(),
+                  Text(
+                 "${widget.appliedVoucher!["discount"] ?? ""}%",
                     style: TextStyle(
                       color: const Color(0xFF242B5C),
                       fontSize: width * 0.045,

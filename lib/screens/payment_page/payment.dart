@@ -87,10 +87,10 @@ class _PaymentPageState extends State<PaymentPage> {
 
  
   List<Map<String, String>> vouchers = [
-    {"code": "HLWN40","title": "Halloween sale","desc": "Get 40% off on all transactions"},
-    {"code": "NEWUSER20","title": "New User Offer","desc": "Get 20% off for new users"},
-    {"code": "FEST50","title": "Festival Offer","desc": "Flat 50% off on booking"},
-    {"code": "SUMMER30","title": "Summer Deal","desc": "Get 30% discount this summer"},
+    {"code": "HLWN40","title": "Halloween sale","desc": "Get 40% off on all transactions", "discount": "40"},
+    {"code": "NEWUSER20","title": "New User Offer","desc": "Get 20% off for new users", "discount": "20"},
+    {"code": "FEST50","title": "Festival Offer","desc": "Flat 50% off on booking", "discount": "50"},
+    {"code": "SUMMER30","title": "Summer Deal","desc": "Get 30% discount this summer", "discount": "30"},
   ];
 
   filteredVouchers = List.from(vouchers);  
@@ -902,7 +902,8 @@ final isSelected = voucher["code"] == selectedVoucher?["code"];
         checkIn: checkInDate!,
         checkOut: checkOutDate!,
         selectedPaymentMethod: selectedPaymentMethod,
-        note: noteController.text
+        note: noteController.text,
+        appliedVoucher: appliedVoucher,
       ),
     ),
   );
