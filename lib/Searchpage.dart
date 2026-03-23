@@ -639,7 +639,7 @@ class _SearchpageState extends State<Searchpage> {
 
   Future<void> applySearch(String query) async {
    if (query.isEmpty) {
-  // 🔥 RESET TO NORMAL MODE
+
   currentFilteredList = getFilteredProperties();
 
   await createFilteredMarkers();
@@ -806,10 +806,8 @@ class _SearchpageState extends State<Searchpage> {
                 onFieldSubmitted: (value) {
                   applySearch(value);
 
-                  // 🔥 CLEAR SEARCH TEXT
                   searchController.clear();
 
-                  // 🔥 KEYBOARD CLOSE
                   FocusScope.of(context).unfocus();
                 },
 

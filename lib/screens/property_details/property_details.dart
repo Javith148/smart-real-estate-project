@@ -41,7 +41,7 @@ class _PropertyDetailsState extends State<PropertyDetails> {
     mapController = MapController();
     nearbyFuture = fetchNearbyFacilities(widget.property["location"]);
   }
-
+// Converts an address to latitude and longitude using Nominatim API
   Future<Map<String, double>?> getLatLngFromAddress(String address) async {
     final url = Uri.parse(
       "https://nominatim.openstreetmap.org/search?q=$address&format=json&limit=1",
@@ -64,8 +64,9 @@ class _PropertyDetailsState extends State<PropertyDetails> {
     return null;
   }
 
+//  calculate straight-line distance between two lat/lng points
   double calculateDistance(double lat1, double lon1, double lat2, double lon2) {
-    const R = 6371; // earth radius in km
+    const R = 6371; 
     final dLat = (lat2 - lat1) * (pi / 180);
     final dLon = (lon2 - lon1) * (pi / 180);
 
@@ -81,6 +82,7 @@ class _PropertyDetailsState extends State<PropertyDetails> {
     return R * c;
   }
 
+// Fetches nearby hospitals, schools, and fuel stations using Overpass API
   Future<List<Map<String, dynamic>>> getNearbyPlaces(
     double lat,
     double lng,
@@ -136,7 +138,7 @@ class _PropertyDetailsState extends State<PropertyDetails> {
 
     return finalResults;
   }
-
+// Fetches nearby facilities and also sets the propertyLatLng for map usage
   Future<List<Map<String, dynamic>>> fetchNearbyFacilities(
     String location,
   ) async {

@@ -15,15 +15,12 @@ class _PaymentPageState extends State<PaymentPage> {
   DateTime? checkOutDate;
   int selectedIndex = 0;
   String? selectedPaymentMethod;
- Map<String,String>? appliedVoucher;
- Map<String,String>? selectedVoucher;
- List<Map<String, String>> filteredVouchers = [];
-   String? dateError; 
+  Map<String, String>? appliedVoucher;
+  Map<String, String>? selectedVoucher;
+  List<Map<String, String>> filteredVouchers = [];
+  String? dateError;
 
- 
-   TextEditingController noteController = TextEditingController(); 
-
-
+  TextEditingController noteController = TextEditingController();
 
   String formatDate(DateTime date) {
     return "${date.day.toString().padLeft(2, '0')}/"
@@ -81,252 +78,273 @@ class _PaymentPageState extends State<PaymentPage> {
     }
   }
 
- void openVoucherBottomDrawer(BuildContext context) {
-  final width = MediaQuery.of(context).size.width;
-  final height = MediaQuery.of(context).size.height;
+  void openVoucherBottomDrawer(BuildContext context) {
+    final width = MediaQuery.of(context).size.width;
+    final height = MediaQuery.of(context).size.height;
 
- 
-  List<Map<String, String>> vouchers = [
-    {"code": "HLWN40","title": "Halloween sale","desc": "Get 40% off on all transactions", "discount": "40"},
-    {"code": "NEWUSER20","title": "New User Offer","desc": "Get 20% off for new users", "discount": "20"},
-    {"code": "FEST50","title": "Festival Offer","desc": "Flat 50% off on booking", "discount": "50"},
-    {"code": "SUMMER30","title": "Summer Deal","desc": "Get 30% discount this summer", "discount": "30"},
-  ];
+    List<Map<String, String>> vouchers = [
+      {
+        "code": "HLWN40",
+        "title": "Halloween sale",
+        "desc": "Get 40% off on all transactions",
+        "discount": "40",
+      },
+      {
+        "code": "NEWUSER20",
+        "title": "New User Offer",
+        "desc": "Get 20% off for new users",
+        "discount": "20",
+      },
+      {
+        "code": "FEST50",
+        "title": "Festival Offer",
+        "desc": "Flat 50% off on booking",
+        "discount": "50",
+      },
+      {
+        "code": "SUMMER30",
+        "title": "Summer Deal",
+        "desc": "Get 30% discount this summer",
+        "discount": "30",
+      },
+    ];
 
-  filteredVouchers = List.from(vouchers);  
+    filteredVouchers = List.from(vouchers);
 
-  TextEditingController searchController = TextEditingController();
+    TextEditingController searchController = TextEditingController();
 
-  showModalBottomSheet(
-    context: context,
-    isScrollControlled: true,
-    backgroundColor: Colors.white,
-    shape: const RoundedRectangleBorder(
-      borderRadius: BorderRadius.vertical(top: Radius.circular(40)),
-    ),
-    builder: (context) {
-      return StatefulBuilder(
-        builder: (context, setState) {
-          return Padding(
-            padding: EdgeInsets.symmetric(
-              horizontal: width * 0.06,
-              vertical: height * 0.03,
-            ),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                /// Drag Handle
-                Container(
-                  width: width * 0.15,
-                  height: height * 0.006,
-                  decoration: BoxDecoration(
-                    color: Colors.grey[400],
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                ),
-
-                SizedBox(height: height * 0.03),
-
-                /// Title
-                Align(
-                  alignment: Alignment.centerLeft,
-                  child: Text(
-                    "Available Voucher",
-                    style: TextStyle(
-                      fontSize: width * 0.05,
-                      fontWeight: FontWeight.bold,
-                      color: const Color(0xFF1F4C6B),
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.white,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(40)),
+      ),
+      builder: (context) {
+        return StatefulBuilder(
+          builder: (context, setState) {
+            return Padding(
+              padding: EdgeInsets.symmetric(
+                horizontal: width * 0.06,
+                vertical: height * 0.03,
+              ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  /// Drag Handle
+                  Container(
+                    width: width * 0.15,
+                    height: height * 0.006,
+                    decoration: BoxDecoration(
+                      color: Colors.grey[400],
+                      borderRadius: BorderRadius.circular(20),
                     ),
                   ),
-                ),
 
-                SizedBox(height: height * 0.02),
+                  SizedBox(height: height * 0.03),
 
-              Container(
-  width: width * 0.85,
-  height: height * 0.065,
-  decoration: BoxDecoration(
-    color: const Color(0xFFF1EFEF), 
-    borderRadius: BorderRadius.circular(width * 0.061),
-  ),
-  child: Row(
-    children: [
-      SizedBox(width: width * 0.05),
-
-      Image.asset(
-        "assets/bluecoupan.png",
-        height: height * 0.04,
-        width: width * 0.08,
-        color: const Color(0xFF234F68),
-      ),
-
-      SizedBox(width: width * 0.02),
-
-     Expanded(
-  child: TextField(
-    controller: searchController,
-   onChanged: (value) {
-  setState(() {
-    filteredVouchers = vouchers.where((voucher) {
-      return voucher["code"]!
-          .toLowerCase()
-          .contains(value.toLowerCase());
-    }).toList();
-  });
-},
-    style: TextStyle(fontSize: width * 0.04),
-    decoration: InputDecoration(
-      hintText: "Type your voucher",
-      hintStyle: TextStyle(
-        fontSize: width * 0.038,
-        color: Colors.grey,
-      ),
-      border: InputBorder.none,
-      isCollapsed: true,
-    ),
-  ),
-)
-    ],
-  ),
-),
-
-                SizedBox(height: height * 0.03),
-                
-  Align(
-                  alignment: Alignment.centerLeft,
-                  child: Text(
-                    " Your Available Vouchers",
-                    style: TextStyle(
-                      fontSize: width * 0.05,
-                      fontWeight: FontWeight.bold,
-                      color: const Color(0xFF1F4C6B),
+                  /// Title
+                  Align(
+                    alignment: Alignment.centerLeft,
+                    child: Text(
+                      "Available Voucher",
+                      style: TextStyle(
+                        fontSize: width * 0.05,
+                        fontWeight: FontWeight.bold,
+                        color: const Color(0xFF1F4C6B),
+                      ),
                     ),
                   ),
-                ),
-                
-                SizedBox(height: height * 0.02),
-                /// Voucher List
-                ListView.builder(
-                  shrinkWrap: true,
-                  itemCount: filteredVouchers.length,
-                  itemBuilder: (context, index) {
-                  final voucher = filteredVouchers[index];
-final isSelected = voucher["code"] == selectedVoucher?["code"];
 
-                    return GestureDetector(
-                      onTap: () {
-                        setState(() {
-                          selectedVoucher = voucher;
-                        });
-                      },
-                      child: Container(
-                        margin: EdgeInsets.only(bottom: height * 0.02),
-                        padding: EdgeInsets.all(width * 0.04),
-                        decoration: BoxDecoration(
-                          color: isSelected
-                              ? const Color(0xFF1F4C6B)
-                              : Colors.grey.shade100,
-                          borderRadius: BorderRadius.circular(20),
-                          border: Border.all(
-                            color: isSelected
-                                ? Colors.green
-                                : Colors.transparent,
-                            width: 2,
+                  SizedBox(height: height * 0.02),
+
+                  Container(
+                    width: width * 0.85,
+                    height: height * 0.065,
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFF1EFEF),
+                      borderRadius: BorderRadius.circular(width * 0.061),
+                    ),
+                    child: Row(
+                      children: [
+                        SizedBox(width: width * 0.05),
+
+                        Image.asset(
+                          "assets/bluecoupan.png",
+                          height: height * 0.04,
+                          width: width * 0.08,
+                          color: const Color(0xFF234F68),
+                        ),
+
+                        SizedBox(width: width * 0.02),
+
+                        Expanded(
+                          child: TextField(
+                            controller: searchController,
+                            onChanged: (value) {
+                              setState(() {
+                                filteredVouchers = vouchers.where((voucher) {
+                                  return voucher["code"]!
+                                      .toLowerCase()
+                                      .contains(value.toLowerCase());
+                                }).toList();
+                              });
+                            },
+                            style: TextStyle(fontSize: width * 0.04),
+                            decoration: InputDecoration(
+                              hintText: "Type your voucher",
+                              hintStyle: TextStyle(
+                                fontSize: width * 0.038,
+                                color: Colors.grey,
+                              ),
+                              border: InputBorder.none,
+                              isCollapsed: true,
+                            ),
                           ),
                         ),
-                        child: Row(
-                          children: [
-                            Container(
-                              height: height * 0.06,
-                              width: width * 0.15,
-                              decoration: BoxDecoration(
-                                color: isSelected
-                                    ? Colors.white
-                                    : const Color(0xFF1F4C6B),
-                                borderRadius: BorderRadius.circular(25),
-                              ),
-                              child: Center(
-                                child: Image.asset(
-                                  "assets/coupan.png",
-                                  height: height * 0.035,
-                                  color: isSelected
-                                      ? const Color(0xFF1F4C6B)
-                                      : Colors.white,
-                                ),
-                              ),
-                            ),
+                      ],
+                    ),
+                  ),
 
-                            SizedBox(width: width * 0.04),
+                  SizedBox(height: height * 0.03),
 
-                            Column(
-                              crossAxisAlignment:
-                                  CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  voucher["code"] ?? "",
-                                  style: TextStyle(
-                                    color: isSelected
-                                        ? Colors.white
-                                        : const Color(0xFF242B5C),
-                                    fontSize: width * 0.05,
-                                    fontWeight: FontWeight.w700,
-                                  ),
-                                ),
-                                Text(
-                                  "Click to select voucher",
-                                  style: TextStyle(
-                                    color: isSelected
-                                        ? Colors.white70
-                                        : Colors.grey,
-                                    fontSize: width * 0.035,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ],
-                        ),
+                  Align(
+                    alignment: Alignment.centerLeft,
+                    child: Text(
+                      " Your Available Vouchers",
+                      style: TextStyle(
+                        fontSize: width * 0.05,
+                        fontWeight: FontWeight.bold,
+                        color: const Color(0xFF1F4C6B),
                       ),
-                    );
-                  },
-                ),
-
-                SizedBox(height: height * 0.02),
-                ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF8BC83F),
-                  minimumSize: Size(width * 0.6, height * 0.07),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
+                    ),
                   ),
-                ),
-          onPressed: () {
-  if (selectedVoucher != null) {
-    this.setState(() {
-      appliedVoucher = selectedVoucher;
-    });
 
-    Navigator.pop(context);
-  }
-},
-                child: Text(
-                  "Next",
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: width * 0.045,
-                    fontFamily: 'Lato',
-                    fontWeight: FontWeight.w700,
+                  SizedBox(height: height * 0.02),
+
+                  /// Voucher List
+                  ListView.builder(
+                    shrinkWrap: true,
+                    itemCount: filteredVouchers.length,
+                    itemBuilder: (context, index) {
+                      final voucher = filteredVouchers[index];
+                      final isSelected =
+                          voucher["code"] == selectedVoucher?["code"];
+
+                      return GestureDetector(
+                        onTap: () {
+                          setState(() {
+                            selectedVoucher = voucher;
+                          });
+                        },
+                        child: Container(
+                          margin: EdgeInsets.only(bottom: height * 0.02),
+                          padding: EdgeInsets.all(width * 0.04),
+                          decoration: BoxDecoration(
+                            color: isSelected
+                                ? const Color(0xFF1F4C6B)
+                                : Colors.grey.shade100,
+                            borderRadius: BorderRadius.circular(20),
+                            border: Border.all(
+                              color: isSelected
+                                  ? Colors.green
+                                  : Colors.transparent,
+                              width: 2,
+                            ),
+                          ),
+                          child: Row(
+                            children: [
+                              Container(
+                                height: height * 0.06,
+                                width: width * 0.15,
+                                decoration: BoxDecoration(
+                                  color: isSelected
+                                      ? Colors.white
+                                      : const Color(0xFF1F4C6B),
+                                  borderRadius: BorderRadius.circular(25),
+                                ),
+                                child: Center(
+                                  child: Image.asset(
+                                    "assets/coupan.png",
+                                    height: height * 0.035,
+                                    color: isSelected
+                                        ? const Color(0xFF1F4C6B)
+                                        : Colors.white,
+                                  ),
+                                ),
+                              ),
+
+                              SizedBox(width: width * 0.04),
+
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    voucher["code"] ?? "",
+                                    style: TextStyle(
+                                      color: isSelected
+                                          ? Colors.white
+                                          : const Color(0xFF242B5C),
+                                      fontSize: width * 0.05,
+                                      fontWeight: FontWeight.w700,
+                                    ),
+                                  ),
+                                  Text(
+                                    "Click to select voucher",
+                                    style: TextStyle(
+                                      color: isSelected
+                                          ? Colors.white70
+                                          : Colors.grey,
+                                      fontSize: width * 0.035,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ),
+                      );
+                    },
                   ),
-                ),
+
+                  SizedBox(height: height * 0.02),
+                  ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFF8BC83F),
+                      minimumSize: Size(width * 0.6, height * 0.07),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                    ),
+                    onPressed: () {
+                      if (selectedVoucher != null) {
+                        this.setState(() {
+                          appliedVoucher = selectedVoucher;
+                        });
+
+                        Navigator.pop(context);
+                      }
+                    },
+                    child: Text(
+                      "Next",
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: width * 0.045,
+                        fontFamily: 'Lato',
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                  ),
+                ],
               ),
-              ],
-            ),
-          );
-        },
-      );
-    },
-  );
-}
+            );
+          },
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final width = MediaQuery.of(context).size.width;
@@ -599,21 +617,23 @@ final isSelected = voucher["code"] == selectedVoucher?["code"];
                     ),
                   ),
                 ),
-       
               ],
             ),
-         if (dateError != null)
-  Padding(
-    padding: EdgeInsets.only(left: width * 0.06, top: height * 0.01),
-    child: Text(
-      dateError!,
-      style: TextStyle(
-        color: Colors.red,
-        fontSize: width * 0.035,
-        fontWeight: FontWeight.w500,
-      ),
-    ),
-  ),
+            if (dateError != null)
+              Padding(
+                padding: EdgeInsets.only(
+                  left: width * 0.06,
+                  top: height * 0.01,
+                ),
+                child: Text(
+                  dateError!,
+                  style: TextStyle(
+                    color: Colors.red,
+                    fontSize: width * 0.035,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ),
             Padding(
               padding: EdgeInsetsGeometry.directional(
                 top: height * 0.03,
@@ -653,19 +673,18 @@ final isSelected = voucher["code"] == selectedVoucher?["code"];
 
                       Expanded(
                         child: TextField(
-  controller: noteController,
-  style: TextStyle(fontSize: width * 0.04),
-  decoration: InputDecoration(
-    hintText: "Write your note in here",
-    hintStyle: TextStyle(
-      fontSize: width * 0.038,
-      color: Colors.grey,
-    ),
-    border: InputBorder.none,
-    isCollapsed: true,
-  ),
-),
-
+                          controller: noteController,
+                          style: TextStyle(fontSize: width * 0.04),
+                          decoration: InputDecoration(
+                            hintText: "Write your note in here",
+                            hintStyle: TextStyle(
+                              fontSize: width * 0.038,
+                              color: Colors.grey,
+                            ),
+                            border: InputBorder.none,
+                            isCollapsed: true,
+                          ),
+                        ),
                       ),
                     ],
                   ),
@@ -809,68 +828,66 @@ final isSelected = voucher["code"] == selectedVoucher?["code"];
                 ],
               ),
             ),
-           if (appliedVoucher != null)
-  Padding(
-    padding: EdgeInsets.symmetric(horizontal: width * 0.07),
-    child: Container(
-      margin: EdgeInsets.only(top: height * 0.02),
-      padding: EdgeInsets.all(width * 0.04),
-      decoration: BoxDecoration(
-        color: const Color(0xFFD9DED6),
-        borderRadius: BorderRadius.circular(25),
-      ),
-      child: Row(
-        children: [
+            if (appliedVoucher != null)
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: width * 0.07),
+                child: Container(
+                  margin: EdgeInsets.only(top: height * 0.02),
+                  padding: EdgeInsets.all(width * 0.04),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFD9DED6),
+                    borderRadius: BorderRadius.circular(25),
+                  ),
+                  child: Row(
+                    children: [
+                      Container(
+                        padding: EdgeInsets.symmetric(
+                          horizontal: width * 0.06,
+                          vertical: height * 0.02,
+                        ),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFF234F68),
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        child: Text(
+                          appliedVoucher!["code"]!,
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                            fontSize: width * 0.05,
+                          ),
+                        ),
+                      ),
 
-          Container(
-            padding: EdgeInsets.symmetric(
-              horizontal: width * 0.06,
-              vertical: height * 0.02,
-            ),
-            decoration: BoxDecoration(
-              color: const Color(0xFF234F68),
-              borderRadius: BorderRadius.circular(20),
-            ),
-            child: Text(
-              appliedVoucher!["code"]!,
-              style: TextStyle(
-                color: Colors.white,
-                fontWeight: FontWeight.bold,
-                fontSize: width * 0.05,
+                      SizedBox(width: width * 0.05),
+
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              appliedVoucher!["title"]!,
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: width * 0.045,
+                                color: const Color(0xFF1F4C6B),
+                              ),
+                            ),
+
+                            Text(
+                              appliedVoucher!["desc"]!,
+                              style: TextStyle(
+                                color: Colors.black54,
+                                fontSize: width * 0.035,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
               ),
-            ),
-          ),
-
-          SizedBox(width: width * 0.05),
-
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-
-                Text(
-                  appliedVoucher!["title"]!,
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: width * 0.045,
-                    color: const Color(0xFF1F4C6B),
-                  ),
-                ),
-
-                Text(
-                  appliedVoucher!["desc"]!,
-                  style: TextStyle(
-                    color: Colors.black54,
-                    fontSize: width * 0.035,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    ),
-  ),
             SizedBox(height: height * 0.05),
             Center(
               child: ElevatedButton(
@@ -882,32 +899,31 @@ final isSelected = voucher["code"] == selectedVoucher?["code"];
                   ),
                 ),
                 onPressed: () {
+                  if (checkInDate == null || checkOutDate == null) {
+                    setState(() {
+                      dateError = "Please select check-in and check-out date";
+                    });
+                    return;
+                  }
 
-  if (checkInDate == null || checkOutDate == null) {
-    setState(() {
-      dateError = "Please select check-in and check-out date";
-    });
-    return;
-  }
+                  setState(() {
+                    dateError = null;
+                  });
 
-  setState(() {
-    dateError = null;
-  });
-
-  Navigator.push(
-    context,
-    MaterialPageRoute(
-      builder: (context) => PaymentDeatail(
-        property: widget.property,
-        checkIn: checkInDate!,
-        checkOut: checkOutDate!,
-        selectedPaymentMethod: selectedPaymentMethod,
-        note: noteController.text,
-        appliedVoucher: appliedVoucher,
-      ),
-    ),
-  );
-},
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => PaymentDeatail(
+                        property: widget.property,
+                        checkIn: checkInDate!,
+                        checkOut: checkOutDate!,
+                        selectedPaymentMethod: selectedPaymentMethod,
+                        note: noteController.text,
+                        appliedVoucher: appliedVoucher,
+                      ),
+                    ),
+                  );
+                },
                 child: Text(
                   "Next",
                   textAlign: TextAlign.center,
