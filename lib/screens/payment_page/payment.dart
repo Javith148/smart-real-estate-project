@@ -19,6 +19,8 @@ class _PaymentPageState extends State<PaymentPage> {
   Map<String, String>? selectedVoucher;
   List<Map<String, String>> filteredVouchers = [];
   String? dateError;
+  TextEditingController upiController = TextEditingController();
+String? enteredUpiId;
 
   TextEditingController noteController = TextEditingController();
 
@@ -54,29 +56,31 @@ class _PaymentPageState extends State<PaymentPage> {
     }
   }
 
-  Future<void> selectCheckOut() async {
-    if (checkInDate == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Please select Check-In first")),
-      );
-      return;
-    }
-
-    final picked = await showDatePicker(
-      context: context,
-      initialDate: checkInDate!,
-      firstDate: checkInDate!,
-      lastDate: DateTime(2100),
+ Future<void> selectCheckOut() async {
+  if (checkInDate == null) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text("Please select Check-In first")),
     );
-
-    if (!mounted) return;
-
-    if (picked != null) {
-      setState(() {
-        checkOutDate = picked;
-      });
-    }
+    return;
   }
+
+  final nextDay = checkInDate!.add(const Duration(days: 1));
+
+  final picked = await showDatePicker(
+    context: context,
+    initialDate: nextDay,     
+    firstDate: nextDay,       
+    lastDate: DateTime(2100),
+  );
+
+  if (!mounted) return;
+
+  if (picked != null) {
+    setState(() {
+      checkOutDate = picked;
+    });
+  }
+}
 
   void openVoucherBottomDrawer(BuildContext context) {
     final width = MediaQuery.of(context).size.width;
@@ -782,6 +786,7 @@ class _PaymentPageState extends State<PaymentPage> {
                               ],
                             ),
                           ),
+                         
                         ],
                       ),
                     ),
@@ -789,6 +794,25 @@ class _PaymentPageState extends State<PaymentPage> {
                 },
               ),
             ),
+             if (selectedPaymentMethod != null &&
+    selectedPaymentMethod!.toLowerCase() == "upi")
+  Padding(
+    padding: EdgeInsets.symmetric(
+      horizontal: width * 0.05,
+      vertical: height * 0.01,
+    ),
+    child: TextField(
+      controller: upiController,
+      decoration: InputDecoration(
+        labelText: "Enter UPI ID",
+        hintText: "example@upi",
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(10),
+        ),
+        prefixIcon: Icon(Icons.account_balance_wallet),
+      ),
+    ),
+  ),
             Padding(
               padding: EdgeInsetsGeometry.directional(
                 start: width * 0.07,
@@ -898,33 +922,67 @@ class _PaymentPageState extends State<PaymentPage> {
                     borderRadius: BorderRadius.circular(10),
                   ),
                 ),
-                onPressed: () {
-                  if (checkInDate == null || checkOutDate == null) {
-                    setState(() {
-                      dateError = "Please select check-in and check-out date";
-                    });
-                    return;
-                  }
+               onPressed: () {
+  // ✅ Date validation
+  if (checkInDate == null || checkOutDate == null) {
+    setState(() {
+      dateError = "Please select check-in and check-out date";
+    });
+    return;
+  }
 
-                  setState(() {
-                    dateError = null;
-                  });
+  // ✅ Payment validation
+  if (selectedPaymentMethod == null) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text("Please select payment method")),
+    );
+    return;
+  }
 
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => PaymentDeatail(
-                        property: widget.property,
-                        checkIn: checkInDate!,
-                        checkOut: checkOutDate!,
-                        selectedPaymentMethod: selectedPaymentMethod,
-                        note: noteController.text,
-                        appliedVoucher: appliedVoucher,
-                      ),
-                    ),
-                  );
-                },
-                child: Text(
+  // ✅ UPI validation
+  if (selectedPaymentMethod!.toLowerCase() == "upi") {
+    if (upiController.text.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Please enter UPI ID")),
+      );
+      return;
+    }
+
+    if (!RegExp(r'^[\w.-]+@[\w]+$').hasMatch(upiController.text)) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Invalid UPI ID")),
+      );
+      return;
+    }
+
+    enteredUpiId = upiController.text;
+  }
+
+upiController.clear();
+  print(enteredUpiId);
+
+  setState(() {
+    dateError = null;
+  });
+ 
+  Navigator.push(
+    context,
+    MaterialPageRoute(
+      builder: (context) => PaymentDeatail(
+        property: widget.property,
+        checkIn: checkInDate!,
+        checkOut: checkOutDate!,
+        selectedPaymentMethod: selectedPaymentMethod,
+        note: noteController.text,
+        appliedVoucher: appliedVoucher ?? {"discount": "0"},
+
+        // 🔥 SEND UPI ID
+        upiId: enteredUpiId,
+      ),
+    ),
+  );
+},
+  child: Text(
                   "Next",
                   textAlign: TextAlign.center,
                   style: TextStyle(
