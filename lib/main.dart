@@ -5,6 +5,9 @@ import 'package:real_esate_finder/SplashScreen.dart';
 
 
 
+
+
+
 void main() {
   runApp(
     MultiProvider(
@@ -25,7 +28,8 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       home: const Scaffold(
         backgroundColor: Colors.white,
-        body: Center(child: const SplashScreen())),
+        body: Center(child: const SplashScreen()),
+      ),
     );
   }
 }

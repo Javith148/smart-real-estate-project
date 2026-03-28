@@ -269,7 +269,7 @@ class _LocationcontainerState extends State<Locationcontainer> {
                           },
 
                           child: Text(
-                            "Edit",
+                            "Add",
                             style: TextStyle(
                               color: Colors.white,
                               fontSize: width * 0.035,
@@ -447,7 +447,7 @@ class _LocationcontainerState extends State<Locationcontainer> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              //  DRAG INDICATOR
+             
               Container(
                 width: width * 0.12,
                 height: height * 0.005,

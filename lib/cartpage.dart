@@ -4,6 +4,7 @@ import 'package:real_esate_finder/homepage.dart';
 import 'CreateProvider.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
+import 'package:real_esate_finder/ApiConfig.dart';
 
 class Cartpage extends StatefulWidget {
   const Cartpage({super.key});
@@ -259,7 +260,7 @@ class _CartpageState extends State<Cartpage> {
                           ),
                           onPressed: () {
                             Provider.of<Createprovider>(
-                              screenContext, // correct context
+                              screenContext, 
                               listen: false,
                             ).clearall();
 
@@ -505,7 +506,7 @@ class _CartpageState extends State<Cartpage> {
                                 child: Card(
                                   child: Container(
                                     width: width * 0.45,
-                                    height: height * 0.3,
+                                    height: height * 0.2,
                                     decoration: BoxDecoration(
                                       color: Color.fromARGB(186, 244, 242, 242),
                                       borderRadius: BorderRadius.circular(10),
@@ -514,19 +515,24 @@ class _CartpageState extends State<Cartpage> {
                                       crossAxisAlignment:
                                           CrossAxisAlignment.start,
                                       children: [
+                                        SizedBox(height: height * 0.01,),
                                         Center(
                                           child: Stack(
                                             children: [
-                                              Image.asset(
-                                                item["image"],
-                                                height: height * 0.23,
-                                                width: width * 0.4,
-                                                fit: BoxFit.contain,
-                                              ),
+                                              ClipRRect(
+                                    borderRadius: BorderRadius.circular(12),
+                                    child: Image.network(
+                                     ApiConfig.getImage(item["image"]),
+                                      height: height * 0.2,
+                                      width: width * 0.35,
+                                      fit: BoxFit.cover,
+                                    ),
+                                  ),
+
 
                                               Positioned(
-                                                left: width * 0.032,
-                                                top: height * 0.022,
+                                                left: width * 0.03,
+                                                top: height * 0.015,
                                                 child: Container(
                                                   width: width * 0.06,
                                                   height: width * 0.06,
@@ -546,7 +552,7 @@ class _CartpageState extends State<Cartpage> {
                                               ),
 
                                               Positioned(
-                                                bottom: height * 0.025,
+                                                bottom: height * 0.02,
                                                 right: width * 0.03,
                                                 child: Container(
                                                   height: height * 0.045,
@@ -572,7 +578,7 @@ class _CartpageState extends State<Cartpage> {
                                                               .center,
                                                       children: [
                                                         Text(
-                                                          item["price"],
+                                                          item["price"].toString(),
                                                           style:
                                                               GoogleFonts.montserrat(
                                                                 color: Colors
@@ -618,6 +624,7 @@ class _CartpageState extends State<Cartpage> {
 
                                         Padding(
                                           padding: EdgeInsets.only(
+                                            top: height * 0.01,
                                             left: width * 0.04,
                                           ),
                                           child: Text(
@@ -647,7 +654,7 @@ class _CartpageState extends State<Cartpage> {
                                               SizedBox(width: width * 0.01),
 
                                               Text(
-                                                item["rating"],
+                                                item["rating"].toString(),
                                                 style: GoogleFonts.montserrat(
                                                   color: Color(0xFF234F68),
                                                   fontSize: width * 0.03,
@@ -695,10 +702,10 @@ class _CartpageState extends State<Cartpage> {
                                 child: Slidable(
                                   key: ValueKey(item["title"]),
 
-                                  // 🔹 40% swipe only
+                                  
                                   endActionPane: ActionPane(
                                     motion: const StretchMotion(),
-                                    extentRatio: 0.4, // 👈 40% STOP HERE
+                                    extentRatio: 0.4, 
 
                                     children: [
                                       CustomSlidableAction(
@@ -720,7 +727,7 @@ class _CartpageState extends State<Cartpage> {
                                     ],
                                   ),
 
-                                  // 🔹 YOUR CARD (NO CHANGE)
+                                  
                                   child: Container(
                                     width: width * 0.9,
                                     height: height * 0.25,
@@ -743,8 +750,8 @@ class _CartpageState extends State<Cartpage> {
                                                 horizontal: width * 0.03,
                                                 vertical: height * 0.02,
                                               ),
-                                              child: Image.asset(
-                                                item["image"],
+                                              child: Image.network(
+                          ApiConfig.getImage(item["image"]),
                                                 height: height * 0.25,
                                                 fit: BoxFit.fill,
                                               ),
@@ -840,7 +847,7 @@ class _CartpageState extends State<Cartpage> {
                                                   ),
                                                   SizedBox(width: width * 0.01),
                                                   Text(
-                                                    item["rating"],
+                                                    item["rating"].toString(),
                                                     style:
                                                         GoogleFonts.montserrat(
                                                           color: const Color(
@@ -886,7 +893,7 @@ class _CartpageState extends State<Cartpage> {
                                               Row(
                                                 children: [
                                                   Text(
-                                                    item["price"],
+                                                    item["price"].toString(),
                                                     style:
                                                         GoogleFonts.montserrat(
                                                           color: const Color(

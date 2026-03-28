@@ -11,9 +11,138 @@ import 'package:real_esate_finder/screens/topLocation/topLocation.dart';
 import 'package:real_esate_finder/screens/topLocation/locationdetail.dart';
 import 'package:real_esate_finder/screens/top agent page/agent.dart';
 import 'package:real_esate_finder/screens/top agent page/agentprofile.dart';
+import 'package:real_esate_finder/ApiConfig.dart';
 
-class Alltab extends StatelessWidget {
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+
+class Alltab extends StatefulWidget {
   const Alltab({super.key});
+
+  @override
+  State<Alltab> createState() => _AllState();
+}
+
+class _AllState extends State<Alltab> {
+  @override
+  void initState() {
+    super.initState();
+    property_details_api();
+  }
+
+  List<Map<String, dynamic>> propertyList = [];
+  Future<void> property_details_api() async {
+    try {
+     var url = Uri.parse(ApiConfig.getApi('/api/property_details/'));
+      var response = await http.get(url);
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+
+        setState(() {
+          propertyList = List<Map<String, dynamic>>.from(data);
+        });
+      } else {
+        print("Error: ${response.statusCode}");
+      }
+    } catch (e) {
+      print("API Error: $e");
+    }
+  }
+
+
+
+
+ List<Map<String, dynamic>> loaction = [
+      {
+        "image": "assets/kovai.jpg",
+        "title": "Coimbatore",
+        "sub1": "assets/kovai1.jpg",
+        "sub2": "assets/kovai2.jpg",
+      },
+      {
+        "image": "assets/chennai.jpg",
+        "title": "Chennai",
+        "sub1": "assets/chennai2.jpg",
+        "sub2": "assets/chennai1.jpg",
+      },
+      {
+        "image": "assets/ooty.jpg",
+        "title": "Ooty",
+        "sub1": "assets/ooty1.jpg",
+        "sub2": "assets/ooty2.jpg",
+      },
+      {
+        "image": "assets/cochin.jpg",
+        "title": "Cochin",
+        "sub1": "assets/cochin1.jpg",
+        "sub2": "assets/cochin2.jpg",
+      },
+      {
+        "image": "assets/varkala.jpg",
+        "title": "Varkala",
+        "sub1": "assets/varkala1.jpg",
+        "sub2": "assets/varkala2.jpg",
+      },
+      {
+        "image": "assets/bangalore.jpg",
+        "title": "Bangalore",
+        "sub1": "assets/bangalore1.jpg",
+        "sub2": "assets/bangalore2.jpg",
+      },
+    ];
+
+    final List<Map<String, String>> peopleList = [
+      {
+        "name": "Javi",
+        "mail id": "javithjavi@gmail.com",
+        "image": "assets/person_javi.jpeg",
+        "rating": "5",
+        "sold": "500",
+        "reviews": "1000",
+      },
+      {
+        "name": "Amanda",
+        "mail id": "javithjavi@gmail.com",
+        "image": "assets/person1.png",
+        "rating": "4.5",
+        "sold": "124",
+        "reviews": "400",
+      },
+      {
+        "name": "Anderson",
+        "mail id": "javithjavi@gmail.com",
+        "image": "assets/person2.png",
+        "rating": "4",
+        "sold": "124",
+        "reviews": "180",
+      },
+      {
+        "name": "Samantha",
+        "mail id": "javithjavi@gmail.com",
+        "image": "assets/person3.png",
+        "rating": "4",
+        "sold": "124",
+        "reviews": "440",
+      },
+      {
+        "name": "Andrew",
+        "mail id": "javithjavi@gmail.com",
+        "image": "assets/person4.png",
+        "rating": "4",
+        "sold": "124",
+        "reviews": "102",
+      },
+      {
+        "name": "Michael",
+        "mail id": "javithjavi@gmail.com",
+        "image": "assets/person5.png",
+        "rating": "4",
+        "sold": "124",
+        "reviews": "340",
+      },
+    ];
+
 
   Widget featuredEstateCard({
     required double width,
@@ -122,7 +251,7 @@ class Alltab extends StatelessWidget {
                       ),
                       SizedBox(width: width * 0.01),
                       Text(
-                        item["rating"] ?? "4.2",
+                        (item["rating"] != null ? item["rating"].toString() : "4.2"),
                         style: GoogleFonts.montserrat(
                           color: const Color(0xFF234F68),
                           fontSize: width * 0.045,
@@ -154,7 +283,7 @@ class Alltab extends StatelessWidget {
                   Row(
                     children: [
                       Text(
-                        item["price"], // ✅ NO EXTRA ₹
+                        item["price"].toString(), 
                         style: GoogleFonts.montserrat(
                           color: const Color(0xFF234F68),
                           fontSize: width * 0.06,
@@ -183,226 +312,26 @@ class Alltab extends StatelessWidget {
     );
   }
 
+
+
+
+
+
+
+
+
+
+
+
+
+
   @override
   Widget build(BuildContext context) {
     final cart = Provider.of<Createprovider>(context);
     final width = MediaQuery.of(context).size.width;
     final height = MediaQuery.of(context).size.height;
 
-    final List<Map<String, dynamic>> propertyList = [
-      {
-        "image": "assets/nearby1.png",
-        "title": "Wings Tower coimbatore",
-        "price": "₹ 30k",
-        "rating": "4.9",
-        "property-type": "Apartment",
-        "location": "Coimbatore, TN",
-        "cost_of_living": "5000",
-        "agent": {
-          "name": "Javi",
-          "mail id": "javithjavi@gmail.com",
-          "image": "assets/person_javi.jpeg",
-          "rating": "5",
-          "sold": "500",
-          "reviews": "1000",
-        },
-        "property-rooms": {
-          'bedrooms': '4',
-          'bathroom': '2',
-          'kitchen': '1',
-          "store_room": '1',
-          "balcony": '2',
-        },
-
-      },
-      {
-        "image": "assets/nearby2.png",
-        "title": "Mill Sper House",
-        "price": "₹ 20k",
-        "rating": "2.5",
-        "property-type": "House",
-        "location": "Peelamedu,TN",
-        "cost_of_living": "9000",
-        "agent": {
-          "name": "Amanda",
-          "mail id": "javithjavi@gmail.com",
-          "image": "assets/person1.png",
-          "rating": "4.5",
-          "sold": "124",
-          "reviews": "400",
-        },
-        "property-rooms": {
-          "bedrooms": '2',
-          "bathroom": '2',
-          "kitchen": '1',
-          "store_room": '0',
-          "balcony": '1',
-        },
-      },
-      {
-        "image": "assets/nearby3.png",
-        "title": "Garden Residency",
-        "price": "₹ 25k",
-        "rating": "4.7",
-        "property-type": "Apartment",
-        "location": "RS Puram, TN",
-        "cost_of_living": "10000",
-        "agent": {
-          "name": "Anderson",
-          "mail id": "javithjavi@gmail.com",
-          "image": "assets/person2.png",
-          "rating": "4",
-          "sold": "124",
-          "reviews": "180",
-        },
-        "property-rooms": {
-          "bedrooms": '3',
-          "bathroom": '3',
-          "kitchen": '1',
-          "store_room": '1',
-          "balcony": '2',
-        },
-      },
-      {
-        "image": "assets/nearby4.png",
-        "title": "Elite Apartment",
-        "price": "₹ 28k",
-        "rating": "4.9",
-        "property-type": "Apartment",
-        "location": "Saibaba Colony, TN",
-        "cost_of_living": "7000",
-        "agent": {
-          "name": "Samantha",
-          "mail id": "javithjavi@gmail.com",
-          "image": "assets/person3.png",
-          "rating": "4",
-          "sold": "124",
-          "reviews": "440",
-        },
-        "property-rooms": {
-          "bedrooms": '1',
-          "bathroom": '1',
-          "kitchen": '1',
-          "store_room": '0',
-          "balcony": '1',
-        },
-      },
-      {
-        "image": "assets/nearby4.png",
-        "title": "Elite Apartment",
-        "price": "₹ 28k",
-        "rating": "4.9",
-        "property-type": "Apartment",
-        "location": "Selvapuram, TN",
-        "cost_of_living": "9000",
-        "agent": {
-          "name": "Michael",
-          "mail id": "javithjavi@gmail.com",
-          "image": "assets/person5.png",
-          "rating": "4",
-          "sold": "124",
-          "reviews": "340",
-        },
-        "property-rooms": {
-          "bedrooms": '4',
-          "bathroom": '4',
-          "kitchen": '1',
-          "store_room": '2',
-          "balcony": '3',
-        },
-      },
-    ];
-
-    List<Map<String, dynamic>> loaction = [
-      {
-        "image": "assets/kovai.jpg",
-        "title": "Coimbatore",
-        "sub1": "assets/kovai1.jpg",
-        "sub2": "assets/kovai2.jpg",
-      },
-      {
-        "image": "assets/chennai.jpg",
-        "title": "Chennai",
-        "sub1": "assets/chennai2.jpg",
-        "sub2": "assets/chennai1.jpg",
-      },
-      {
-        "image": "assets/ooty.jpg",
-        "title": "Ooty",
-        "sub1": "assets/ooty1.jpg",
-        "sub2": "assets/ooty2.jpg",
-      },
-      {
-        "image": "assets/cochin.jpg",
-        "title": "Cochin",
-        "sub1": "assets/cochin1.jpg",
-        "sub2": "assets/cochin2.jpg",
-      },
-      {
-        "image": "assets/varkala.jpg",
-        "title": "Varkala",
-        "sub1": "assets/varkala1.jpg",
-        "sub2": "assets/varkala2.jpg",
-      },
-      {
-        "image": "assets/bangalore.jpg",
-        "title": "Bangalore",
-        "sub1": "assets/bangalore1.jpg",
-        "sub2": "assets/bangalore2.jpg",
-      },
-    ];
-
-    final List<Map<String, String>> peopleList = [
-      {
-        "name": "Javi",
-        "mail id": "javithjavi@gmail.com",
-        "image": "assets/person_javi.jpeg",
-        "rating": "5",
-        "sold": "500",
-        "reviews": "1000",
-      },
-      {
-        "name": "Amanda",
-        "mail id": "javithjavi@gmail.com",
-        "image": "assets/person1.png",
-        "rating": "4.5",
-        "sold": "124",
-        "reviews": "400",
-      },
-      {
-        "name": "Anderson",
-        "mail id": "javithjavi@gmail.com",
-        "image": "assets/person2.png",
-        "rating": "4",
-        "sold": "124",
-        "reviews": "180",
-      },
-      {
-        "name": "Samantha",
-        "mail id": "javithjavi@gmail.com",
-        "image": "assets/person3.png",
-        "rating": "4",
-        "sold": "124",
-        "reviews": "440",
-      },
-      {
-        "name": "Andrew",
-        "mail id": "javithjavi@gmail.com",
-        "image": "assets/person4.png",
-        "rating": "4",
-        "sold": "124",
-        "reviews": "102",
-      },
-      {
-        "name": "Michael",
-        "mail id": "javithjavi@gmail.com",
-        "image": "assets/person5.png",
-        "rating": "4",
-        "sold": "124",
-        "reviews": "340",
-      },
-    ];
-
+    
     return Padding(
       padding: EdgeInsets.only(top: height * 0.02),
       child: SingleChildScrollView(
@@ -410,7 +339,9 @@ class Alltab extends StatelessWidget {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
-              SingleChildScrollView(
+              
+
+  SingleChildScrollView(
                 scrollDirection: Axis.horizontal,
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.start,
@@ -1145,7 +1076,7 @@ class Alltab extends StatelessWidget {
                 ),
               ),
               SizedBox(height: height * 0.0),
-              //nearest estate
+            
               GridView.builder(
                 shrinkWrap: true,
                 physics: NeverScrollableScrollPhysics(),
@@ -1160,7 +1091,7 @@ class Alltab extends StatelessWidget {
 
                 itemBuilder: (context, index) {
                   final item = propertyList[index];
-
+  double rating = double.tryParse(item["rating"] ?? "0") ?? 0;
                   return Card(
                     child: GestureDetector(
                       onTap: () {
@@ -1183,19 +1114,23 @@ class Alltab extends StatelessWidget {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
+                            SizedBox(height: height * 0.01),
                             Center(
                               child: Stack(
                                 children: [
-                                  Image.asset(
-                                    item["image"],
-                                    height: height * 0.23,
-                                    width: width * 0.4,
-                                    fit: BoxFit.contain,
+                                  ClipRRect(
+                                    borderRadius: BorderRadius.circular(12),
+                                    child: Image.network(
+                                     ApiConfig.getImage(item["image"]),
+                                      height: height * 0.23,
+                                      width: width * 0.4,
+                                      fit: BoxFit.cover,
+                                    ),
                                   ),
 
                                   Positioned(
                                     right: width * 0.03,
-                                    top: height * 0.025,
+                                    top: height * 0.017,
                                     child: Consumer<Createprovider>(
                                       builder: (context, cart, child) {
                                         bool isAdded = cart.isInCart(item);
@@ -1267,11 +1202,11 @@ class Alltab extends StatelessWidget {
                                   ),
 
                                   Positioned(
-                                    bottom: height * 0.025,
+                                    bottom: height * 0.01,
                                     right: width * 0.03,
                                     child: Container(
                                       height: height * 0.045,
-                                      width: width * 0.18,
+                                      width: width * 0.2,
                                       decoration: ShapeDecoration(
                                         color: Color.fromARGB(214, 35, 79, 104),
                                         shape: RoundedRectangleBorder(
@@ -1286,7 +1221,7 @@ class Alltab extends StatelessWidget {
                                               MainAxisAlignment.center,
                                           children: [
                                             Text(
-                                              item["price"],
+                                              item["price"].toString(),
                                               style: GoogleFonts.montserrat(
                                                 color: Colors.white,
                                                 fontSize: width * 0.035,
@@ -1316,7 +1251,10 @@ class Alltab extends StatelessWidget {
                             ),
 
                             Padding(
-                              padding: EdgeInsets.only(left: width * 0.04),
+                              padding: EdgeInsets.only(
+                                left: width * 0.04,
+                                top: height * 0.01,
+                              ),
                               child: Text(
                                 item["title"],
                                 style: GoogleFonts.raleway(
@@ -1340,14 +1278,16 @@ class Alltab extends StatelessWidget {
                                   ),
                                   SizedBox(width: width * 0.01),
 
-                                  Text(
-                                    item["rating"],
-                                    style: GoogleFonts.montserrat(
-                                      color: Color(0xFF234F68),
-                                      fontSize: width * 0.03,
-                                      fontWeight: FontWeight.w700,
-                                    ),
-                                  ),
+                                
+
+Text(
+  rating.toStringAsFixed(1), 
+  style: GoogleFonts.montserrat(
+    color: Color(0xFF234F68),
+    fontSize: width * 0.03,
+    fontWeight: FontWeight.w700,
+  ),
+),
 
                                   SizedBox(width: width * 0.03),
 
@@ -1362,7 +1302,7 @@ class Alltab extends StatelessWidget {
                                   Text(
                                     item["location"],
                                     style: TextStyle(
-                                      fontSize: width * 0.025,
+                                      fontSize: width * 0.03,
                                       fontWeight: FontWeight.bold,
                                       color: Color(0xFF1F4C6B),
                                     ),

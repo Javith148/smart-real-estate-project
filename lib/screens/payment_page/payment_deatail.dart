@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+// import 'package:upi_india/upi_india.dart';
 
 class PaymentDeatail extends StatefulWidget {
   final Map<String, dynamic> property;
@@ -38,7 +39,7 @@ class _PaymentDeatailState extends State<PaymentDeatail> {
       (item) => item["name"] == selectedPaymentMethod,
     );
 
-    currentUpiId = widget.upiId; // ✅ important
+    currentUpiId = widget.upiId;
 
     if (currentUpiId != null) {
       upiController.text = currentUpiId!;
@@ -297,10 +298,9 @@ class _PaymentDeatailState extends State<PaymentDeatail> {
                         ),
                       ),
 
-                    // 🔥 UPI TEXTFIELD (dynamic)
                     SizedBox(height: height * 0.03),
 
-                    // 🔹 Select Button
+                    //  Select Button
                     SizedBox(
                       width: double.infinity,
                       height: height * 0.06,
@@ -339,10 +339,10 @@ class _PaymentDeatailState extends State<PaymentDeatail> {
                                   }
                                 }
                                 upiController.clear();
+                                upiController.clear();
                                 setState(() {
                                   selectedPaymentMethod = selectedName;
 
-                                  // 🔥 UPDATE UPI VALUE HERE
                                   if (selectedName.toLowerCase() == "upi") {
                                     currentUpiId = upiController.text;
                                   }
@@ -369,6 +369,50 @@ class _PaymentDeatailState extends State<PaymentDeatail> {
       },
     );
   }
+
+  // final UpiIndia _upiIndia = UpiIndia();
+
+  // void handlePaymentResponse(UpiResponse response) {
+  //   if (response.status == UpiPaymentStatus.SUCCESS) {
+  //     ScaffoldMessenger.of(
+  //       context,
+  //     ).showSnackBar(SnackBar(content: Text("Payment Successful ✅")));
+  //   } else if (response.status == UpiPaymentStatus.SUBMITTED) {
+  //     ScaffoldMessenger.of(
+  //       context,
+  //     ).showSnackBar(SnackBar(content: Text("Payment Submitted ⏳")));
+  //   } else {
+  //     ScaffoldMessenger.of(
+  //       context,
+  //     ).showSnackBar(SnackBar(content: Text("Payment Failed ❌")));
+  //   }
+  // }
+
+  // Future<void> startUpiPayment() async {
+  //   List<UpiApp> apps = await _upiIndia.getAllUpiApps();
+
+  //   if (apps.isEmpty) {
+  //     ScaffoldMessenger.of(
+  //       context,
+  //     ).showSnackBar(SnackBar(content: Text("No UPI apps found")));
+  //     return;
+  //   }
+
+  //   try {
+  //     final transaction = await _upiIndia.startTransaction(
+  //       app: UpiApp.googlePay,
+  //       receiverUpiId: "javitharshad-1@oksbi",
+  //       receiverName: "Javi Rentals",
+  //       transactionRefId: DateTime.now().millisecondsSinceEpoch.toString(),
+  //       transactionNote: "Property Booking Payment",
+  //       amount: finalAmount,
+  //     );
+
+  //     handlePaymentResponse(transaction);
+  //   } catch (e) {
+  //     print("Error: $e");
+  //   }
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -779,6 +823,43 @@ class _PaymentDeatailState extends State<PaymentDeatail> {
                       ),
                     ),
                   ],
+                ),
+              ),
+            ),
+            SizedBox(height: height * 0.08),
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: width * 0.01),
+              child: Center(
+                child: SizedBox(
+                  height: height * 0.06,
+                  width: width * 0.9,
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFF8BC83F),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                    ),
+                    onPressed: selectedPaymentMethod == null
+                        ? null
+                        : () {
+                            if (selectedPaymentMethod!.toLowerCase() == "upi") {
+                              // startUpiPayment();
+                            } else {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(content: Text("Only UPI implemented")),
+                              );
+                            }
+                          },
+                    child: Text(
+                      "Proceed to Payment",
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: width * 0.045,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                  ),
                 ),
               ),
             ),

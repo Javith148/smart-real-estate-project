@@ -8,6 +8,7 @@ import 'package:real_esate_finder/screens/payment_page/payment.dart';
 import 'dart:math';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
+import 'package:real_esate_finder/ApiConfig.dart';
 
 class PropertyDetails extends StatefulWidget {
   final Map<String, dynamic> property;
@@ -39,9 +40,11 @@ class _PropertyDetailsState extends State<PropertyDetails> {
   void initState() {
     super.initState();
     mapController = MapController();
-    nearbyFuture = fetchNearbyFacilities(widget.property["location"]);
+    nearbyFuture = fetchNearbyFacilities(
+                          ApiConfig.getImage(widget.property["image"]),);
   }
-// Converts an address to latitude and longitude using Nominatim API
+
+  // Converts an address to latitude and longitude using Nominatim API
   Future<Map<String, double>?> getLatLngFromAddress(String address) async {
     final url = Uri.parse(
       "https://nominatim.openstreetmap.org/search?q=$address&format=json&limit=1",
@@ -64,9 +67,9 @@ class _PropertyDetailsState extends State<PropertyDetails> {
     return null;
   }
 
-//  calculate straight-line distance between two lat/lng points
+  //  calculate straight-line distance between two lat/lng points
   double calculateDistance(double lat1, double lon1, double lat2, double lon2) {
-    const R = 6371; 
+    const R = 6371;
     final dLat = (lat2 - lat1) * (pi / 180);
     final dLon = (lon2 - lon1) * (pi / 180);
 
@@ -82,7 +85,7 @@ class _PropertyDetailsState extends State<PropertyDetails> {
     return R * c;
   }
 
-// Fetches nearby hospitals, schools, and fuel stations using Overpass API
+  // Fetches nearby hospitals, schools, and fuel stations using Overpass API
   Future<List<Map<String, dynamic>>> getNearbyPlaces(
     double lat,
     double lng,
@@ -138,7 +141,8 @@ class _PropertyDetailsState extends State<PropertyDetails> {
 
     return finalResults;
   }
-// Fetches nearby facilities and also sets the propertyLatLng for map usage
+
+  // Fetches nearby facilities and also sets the propertyLatLng for map usage
   Future<List<Map<String, dynamic>>> fetchNearbyFacilities(
     String location,
   ) async {
@@ -176,8 +180,8 @@ class _PropertyDetailsState extends State<PropertyDetails> {
                     children: [
                       ClipRRect(
                         borderRadius: BorderRadius.circular(50),
-                        child: Image.asset(
-                          widget.property['image'],
+                        child: Image.network(
+                          ApiConfig.getImage(widget.property["image"]),
                           height: height * 0.55,
                           width: double.infinity,
                           fit: BoxFit.cover,
@@ -297,7 +301,7 @@ class _PropertyDetailsState extends State<PropertyDetails> {
                                 Icon(Icons.star, color: Colors.amber),
                                 SizedBox(width: width * 0.01),
                                 Text(
-                                  widget.property['rating'],
+                                  widget.property['rating'].toString(),
                                   style: GoogleFonts.montserrat(
                                     color: Colors.white,
                                     fontSize: height * 0.02,
@@ -323,7 +327,7 @@ class _PropertyDetailsState extends State<PropertyDetails> {
                           ),
                           child: Center(
                             child: Text(
-                              widget.property['property-type'],
+                              widget.property['property_type'],
                               style: GoogleFonts.raleway(
                                 color: Colors.white,
                                 fontSize: height * 0.021,
@@ -345,14 +349,12 @@ class _PropertyDetailsState extends State<PropertyDetails> {
                   child: Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      /// LEFT SIDE (Title + Location)
                       Expanded(
-                        // ✅ IMPORTANT
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              widget.property['title'],
+                              widget.property['title'] ?? "No Title",
                               maxLines: 2,
                               overflow: TextOverflow.ellipsis,
                               style: GoogleFonts.lato(
@@ -375,9 +377,9 @@ class _PropertyDetailsState extends State<PropertyDetails> {
                                 SizedBox(width: width * 0.01),
 
                                 Expanded(
-                                  // ✅ prevents location overflow
                                   child: Text(
-                                    widget.property["location"],
+                                    widget.property["location"] ??
+                                        "No Location",
                                     maxLines: 1,
                                     overflow: TextOverflow.ellipsis,
                                     style: TextStyle(
@@ -393,12 +395,11 @@ class _PropertyDetailsState extends State<PropertyDetails> {
                         ),
                       ),
 
-                      /// RIGHT SIDE (Price)
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.end,
                         children: [
                           Text(
-                            '${widget.property['price']}',
+                            widget.property['price'].toString(),
                             style: GoogleFonts.lato(
                               color: const Color(0xFF1F4C6B),
                               fontSize: height * 0.04,
@@ -502,11 +503,24 @@ class _PropertyDetailsState extends State<PropertyDetails> {
                         children: [
                           SizedBox(width: width * 0.06),
                           ClipOval(
-                            child: Image.asset(
-                              widget.property['agent']["image"],
+                            child: Image.network(
+                              ApiConfig.getImage(
+                                widget.property['agent']?['agent_image'],
+                              ),
                               width: width * 0.12,
                               height: width * 0.12,
                               fit: BoxFit.cover,
+                              errorBuilder: (context, error, stackTrace) {
+                                return Container(
+                                  width: width * 0.12,
+                                  height: width * 0.12,
+                                  color: Colors.grey[300],
+                                  child: Icon(
+                                    Icons.person,
+                                    color: Colors.white,
+                                  ),
+                                );
+                              },
                             ),
                           ),
                           SizedBox(width: width * 0.06),
@@ -691,7 +705,6 @@ class _PropertyDetailsState extends State<PropertyDetails> {
                         }).toList(),
                         SizedBox(height: height * 0.03),
 
-                        // Show counts of all nearby facilities
                         Padding(
                           padding: EdgeInsets.symmetric(
                             horizontal: width * 0.04,
@@ -762,7 +775,7 @@ class _PropertyDetailsState extends State<PropertyDetails> {
                                   ),
                                 ],
                               ),
-                            // 📍 Markers
+
                             MarkerLayer(
                               markers: [
                                 if (propertyLatLng != null)
@@ -773,14 +786,12 @@ class _PropertyDetailsState extends State<PropertyDetails> {
                                     child: Stack(
                                       alignment: Alignment.center,
                                       children: [
-                                        // Marker background shape
                                         Image.asset(
-                                          'assets/Vector.png', // your marker pin image
+                                          'assets/Vector.png',
                                           width: 80,
                                           height: 80,
                                         ),
 
-                                        // Center property image
                                         Positioned(
                                           top: 22,
                                           child: ClipOval(
@@ -804,7 +815,7 @@ class _PropertyDetailsState extends State<PropertyDetails> {
                                     child: Stack(
                                       alignment: Alignment.center,
                                       children: [
-                                        // Marker Image
+                                        
                                         Image.asset(
                                           'assets/Vector.png',
                                           width: 40,
@@ -876,7 +887,7 @@ class _PropertyDetailsState extends State<PropertyDetails> {
                   child: Row(
                     children: [
                       Text(
-                        '₹ ${widget.property['cost_of_living']} ',
+                        '₹ ${widget.property['cost_of_living'].toString()} ',
                         style: GoogleFonts.montserrat(
                           color: const Color(0xFF242B5C),
                           fontSize: width * 0.06,
@@ -973,7 +984,7 @@ class _PropertyDetailsState extends State<PropertyDetails> {
                               ),
                               SizedBox(width: width * 0.02),
                               Text(
-                                widget.property['rating'],
+                                widget.property['rating'].toString(),
                                 style: GoogleFonts.montserrat(
                                   color: const Color(0xFF242B5C),
                                   fontSize: width * 0.05,
@@ -985,7 +996,7 @@ class _PropertyDetailsState extends State<PropertyDetails> {
                           ),
 
                           Text(
-                            "From ${widget.property['agent']['reviews']} reviews",
+                            "From ${widget.property['agent']['reviews'].toString()} reviews",
                             style: GoogleFonts.montserrat(
                               color: Colors.grey,
                               fontSize: width * 0.03,
@@ -995,7 +1006,7 @@ class _PropertyDetailsState extends State<PropertyDetails> {
                           ),
                         ],
                       ),
-                      SizedBox(width: width * 0.2),
+                      SizedBox(width: width * 0.18),
                       Stack(
                         children: [
                           SizedBox(

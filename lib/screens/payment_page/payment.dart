@@ -1,6 +1,7 @@
 import "package:flutter/material.dart";
 import 'package:google_fonts/google_fonts.dart';
 import 'payment_deatail.dart';
+import 'package:real_esate_finder/ApiConfig.dart';
 
 class PaymentPage extends StatefulWidget {
   final Map<String, dynamic> property;
@@ -226,7 +227,7 @@ String? enteredUpiId;
 
                   SizedBox(height: height * 0.02),
 
-                  /// Voucher List
+                  
                   ListView.builder(
                     shrinkWrap: true,
                     itemCount: filteredVouchers.length,
@@ -415,13 +416,14 @@ String? enteredUpiId;
                               horizontal: width * 0.03,
                               vertical: height * 0.02,
                             ),
-                            child: Image.asset(
-                              widget.property['image'],
+                            child: ClipRRect(
+                                    borderRadius: BorderRadius.circular(12),child: Image.network(
+                          ApiConfig.getImage(widget.property["image"]),
                               height: height * 0.25,
                               width: width * 0.5,
-                              fit: BoxFit.fill,
+                              fit: BoxFit.cover,
                             ),
-                          ),
+                          ),),
 
                           Positioned(
                             bottom: height * 0.03,
@@ -437,7 +439,7 @@ String? enteredUpiId;
                                 ),
                                 onPressed: () {},
                                 child: Text(
-                                  widget.property['property-type'],
+                                  widget.property['property_type'],
                                   style: GoogleFonts.raleway(
                                     color: Colors.white,
                                     fontSize: width * 0.025,
@@ -976,7 +978,7 @@ upiController.clear();
         note: noteController.text,
         appliedVoucher: appliedVoucher ?? {"discount": "0"},
 
-        // 🔥 SEND UPI ID
+     
         upiId: enteredUpiId,
       ),
     ),
