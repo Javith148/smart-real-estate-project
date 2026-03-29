@@ -18,9 +18,24 @@ void main() {
   );
 }
 
-class MyApp extends StatelessWidget {
+
+class MyApp extends StatefulWidget {
   const MyApp({super.key});
 
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+
+  @override
+void initState() {
+  super.initState();
+  Future.microtask(() =>
+    Provider.of<Createprovider>(context, listen: false)
+        .fetchProperties()
+  );
+}
   @override
   Widget build(BuildContext context) {
     return MaterialApp(

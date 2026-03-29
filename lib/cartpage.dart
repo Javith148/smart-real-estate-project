@@ -5,6 +5,7 @@ import 'CreateProvider.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:real_esate_finder/ApiConfig.dart';
+import 'package:real_esate_finder/screens/property_details/property_details.dart';
 
 class Cartpage extends StatefulWidget {
   const Cartpage({super.key});
@@ -260,7 +261,7 @@ class _CartpageState extends State<Cartpage> {
                           ),
                           onPressed: () {
                             Provider.of<Createprovider>(
-                              screenContext, 
+                              screenContext,
                               listen: false,
                             ).clearall();
 
@@ -496,6 +497,15 @@ class _CartpageState extends State<Cartpage> {
                               final item = cart.cartItems[index];
 
                               return GestureDetector(
+                                onTap: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) =>
+                                          PropertyDetails(property: item),
+                                    ),
+                                  );
+                                },
                                 onLongPress: () {
                                   _showDeleteDialog(
                                     context,
@@ -515,20 +525,22 @@ class _CartpageState extends State<Cartpage> {
                                       crossAxisAlignment:
                                           CrossAxisAlignment.start,
                                       children: [
-                                        SizedBox(height: height * 0.01,),
+                                        SizedBox(height: height * 0.01),
                                         Center(
                                           child: Stack(
                                             children: [
                                               ClipRRect(
-                                    borderRadius: BorderRadius.circular(12),
-                                    child: Image.network(
-                                     ApiConfig.getImage(item["image"]),
-                                      height: height * 0.2,
-                                      width: width * 0.35,
-                                      fit: BoxFit.cover,
-                                    ),
-                                  ),
-
+                                                borderRadius:
+                                                    BorderRadius.circular(12),
+                                                child: Image.network(
+                                                  ApiConfig.getImage(
+                                                    item["image"],
+                                                  ),
+                                                  height: height * 0.2,
+                                                  width: width * 0.35,
+                                                  fit: BoxFit.cover,
+                                                ),
+                                              ),
 
                                               Positioned(
                                                 left: width * 0.03,
@@ -578,7 +590,8 @@ class _CartpageState extends State<Cartpage> {
                                                               .center,
                                                       children: [
                                                         Text(
-                                                          item["price"].toString(),
+                                                          item["price"]
+                                                              .toString(),
                                                           style:
                                                               GoogleFonts.montserrat(
                                                                 color: Colors
@@ -702,10 +715,9 @@ class _CartpageState extends State<Cartpage> {
                                 child: Slidable(
                                   key: ValueKey(item["title"]),
 
-                                  
                                   endActionPane: ActionPane(
                                     motion: const StretchMotion(),
-                                    extentRatio: 0.4, 
+                                    extentRatio: 0.4,
 
                                     children: [
                                       CustomSlidableAction(
@@ -727,208 +739,238 @@ class _CartpageState extends State<Cartpage> {
                                     ],
                                   ),
 
-                                  
-                                  child: Container(
-                                    width: width * 0.9,
-                                    height: height * 0.25,
-                                    decoration: BoxDecoration(
-                                      color: const Color.fromARGB(
-                                        186,
-                                        244,
-                                        242,
-                                        242,
-                                      ),
-                                      borderRadius: BorderRadius.circular(20),
-                                    ),
-                                    clipBehavior: Clip.hardEdge,
-                                    child: Row(
-                                      children: [
-                                        Stack(
-                                          children: [
-                                            Padding(
-                                              padding: EdgeInsets.symmetric(
-                                                horizontal: width * 0.03,
-                                                vertical: height * 0.02,
-                                              ),
-                                              child: Image.network(
-                          ApiConfig.getImage(item["image"]),
-                                                height: height * 0.25,
-                                                fit: BoxFit.fill,
-                                              ),
-                                            ),
-
-                                            Positioned(
-                                              left: width * 0.052,
-                                              top: height * 0.032,
-                                              child: Container(
-                                                width: width * 0.08,
-                                                height: width * 0.08,
-                                                decoration: const BoxDecoration(
-                                                  color: Color(0xFF8BC83F),
-                                                  shape: BoxShape.circle,
-                                                ),
-                                                child: Icon(
-                                                  Icons.favorite,
-                                                  color: Colors.white,
-                                                  size: height * 0.015,
-                                                ),
-                                              ),
-                                            ),
-
-                                            Positioned(
-                                              top: height * 0.165,
-                                              left: width * 0.058,
-                                              child: SizedBox(
-                                                width: width * 0.24,
-                                                child: ElevatedButton(
-                                                  style: ElevatedButton.styleFrom(
-                                                    backgroundColor:
-                                                        const Color(0xFF234F68),
-                                                    shape: RoundedRectangleBorder(
-                                                      borderRadius:
-                                                          BorderRadius.circular(
-                                                            10,
-                                                          ),
-                                                    ),
-                                                  ),
-                                                  onPressed: () {},
-                                                  child: Text(
-                                                    "Apartment",
-                                                    style: GoogleFonts.raleway(
-                                                      color: Colors.white,
-                                                      fontSize: width * 0.025,
-                                                      fontWeight:
-                                                          FontWeight.w600,
-                                                    ),
-                                                  ),
-                                                ),
-                                              ),
-                                            ),
-                                          ],
+                                  child: GestureDetector(
+                                    onTap: () {
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) =>
+                                              PropertyDetails(property: item),
                                         ),
-
-                                        SizedBox(width: width * 0.02),
-
-                                        Padding(
-                                          padding: EdgeInsets.only(
-                                            top: height * 0.03,
-                                          ),
-                                          child: Column(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
+                                      );
+                                    },
+                                    child: Container(
+                                      width: width * 0.9,
+                                      height: height * 0.25,
+                                      decoration: BoxDecoration(
+                                        color: const Color.fromARGB(
+                                          186,
+                                          244,
+                                          242,
+                                          242,
+                                        ),
+                                        borderRadius: BorderRadius.circular(20),
+                                      ),
+                                      clipBehavior: Clip.hardEdge,
+                                      child: Row(
+                                        children: [
+                                          Stack(
                                             children: [
-                                              SizedBox(
-                                                width: width * 0.35,
-                                                child: Text(
-                                                  item["title"],
-                                                  maxLines: 1,
-                                                  overflow:
-                                                      TextOverflow.ellipsis,
-                                                  softWrap: false,
-                                                  style: GoogleFonts.raleway(
-                                                    color: const Color(
-                                                      0xFF234F68,
+                                              Padding(
+                                                padding: EdgeInsets.symmetric(
+                                                  horizontal: width * 0.03,
+                                                  vertical: height * 0.02,
+                                                ),
+                                                child: ClipRRect(
+                                                  borderRadius:
+                                                      BorderRadius.circular(20),
+                                                  child: Image.network(
+                                                    ApiConfig.getImage(
+                                                      item["image"],
                                                     ),
-                                                    fontSize: width * 0.045,
-                                                    fontWeight: FontWeight.w800,
-                                                    letterSpacing: 0.54,
+                                                    height: height * 0.25,
+                                                    fit: BoxFit.fill,
                                                   ),
                                                 ),
                                               ),
 
-                                              SizedBox(height: height * 0.01),
-
-                                              Row(
-                                                children: [
-                                                  Icon(
-                                                    Icons.star,
-                                                    color: Colors.amber,
-                                                    size: height * 0.02,
+                                              Positioned(
+                                                left: width * 0.052,
+                                                top: height * 0.032,
+                                                child: Container(
+                                                  width: width * 0.08,
+                                                  height: width * 0.08,
+                                                  decoration:
+                                                      const BoxDecoration(
+                                                        color: Color(
+                                                          0xFF8BC83F,
+                                                        ),
+                                                        shape: BoxShape.circle,
+                                                      ),
+                                                  child: Icon(
+                                                    Icons.favorite,
+                                                    color: Colors.white,
+                                                    size: height * 0.015,
                                                   ),
-                                                  SizedBox(width: width * 0.01),
-                                                  Text(
-                                                    item["rating"].toString(),
-                                                    style:
-                                                        GoogleFonts.montserrat(
-                                                          color: const Color(
+                                                ),
+                                              ),
+
+                                              Positioned(
+                                                top: height * 0.165,
+                                                left: width * 0.058,
+                                                child: SizedBox(
+                                                  width: width * 0.24,
+                                                  child: ElevatedButton(
+                                                    style: ElevatedButton.styleFrom(
+                                                      backgroundColor:
+                                                          const Color(
                                                             0xFF234F68,
                                                           ),
-                                                          fontSize:
-                                                              width * 0.045,
-                                                          fontWeight:
-                                                              FontWeight.w700,
-                                                        ),
-                                                  ),
-                                                ],
-                                              ),
-
-                                              SizedBox(height: height * 0.01),
-
-                                              Row(
-                                                children: [
-                                                  Icon(
-                                                    Icons.location_on,
-                                                    size: height * 0.020,
-                                                    color: const Color(
-                                                      0xFF1F4C6B,
-                                                    ),
-                                                  ),
-                                                  SizedBox(width: width * 0.01),
-                                                  Text(
-                                                    item["location"],
-                                                    style: TextStyle(
-                                                      fontSize: width * 0.035,
-                                                      fontWeight:
-                                                          FontWeight.bold,
-                                                      color: const Color(
-                                                        0xFF1F4C6B,
+                                                      shape: RoundedRectangleBorder(
+                                                        borderRadius:
+                                                            BorderRadius.circular(
+                                                              10,
+                                                            ),
                                                       ),
                                                     ),
-                                                  ),
-                                                ],
-                                              ),
-
-                                              SizedBox(height: height * 0.03),
-
-                                              Row(
-                                                children: [
-                                                  Text(
-                                                    item["price"].toString(),
-                                                    style:
-                                                        GoogleFonts.montserrat(
-                                                          color: const Color(
-                                                            0xFF234F68,
-                                                          ),
-                                                          fontSize:
-                                                              width * 0.06,
-                                                          fontWeight:
-                                                              FontWeight.w700,
-                                                        ),
-                                                  ),
-                                                  Padding(
-                                                    padding: EdgeInsets.only(
-                                                      top: height * 0.01,
-                                                    ),
+                                                    onPressed: () {},
                                                     child: Text(
-                                                      " / month",
+                                                      "Apartment",
+                                                      style:
+                                                          GoogleFonts.raleway(
+                                                            color: Colors.white,
+                                                            fontSize:
+                                                                width * 0.025,
+                                                            fontWeight:
+                                                                FontWeight.w600,
+                                                          ),
+                                                    ),
+                                                  ),
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+
+                                          SizedBox(width: width * 0.02),
+
+                                          Padding(
+                                            padding: EdgeInsets.only(
+                                              top: height * 0.03,
+                                            ),
+                                            child: Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              children: [
+                                                SizedBox(
+                                                  width: width * 0.35,
+                                                  child: Text(
+                                                    item["title"],
+                                                    maxLines: 1,
+                                                    overflow:
+                                                        TextOverflow.ellipsis,
+                                                    softWrap: false,
+                                                    style: GoogleFonts.raleway(
+                                                      color: const Color(
+                                                        0xFF234F68,
+                                                      ),
+                                                      fontSize: width * 0.045,
+                                                      fontWeight:
+                                                          FontWeight.w800,
+                                                      letterSpacing: 0.54,
+                                                    ),
+                                                  ),
+                                                ),
+
+                                                SizedBox(height: height * 0.01),
+
+                                                Row(
+                                                  children: [
+                                                    Icon(
+                                                      Icons.star,
+                                                      color: Colors.amber,
+                                                      size: height * 0.02,
+                                                    ),
+                                                    SizedBox(
+                                                      width: width * 0.01,
+                                                    ),
+                                                    Text(
+                                                      item["rating"].toString(),
                                                       style:
                                                           GoogleFonts.montserrat(
                                                             color: const Color(
                                                               0xFF234F68,
                                                             ),
                                                             fontSize:
-                                                                width * 0.035,
+                                                                width * 0.045,
                                                             fontWeight:
-                                                                FontWeight.w500,
+                                                                FontWeight.w700,
                                                           ),
                                                     ),
-                                                  ),
-                                                ],
-                                              ),
-                                            ],
+                                                  ],
+                                                ),
+
+                                                SizedBox(height: height * 0.01),
+
+                                                Row(
+                                                  children: [
+                                                    Icon(
+                                                      Icons.location_on,
+                                                      size: height * 0.020,
+                                                      color: const Color(
+                                                        0xFF1F4C6B,
+                                                      ),
+                                                    ),
+                                                    SizedBox(
+                                                      width: width * 0.01,
+                                                    ),
+                                                    Text(
+                                                      item["location"],
+                                                      style: TextStyle(
+                                                        fontSize: width * 0.035,
+                                                        fontWeight:
+                                                            FontWeight.bold,
+                                                        color: const Color(
+                                                          0xFF1F4C6B,
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+
+                                                SizedBox(height: height * 0.03),
+
+                                                Row(
+                                                  children: [
+                                                    Text(
+                                                      item["price"].toString(),
+                                                      style:
+                                                          GoogleFonts.montserrat(
+                                                            color: const Color(
+                                                              0xFF234F68,
+                                                            ),
+                                                            fontSize:
+                                                                width * 0.06,
+                                                            fontWeight:
+                                                                FontWeight.w700,
+                                                          ),
+                                                    ),
+                                                    Padding(
+                                                      padding: EdgeInsets.only(
+                                                        top: height * 0.01,
+                                                      ),
+                                                      child: Text(
+                                                        " / month",
+                                                        style:
+                                                            GoogleFonts.montserrat(
+                                                              color:
+                                                                  const Color(
+                                                                    0xFF234F68,
+                                                                  ),
+                                                              fontSize:
+                                                                  width * 0.035,
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .w500,
+                                                            ),
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                              ],
+                                            ),
                                           ),
-                                        ),
-                                      ],
+                                        ],
+                                      ),
                                     ),
                                   ),
                                 ),

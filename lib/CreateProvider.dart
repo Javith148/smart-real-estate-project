@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:real_esate_finder/ApiConfig.dart';
+
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 class Createprovider with ChangeNotifier {
   // private variable  declaration
@@ -67,6 +71,29 @@ class Createprovider with ChangeNotifier {
     _address = value;
     notifyListeners();
   }
+
+
+//
+
+  List<Map<String, dynamic>> _propertyList = [];
+
+  List<Map<String, dynamic>> get propertyList => _propertyList;
+
+  Future<void> fetchProperties() async {
+    try {
+      var url = Uri.parse(ApiConfig.getApi('/api/property_details/'));
+      var response = await http.get(url);
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        _propertyList = List<Map<String, dynamic>>.from(data);
+        notifyListeners(); // 🔥 முக்கியம்
+      }
+    } catch (e) {
+      print("API Error: $e");
+    }
+  }
+  
 }
 
 

@@ -236,7 +236,7 @@ class _HomeBodyState extends State<HomeBody> {
 
                           SizedBox(width: width * 0.04),
 
-                          // 🔹 Profile Icon (FIXED)
+                          
                           Container(
                             width: width * 0.12,
                             height: width * 0.12,

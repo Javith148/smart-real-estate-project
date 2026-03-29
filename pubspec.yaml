@@ -143,12 +143,16 @@ flutter:
       - assets/star.png
       - assets/review_icon.png
       - assets/reviews_img1.png
+      - assets/not_found.jpg
 
       
       - assets/paypal.png
       - assets/upi.png
       - assets/apple pay.png
       - assets/gpay.png
+      
+
+
 
 
 

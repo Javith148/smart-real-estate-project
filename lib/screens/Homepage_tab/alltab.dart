@@ -13,8 +13,7 @@ import 'package:real_esate_finder/screens/top agent page/agent.dart';
 import 'package:real_esate_finder/screens/top agent page/agentprofile.dart';
 import 'package:real_esate_finder/ApiConfig.dart';
 
-import 'package:http/http.dart' as http;
-import 'dart:convert';
+
 
 class Alltab extends StatefulWidget {
   const Alltab({super.key});
@@ -24,31 +23,7 @@ class Alltab extends StatefulWidget {
 }
 
 class _AllState extends State<Alltab> {
-  @override
-  void initState() {
-    super.initState();
-    property_details_api();
-  }
-
-  List<Map<String, dynamic>> propertyList = [];
-  Future<void> property_details_api() async {
-    try {
-     var url = Uri.parse(ApiConfig.getApi('/api/property_details/'));
-      var response = await http.get(url);
-
-      if (response.statusCode == 200) {
-        final data = jsonDecode(response.body);
-
-        setState(() {
-          propertyList = List<Map<String, dynamic>>.from(data);
-        });
-      } else {
-        print("Error: ${response.statusCode}");
-      }
-    } catch (e) {
-      print("API Error: $e");
-    }
-  }
+ 
 
 
 
@@ -177,12 +152,14 @@ class _AllState extends State<Alltab> {
                     horizontal: width * 0.03,
                     vertical: height * 0.02,
                   ),
-                  child: Image.asset(
-                    item["image"],
+                  child: ClipRRect(
+                                    borderRadius: BorderRadius.circular(20),
+                                    child: Image.network(
+                          ApiConfig.getImage(item["image"]),
                     height: height * 0.25,
                     fit: BoxFit.fill,
                   ),
-                ),
+                ),),
                 Positioned(
                   left: width * 0.052,
                   top: height * 0.032,
@@ -619,6 +596,7 @@ class _AllState extends State<Alltab> {
                 ),
               ),
               SizedBox(height: height * 0.011),
+              if (cart.cartItems.isNotEmpty)
               Padding(
                 padding: EdgeInsetsGeometry.directional(
                   start: width * 0.07,
@@ -669,168 +647,7 @@ class _AllState extends State<Alltab> {
                 child: Row(
                   children: [
                     SizedBox(width: width * 0.04),
-                    Container(
-                      width: width * 0.9,
-                      height: height * 0.25,
-                      decoration: BoxDecoration(
-                        color: const Color.fromARGB(186, 244, 242, 242),
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(20),
-                        child: Row(
-                          children: [
-                            Stack(
-                              children: [
-                                Padding(
-                                  padding: EdgeInsetsGeometry.symmetric(
-                                    horizontal: width * 0.03,
-                                    vertical: height * 0.02,
-                                  ),
-                                  child: Image.asset(
-                                    "assets/featured_img.png",
-                                    height: height * 0.25,
-                                    fit: BoxFit.fill,
-                                  ),
-                                ),
-                                Positioned(
-                                  left: width * 0.052,
-                                  top: height * 0.032,
-                                  child: Container(
-                                    width: width * 0.08,
-                                    height: width * 0.08,
-                                    decoration: BoxDecoration(
-                                      color: const Color(0xFF8BC83F),
-                                      shape: BoxShape.circle,
-                                    ),
-                                    child: Icon(
-                                      Icons.favorite,
-                                      color: Colors.white,
-                                      size: height * 0.015,
-                                    ),
-                                  ),
-                                ),
-                                Positioned(
-                                  top: height * 0.165,
-                                  left: width * 0.058,
-                                  child: Container(
-                                    width: width * 0.24,
-                                    child: ElevatedButton(
-                                      style: ElevatedButton.styleFrom(
-                                        shape: RoundedRectangleBorder(
-                                          borderRadius: BorderRadius.circular(
-                                            10,
-                                          ),
-                                        ),
-                                        backgroundColor: const Color(
-                                          0xFF234F68,
-                                        ),
-                                      ),
-                                      onPressed: () {},
-                                      child: Text(
-                                        "Apartment",
-                                        style: GoogleFonts.raleway(
-                                          color: Colors.white,
-                                          fontSize: width * 0.025,
-                                          fontWeight: FontWeight.w600,
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                            SizedBox(width: width * 0.02),
-                            Padding(
-                              padding: EdgeInsetsGeometry.only(
-                                top: height * 0.03,
-                              ),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    'Sky Dandelions\nApartment',
-                                    style: GoogleFonts.raleway(
-                                      color: const Color(0xFF234F68),
-                                      fontSize: width * 0.045,
-                                      fontWeight: FontWeight.w800,
-                                      letterSpacing: 0.54,
-                                    ),
-                                  ),
-                                  SizedBox(height: height * 0.01),
-                                  Row(
-                                    children: [
-                                      Icon(
-                                        Icons.star,
-                                        color: Colors.amber,
-                                        size: height * 0.02,
-                                      ),
-                                      SizedBox(width: width * 0.01),
-                                      Text(
-                                        "4.2",
-                                        style: GoogleFonts.montserrat(
-                                          color: const Color(0xFF234F68),
-                                          fontSize: width * 0.045,
-                                          fontWeight: FontWeight.w700,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                  SizedBox(height: height * 0.01),
-                                  Row(
-                                    mainAxisAlignment: MainAxisAlignment.start,
-                                    children: [
-                                      Icon(
-                                        Icons.location_on,
-                                        size: height * 0.020,
-                                        color: const Color(0xFF1F4C6B),
-                                      ),
-                                      SizedBox(width: width * 0.01),
-                                      Text(
-                                        "Coimbatore, TN",
-                                        style: TextStyle(
-                                          fontSize: width * 0.035,
-                                          fontWeight: FontWeight.bold,
-                                          color: const Color(0xFF1F4C6B),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                  SizedBox(height: height * 0.03),
-                                  Row(
-                                    children: [
-                                      Text(
-                                        '₹\t20k',
-                                        style: GoogleFonts.montserrat(
-                                          color: const Color(0xFF234F68),
-                                          fontSize: width * 0.06,
-                                          fontWeight: FontWeight.w700,
-                                        ),
-                                      ),
-                                      Padding(
-                                        padding: EdgeInsetsGeometry.only(
-                                          top: height * 0.01,
-                                        ),
-                                        child: Text(
-                                          '/month',
-                                          style: GoogleFonts.montserrat(
-                                            color: const Color(0xFF234F68),
-                                            fontSize: width * 0.035,
-                                            fontWeight: FontWeight.w500,
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                    SizedBox(width: width * 0.04),
+                    
 
                     ...cart.cartItems.take(4).map((item) {
                       return Padding(
@@ -1077,21 +894,29 @@ class _AllState extends State<Alltab> {
               ),
               SizedBox(height: height * 0.0),
             
-              GridView.builder(
-                shrinkWrap: true,
-                physics: NeverScrollableScrollPhysics(),
-                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 2,
-                  mainAxisSpacing: 10,
-                  crossAxisSpacing: 10,
-                  childAspectRatio: (width * 0.45) / (height * 0.32),
-                ),
+            Consumer<Createprovider>(
+  builder: (context, provider, child) {
+    var propertyList = provider.propertyList;
 
-                itemCount: propertyList.length,
+    if (propertyList.isEmpty) {
+      return Center(child: CircularProgressIndicator());
+    }
 
-                itemBuilder: (context, index) {
-                  final item = propertyList[index];
-  double rating = double.tryParse(item["rating"] ?? "0") ?? 0;
+    return GridView.builder(
+      shrinkWrap: true,
+      physics: NeverScrollableScrollPhysics(),
+      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 2,
+        mainAxisSpacing: 10,
+        crossAxisSpacing: 10,
+        childAspectRatio: (width * 0.45) / (height * 0.32),
+      ),
+      itemCount: propertyList.length,
+      itemBuilder: (context, index) {
+        final item = propertyList[index];
+        double rating =
+            double.tryParse(item["rating"] ?? "0") ?? 0;
+
                   return Card(
                     child: GestureDetector(
                       onTap: () {
@@ -1316,7 +1141,7 @@ Text(
                     ),
                   );
                 },
-              ),
+             );} )
             ],
           ),
         ),
