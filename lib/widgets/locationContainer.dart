@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:real_esate_finder/widgets/map.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:provider/provider.dart';
-import 'package:real_esate_finder/CreateProvider.dart';
+import 'package:real_esate_finder/Provider/CreateProvider.dart';
 
 class Locationcontainer extends StatefulWidget {
   const Locationcontainer({super.key});
@@ -57,7 +57,6 @@ class _LocationcontainerState extends State<Locationcontainer> {
         }
       });
 
-     
       Provider.of<Createprovider>(
         context,
         listen: false,
@@ -283,7 +282,7 @@ class _LocationcontainerState extends State<Locationcontainer> {
 
                   SizedBox(height: height * 0.04),
 
-                  // 🔹 LOCATION LIST (DESIGN SAME)
+                 
                   Column(
                     children: List.generate(locations.length, (index) {
                       return Padding(
@@ -296,10 +295,10 @@ class _LocationcontainerState extends State<Locationcontainer> {
 
                             await saveSelectedIndex(index);
 
-                            // 🔥 FULL ADDRESS
+                         
                             String fullAddress = locations[index];
 
-                            // 🔥 SEND TO PROVIDER
+                           
                             Provider.of<Createprovider>(
                               context,
                               listen: false,
@@ -340,9 +339,9 @@ class _LocationcontainerState extends State<Locationcontainer> {
                                   child: Icon(
                                     selectedIndex == index
                                         ? Icons
-                                              .location_on // selected → filled
+                                              .location_on 
                                         : Icons
-                                              .location_on_outlined, // unselected → outlined
+                                              .location_on_outlined, 
                                     color: selectedIndex == index
                                         ? Colors.white
                                         : Colors.black,
@@ -354,7 +353,7 @@ class _LocationcontainerState extends State<Locationcontainer> {
                                     locations[index]
                                         .split(",")
                                         .first
-                                        .trim(), // ⭐ only first word
+                                        .trim(), 
                                     style: TextStyle(
                                       color: selectedIndex == index
                                           ? Colors.white
@@ -370,6 +369,7 @@ class _LocationcontainerState extends State<Locationcontainer> {
                       );
                     }),
                   ),
+
                   ElevatedButton(
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color(0xFF8BC83F),
@@ -413,6 +413,14 @@ class _LocationcontainerState extends State<Locationcontainer> {
                       ),
                     ),
                   ),
+                  SizedBox(height: height * 0.01),
+                  Text(
+                    "swipe down to close the sheet",
+                    style: TextStyle(
+                      color: Colors.grey[500],
+                      fontSize: width * 0.04,
+                    ),
+                  ),
                 ],
               ),
             );
@@ -421,7 +429,7 @@ class _LocationcontainerState extends State<Locationcontainer> {
       },
     );
   }
- 
+
   //  ADD ADDRESS SHEET – PROFESSIONAL THEME
   void openAddAddressSheet(BuildContext context, Function(String) onSave) {
     final width = MediaQuery.of(context).size.width;
@@ -447,7 +455,6 @@ class _LocationcontainerState extends State<Locationcontainer> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-             
               Container(
                 width: width * 0.12,
                 height: height * 0.005,
@@ -458,20 +465,24 @@ class _LocationcontainerState extends State<Locationcontainer> {
               ),
 
               SizedBox(height: height * 0.03),
-
-              // 🔹 TITLE
-              Text(
-                "Add New Address",
-                style: TextStyle(
-                  fontSize: width * 0.05,
-                  fontWeight: FontWeight.bold,
-                  color: const Color(0xFF1F4C6B),
-                ),
+              Padding(padding: EdgeInsets.only(left: width * 0.02)),
+              Row(
+                children: [
+                  Text(
+                    "Add New Address",
+                    style: TextStyle(
+                      fontSize: width * 0.05,
+                      fontWeight: FontWeight.bold,
+                      color: const Color(0xFF1F4C6B),
+                    ),
+                  ),
+                  Spacer(),
+                 OutlinedButton(onPressed: (){Navigator.pop(context);}, child: Text("Cancel",style: TextStyle(color: const Color(0xFF1F4C6B),fontSize: width*0.035),))
+                ],
               ),
 
               SizedBox(height: height * 0.03),
 
-              // 🔹 ADDRESS FIELD
               TextField(
                 controller: addressController,
                 maxLines: 3,
@@ -491,7 +502,6 @@ class _LocationcontainerState extends State<Locationcontainer> {
 
               SizedBox(height: height * 0.04),
 
-              // 🔹 SAVE BUTTON (THEME)
               ElevatedButton(
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFF8BC83F),
@@ -510,7 +520,7 @@ class _LocationcontainerState extends State<Locationcontainer> {
                   height: height * 0.065,
                   child: Center(
                     child: Text(
-                      "Save Address",
+                      "Add Address",
                       style: TextStyle(
                         color: Colors.white,
                         fontSize: width * 0.042,

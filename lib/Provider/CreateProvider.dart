@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:real_esate_finder/ApiConfig.dart';
+import 'package:real_esate_finder/ApiConfig/ApiConfig.dart';
 
 import 'package:http/http.dart' as http;
 import 'dart:convert';
@@ -62,7 +62,7 @@ class Createprovider with ChangeNotifier {
     return _cartItems.any((x) => x["title"] == item["title"]);
   }
 
-
+// address save panna use aguthu
  String _address = "";
 
   String get address => _address;
@@ -73,8 +73,7 @@ class Createprovider with ChangeNotifier {
   }
 
 
-//
-
+//property details api call panna use aguthu
   List<Map<String, dynamic>> _propertyList = [];
 
   List<Map<String, dynamic>> get propertyList => _propertyList;
@@ -87,7 +86,7 @@ class Createprovider with ChangeNotifier {
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
         _propertyList = List<Map<String, dynamic>>.from(data);
-        notifyListeners(); // 🔥 முக்கியம்
+        notifyListeners(); 
       }
     } catch (e) {
       print("API Error: $e");

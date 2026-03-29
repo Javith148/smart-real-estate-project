@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:real_esate_finder/homepage.dart';
-import 'package:real_esate_finder/loader.dart';
+import 'package:real_esate_finder/bottom_menu/homepage.dart';
+import 'package:real_esate_finder/screens/loader/loader.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:provider/provider.dart';
-import 'package:real_esate_finder/CreateProvider.dart';
+import 'package:real_esate_finder/Provider/CreateProvider.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'dart:async';
-import 'package:real_esate_finder/CreateProvider.dart';
+import 'package:real_esate_finder/Provider/CreateProvider.dart';
 import 'package:provider/provider.dart';
 import 'package:real_esate_finder/screens/property_details/property_details.dart';
 

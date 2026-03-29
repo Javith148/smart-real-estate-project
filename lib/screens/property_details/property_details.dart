@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:real_esate_finder/CreateProvider.dart';
+import 'package:real_esate_finder/Provider/CreateProvider.dart';
 import 'package:provider/provider.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'dart:convert';
@@ -8,7 +8,7 @@ import 'package:real_esate_finder/screens/payment_page/payment.dart';
 import 'dart:math';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
-import 'package:real_esate_finder/ApiConfig.dart';
+import 'package:real_esate_finder/ApiConfig/ApiConfig.dart';
 
 class PropertyDetails extends StatefulWidget {
   final Map<String, dynamic> property;

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:real_esate_finder/CreateProvider.dart';
-import 'package:real_esate_finder/homepage.dart';
+import 'package:real_esate_finder/Provider/CreateProvider.dart';
+import 'package:real_esate_finder/bottom_menu/homepage.dart';
 import 'dart:async';
 
 class OtpPage extends StatefulWidget {

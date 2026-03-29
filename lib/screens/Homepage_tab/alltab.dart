@@ -1,19 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:real_esate_finder/cartpage.dart';
+import 'package:real_esate_finder/bottom_menu/cartpage.dart';
 import 'package:real_esate_finder/screens/promotion/halloween.dart';
 import 'package:real_esate_finder/screens/promotion/summer.dart';
 import 'package:real_esate_finder/screens/promotion/Winter.dart';
-import 'package:real_esate_finder/CreateProvider.dart';
+import 'package:real_esate_finder/Provider/CreateProvider.dart';
 import 'package:provider/provider.dart';
 import 'package:real_esate_finder/screens/property_details/property_details.dart';
 import 'package:real_esate_finder/screens/topLocation/topLocation.dart';
 import 'package:real_esate_finder/screens/topLocation/locationdetail.dart';
 import 'package:real_esate_finder/screens/top agent page/agent.dart';
 import 'package:real_esate_finder/screens/top agent page/agentprofile.dart';
-import 'package:real_esate_finder/ApiConfig.dart';
-
-
+import 'package:real_esate_finder/ApiConfig/ApiConfig.dart';
 
 class Alltab extends StatefulWidget {
   const Alltab({super.key});
@@ -23,101 +21,95 @@ class Alltab extends StatefulWidget {
 }
 
 class _AllState extends State<Alltab> {
- 
+  List<Map<String, dynamic>> loaction = [
+    {
+      "image": "assets/kovai.jpg",
+      "title": "Coimbatore",
+      "sub1": "assets/kovai1.jpg",
+      "sub2": "assets/kovai2.jpg",
+    },
+    {
+      "image": "assets/chennai.jpg",
+      "title": "Chennai",
+      "sub1": "assets/chennai2.jpg",
+      "sub2": "assets/chennai1.jpg",
+    },
+    {
+      "image": "assets/ooty.jpg",
+      "title": "Ooty",
+      "sub1": "assets/ooty1.jpg",
+      "sub2": "assets/ooty2.jpg",
+    },
+    {
+      "image": "assets/cochin.jpg",
+      "title": "Cochin",
+      "sub1": "assets/cochin1.jpg",
+      "sub2": "assets/cochin2.jpg",
+    },
+    {
+      "image": "assets/varkala.jpg",
+      "title": "Varkala",
+      "sub1": "assets/varkala1.jpg",
+      "sub2": "assets/varkala2.jpg",
+    },
+    {
+      "image": "assets/bangalore.jpg",
+      "title": "Bangalore",
+      "sub1": "assets/bangalore1.jpg",
+      "sub2": "assets/bangalore2.jpg",
+    },
+  ];
 
-
-
-
- List<Map<String, dynamic>> loaction = [
-      {
-        "image": "assets/kovai.jpg",
-        "title": "Coimbatore",
-        "sub1": "assets/kovai1.jpg",
-        "sub2": "assets/kovai2.jpg",
-      },
-      {
-        "image": "assets/chennai.jpg",
-        "title": "Chennai",
-        "sub1": "assets/chennai2.jpg",
-        "sub2": "assets/chennai1.jpg",
-      },
-      {
-        "image": "assets/ooty.jpg",
-        "title": "Ooty",
-        "sub1": "assets/ooty1.jpg",
-        "sub2": "assets/ooty2.jpg",
-      },
-      {
-        "image": "assets/cochin.jpg",
-        "title": "Cochin",
-        "sub1": "assets/cochin1.jpg",
-        "sub2": "assets/cochin2.jpg",
-      },
-      {
-        "image": "assets/varkala.jpg",
-        "title": "Varkala",
-        "sub1": "assets/varkala1.jpg",
-        "sub2": "assets/varkala2.jpg",
-      },
-      {
-        "image": "assets/bangalore.jpg",
-        "title": "Bangalore",
-        "sub1": "assets/bangalore1.jpg",
-        "sub2": "assets/bangalore2.jpg",
-      },
-    ];
-
-    final List<Map<String, String>> peopleList = [
-      {
-        "name": "Javi",
-        "mail id": "javithjavi@gmail.com",
-        "image": "assets/person_javi.jpeg",
-        "rating": "5",
-        "sold": "500",
-        "reviews": "1000",
-      },
-      {
-        "name": "Amanda",
-        "mail id": "javithjavi@gmail.com",
-        "image": "assets/person1.png",
-        "rating": "4.5",
-        "sold": "124",
-        "reviews": "400",
-      },
-      {
-        "name": "Anderson",
-        "mail id": "javithjavi@gmail.com",
-        "image": "assets/person2.png",
-        "rating": "4",
-        "sold": "124",
-        "reviews": "180",
-      },
-      {
-        "name": "Samantha",
-        "mail id": "javithjavi@gmail.com",
-        "image": "assets/person3.png",
-        "rating": "4",
-        "sold": "124",
-        "reviews": "440",
-      },
-      {
-        "name": "Andrew",
-        "mail id": "javithjavi@gmail.com",
-        "image": "assets/person4.png",
-        "rating": "4",
-        "sold": "124",
-        "reviews": "102",
-      },
-      {
-        "name": "Michael",
-        "mail id": "javithjavi@gmail.com",
-        "image": "assets/person5.png",
-        "rating": "4",
-        "sold": "124",
-        "reviews": "340",
-      },
-    ];
-
+  final List<Map<String, String>> peopleList = [
+    {
+      "name": "Javi",
+      "mail id": "javithjavi@gmail.com",
+      "image": "assets/person_javi.jpeg",
+      "rating": "5",
+      "sold": "500",
+      "reviews": "1000",
+    },
+    {
+      "name": "Amanda",
+      "mail id": "javithjavi@gmail.com",
+      "image": "assets/person1.png",
+      "rating": "4.5",
+      "sold": "124",
+      "reviews": "400",
+    },
+    {
+      "name": "Anderson",
+      "mail id": "javithjavi@gmail.com",
+      "image": "assets/person2.png",
+      "rating": "4",
+      "sold": "124",
+      "reviews": "180",
+    },
+    {
+      "name": "Samantha",
+      "mail id": "javithjavi@gmail.com",
+      "image": "assets/person3.png",
+      "rating": "4",
+      "sold": "124",
+      "reviews": "440",
+    },
+    {
+      "name": "Andrew",
+      "mail id": "javithjavi@gmail.com",
+      "image": "assets/person4.png",
+      "rating": "4",
+      "sold": "124",
+      "reviews": "102",
+    },
+    {
+      "name": "Michael",
+      "mail id": "javithjavi@gmail.com",
+      "image": "assets/person5.png",
+      "rating": "4",
+      "sold": "124",
+      "reviews": "340",
+    },
+  ];
 
   Widget featuredEstateCard({
     required double width,
@@ -153,13 +145,14 @@ class _AllState extends State<Alltab> {
                     vertical: height * 0.02,
                   ),
                   child: ClipRRect(
-                                    borderRadius: BorderRadius.circular(20),
-                                    child: Image.network(
-                          ApiConfig.getImage(item["image"]),
-                    height: height * 0.25,
-                    fit: BoxFit.fill,
+                    borderRadius: BorderRadius.circular(20),
+                    child: Image.network(
+                      ApiConfig.getImage(item["image"]),
+                      height: height * 0.25,
+                      fit: BoxFit.fill,
+                    ),
                   ),
-                ),),
+                ),
                 Positioned(
                   left: width * 0.052,
                   top: height * 0.032,
@@ -228,7 +221,9 @@ class _AllState extends State<Alltab> {
                       ),
                       SizedBox(width: width * 0.01),
                       Text(
-                        (item["rating"] != null ? item["rating"].toString() : "4.2"),
+                        (item["rating"] != null
+                            ? item["rating"].toString()
+                            : "4.2"),
                         style: GoogleFonts.montserrat(
                           color: const Color(0xFF234F68),
                           fontSize: width * 0.045,
@@ -260,7 +255,7 @@ class _AllState extends State<Alltab> {
                   Row(
                     children: [
                       Text(
-                        item["price"].toString(), 
+                        item["price"].toString(),
                         style: GoogleFonts.montserrat(
                           color: const Color(0xFF234F68),
                           fontSize: width * 0.06,
@@ -289,26 +284,12 @@ class _AllState extends State<Alltab> {
     );
   }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
   @override
   Widget build(BuildContext context) {
     final cart = Provider.of<Createprovider>(context);
     final width = MediaQuery.of(context).size.width;
     final height = MediaQuery.of(context).size.height;
 
-    
     return Padding(
       padding: EdgeInsets.only(top: height * 0.02),
       child: SingleChildScrollView(
@@ -316,9 +297,7 @@ class _AllState extends State<Alltab> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
-              
-
-  SingleChildScrollView(
+              SingleChildScrollView(
                 scrollDirection: Axis.horizontal,
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.start,
@@ -597,57 +576,56 @@ class _AllState extends State<Alltab> {
               ),
               SizedBox(height: height * 0.011),
               if (cart.cartItems.isNotEmpty)
-              Padding(
-                padding: EdgeInsetsGeometry.directional(
-                  start: width * 0.07,
-                  end: width * 0.04,
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      'Your Favourite',
-                      style: TextStyle(
-                        color: const Color(0xFF242B5C),
-                        fontSize: width * 0.060,
-                        fontFamily: 'Lato',
-                        fontWeight: FontWeight.w700,
-                        letterSpacing: 0.54,
+                Padding(
+                  padding: EdgeInsetsGeometry.directional(
+                    start: width * 0.07,
+                    end: width * 0.04,
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        'Your Favourite',
+                        style: TextStyle(
+                          color: const Color(0xFF242B5C),
+                          fontSize: width * 0.060,
+                          fontFamily: 'Lato',
+                          fontWeight: FontWeight.w700,
+                          letterSpacing: 0.54,
+                        ),
                       ),
-                    ),
-                    Column(
-                      children: [
-                        SizedBox(height: height * 0.005),
-                        TextButton(
-                          onPressed: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => Cartpage(),
+                      Column(
+                        children: [
+                          SizedBox(height: height * 0.005),
+                          TextButton(
+                            onPressed: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => Cartpage(),
+                                ),
+                              );
+                            },
+                            child: Text(
+                              'view all',
+                              style: GoogleFonts.raleway(
+                                color: const Color(0xFF242B5C),
+                                fontSize: width * 0.039,
+                                fontWeight: FontWeight.w500,
                               ),
-                            );
-                          },
-                          child: Text(
-                            'view all',
-                            style: GoogleFonts.raleway(
-                              color: const Color(0xFF242B5C),
-                              fontSize: width * 0.039,
-                              fontWeight: FontWeight.w500,
                             ),
                           ),
-                        ),
-                      ],
-                    ),
-                  ],
+                        ],
+                      ),
+                    ],
+                  ),
                 ),
-              ),
 
               SingleChildScrollView(
                 scrollDirection: Axis.horizontal,
                 child: Row(
                   children: [
                     SizedBox(width: width * 0.04),
-                    
 
                     ...cart.cartItems.take(4).map((item) {
                       return Padding(
@@ -893,255 +871,262 @@ class _AllState extends State<Alltab> {
                 ),
               ),
               SizedBox(height: height * 0.0),
-            
-            Consumer<Createprovider>(
-  builder: (context, provider, child) {
-    var propertyList = provider.propertyList;
 
-    if (propertyList.isEmpty) {
-      return Center(child: CircularProgressIndicator());
-    }
+              Consumer<Createprovider>(
+                builder: (context, provider, child) {
+                  var propertyList = provider.propertyList;
 
-    return GridView.builder(
-      shrinkWrap: true,
-      physics: NeverScrollableScrollPhysics(),
-      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 2,
-        mainAxisSpacing: 10,
-        crossAxisSpacing: 10,
-        childAspectRatio: (width * 0.45) / (height * 0.32),
-      ),
-      itemCount: propertyList.length,
-      itemBuilder: (context, index) {
-        final item = propertyList[index];
-        double rating =
-            double.tryParse(item["rating"] ?? "0") ?? 0;
+                  if (propertyList.isEmpty) {
+                    return Center(child: CircularProgressIndicator());
+                  }
 
-                  return Card(
-                    child: GestureDetector(
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) =>
-                                PropertyDetails(property: item),
-                          ),
-                        );
-                      },
+                  return GridView.builder(
+                    shrinkWrap: true,
+                    physics: NeverScrollableScrollPhysics(),
+                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 2,
+                      mainAxisSpacing: 10,
+                      crossAxisSpacing: 10,
+                      childAspectRatio: (width * 0.45) / (height * 0.32),
+                    ),
+                    itemCount: propertyList.length,
+                    itemBuilder: (context, index) {
+                      final item = propertyList[index];
+                      double rating =
+                          double.tryParse(item["rating"] ?? "0") ?? 0;
 
-                      child: Container(
-                        width: width * 0.45,
-                        height: height * 0.3,
-                        decoration: BoxDecoration(
-                          color: Color.fromARGB(186, 244, 242, 242),
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            SizedBox(height: height * 0.01),
-                            Center(
-                              child: Stack(
-                                children: [
-                                  ClipRRect(
-                                    borderRadius: BorderRadius.circular(12),
-                                    child: Image.network(
-                                     ApiConfig.getImage(item["image"]),
-                                      height: height * 0.23,
-                                      width: width * 0.4,
-                                      fit: BoxFit.cover,
-                                    ),
-                                  ),
+                      return Card(
+                        child: GestureDetector(
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) =>
+                                    PropertyDetails(property: item),
+                              ),
+                            );
+                          },
 
-                                  Positioned(
-                                    right: width * 0.03,
-                                    top: height * 0.017,
-                                    child: Consumer<Createprovider>(
-                                      builder: (context, cart, child) {
-                                        bool isAdded = cart.isInCart(item);
+                          child: Container(
+                            width: width * 0.45,
+                            height: height * 0.3,
+                            decoration: BoxDecoration(
+                              color: Color.fromARGB(186, 244, 242, 242),
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                SizedBox(height: height * 0.01),
+                                Center(
+                                  child: Stack(
+                                    children: [
+                                      ClipRRect(
+                                        borderRadius: BorderRadius.circular(12),
+                                        child: Image.network(
+                                          ApiConfig.getImage(item["image"]),
+                                          height: height * 0.23,
+                                          width: width * 0.4,
+                                          fit: BoxFit.cover,
+                                        ),
+                                      ),
 
-                                        return InkWell(
-                                          onTap: () {
-                                            if (isAdded) {
-                                              cart.removeFromCart(item);
+                                      Positioned(
+                                        right: width * 0.03,
+                                        top: height * 0.017,
+                                        child: Consumer<Createprovider>(
+                                          builder: (context, cart, child) {
+                                            bool isAdded = cart.isInCart(item);
 
-                                              ScaffoldMessenger.of(
-                                                context,
-                                              ).showSnackBar(
-                                                SnackBar(
-                                                  content: Text(
-                                                    "${item['title']} removed from favorites",
-                                                  ),
+                                            return InkWell(
+                                              onTap: () {
+                                                if (isAdded) {
+                                                  cart.removeFromCart(item);
 
-                                                  backgroundColor:
-                                                      Colors.redAccent,
+                                                  ScaffoldMessenger.of(
+                                                    context,
+                                                  ).showSnackBar(
+                                                    SnackBar(
+                                                      content: Text(
+                                                        "${item['title']} removed from favorites",
+                                                      ),
+
+                                                      backgroundColor:
+                                                          Colors.redAccent,
+                                                    ),
+                                                  );
+                                                } else {
+                                                  cart.addToCart(item);
+
+                                                  ScaffoldMessenger.of(
+                                                    context,
+                                                  ).showSnackBar(
+                                                    SnackBar(
+                                                      content: Text(
+                                                        "${item['title']} added to favorites",
+                                                      ),
+                                                    ),
+                                                  );
+                                                }
+                                              },
+
+                                              child: AnimatedContainer(
+                                                duration: Duration(
+                                                  milliseconds: 250,
                                                 ),
-                                              );
-                                            } else {
-                                              cart.addToCart(item);
-
-                                              ScaffoldMessenger.of(
-                                                context,
-                                              ).showSnackBar(
-                                                SnackBar(
-                                                  content: Text(
-                                                    "${item['title']} added to favorites",
-                                                  ),
+                                                width: width * 0.08,
+                                                height: width * 0.08,
+                                                decoration: BoxDecoration(
+                                                  color: isAdded
+                                                      ? Colors.green
+                                                      : Colors.white,
+                                                  shape: BoxShape.circle,
+                                                  boxShadow: [
+                                                    BoxShadow(
+                                                      color: Colors.black12,
+                                                      blurRadius: 4,
+                                                      spreadRadius: 1,
+                                                    ),
+                                                  ],
                                                 ),
-                                              );
-                                            }
+                                                child: Icon(
+                                                  isAdded
+                                                      ? Icons.favorite
+                                                      : Icons.favorite_border,
+                                                  color: isAdded
+                                                      ? Colors.white
+                                                      : Colors.pinkAccent,
+                                                  size: height * 0.020,
+                                                ),
+                                              ),
+                                            );
                                           },
+                                        ),
+                                      ),
 
-                                          child: AnimatedContainer(
-                                            duration: Duration(
-                                              milliseconds: 250,
+                                      Positioned(
+                                        bottom: height * 0.01,
+                                        right: width * 0.03,
+                                        child: Container(
+                                          height: height * 0.045,
+                                          width: width * 0.2,
+                                          decoration: ShapeDecoration(
+                                            color: Color.fromARGB(
+                                              214,
+                                              35,
+                                              79,
+                                              104,
                                             ),
-                                            width: width * 0.08,
-                                            height: width * 0.08,
-                                            decoration: BoxDecoration(
-                                              color: isAdded
-                                                  ? Colors.green
-                                                  : Colors.white,
-                                              shape: BoxShape.circle,
-                                              boxShadow: [
-                                                BoxShadow(
-                                                  color: Colors.black12,
-                                                  blurRadius: 4,
-                                                  spreadRadius: 1,
+                                            shape: RoundedRectangleBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(8),
+                                            ),
+                                          ),
+                                          child: Center(
+                                            child: Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.center,
+                                              children: [
+                                                Text(
+                                                  item["price"].toString(),
+                                                  style: GoogleFonts.montserrat(
+                                                    color: Colors.white,
+                                                    fontSize: width * 0.035,
+                                                    fontWeight: FontWeight.w700,
+                                                  ),
+                                                ),
+                                                Padding(
+                                                  padding: EdgeInsets.only(
+                                                    top: height * 0.005,
+                                                  ),
+                                                  child: Text(
+                                                    "/month",
+                                                    style:
+                                                        GoogleFonts.montserrat(
+                                                          color: Colors.white,
+                                                          fontSize:
+                                                              width * 0.02,
+                                                          fontWeight:
+                                                              FontWeight.w500,
+                                                        ),
+                                                  ),
                                                 ),
                                               ],
                                             ),
-                                            child: Icon(
-                                              isAdded
-                                                  ? Icons.favorite
-                                                  : Icons.favorite_border,
-                                              color: isAdded
-                                                  ? Colors.white
-                                                  : Colors.pinkAccent,
-                                              size: height * 0.020,
-                                            ),
-                                          ),
-                                        );
-                                      },
-                                    ),
-                                  ),
-
-                                  Positioned(
-                                    bottom: height * 0.01,
-                                    right: width * 0.03,
-                                    child: Container(
-                                      height: height * 0.045,
-                                      width: width * 0.2,
-                                      decoration: ShapeDecoration(
-                                        color: Color.fromARGB(214, 35, 79, 104),
-                                        shape: RoundedRectangleBorder(
-                                          borderRadius: BorderRadius.circular(
-                                            8,
                                           ),
                                         ),
                                       ),
-                                      child: Center(
-                                        child: Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.center,
-                                          children: [
-                                            Text(
-                                              item["price"].toString(),
-                                              style: GoogleFonts.montserrat(
-                                                color: Colors.white,
-                                                fontSize: width * 0.035,
-                                                fontWeight: FontWeight.w700,
-                                              ),
-                                            ),
-                                            Padding(
-                                              padding: EdgeInsets.only(
-                                                top: height * 0.005,
-                                              ),
-                                              child: Text(
-                                                "/month",
-                                                style: GoogleFonts.montserrat(
-                                                  color: Colors.white,
-                                                  fontSize: width * 0.02,
-                                                  fontWeight: FontWeight.w500,
-                                                ),
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                    ),
+                                    ],
                                   ),
-                                ],
-                              ),
-                            ),
-
-                            Padding(
-                              padding: EdgeInsets.only(
-                                left: width * 0.04,
-                                top: height * 0.01,
-                              ),
-                              child: Text(
-                                item["title"],
-                                style: GoogleFonts.raleway(
-                                  color: Color(0xFF242B5C),
-                                  fontSize: width * 0.05,
-                                  fontWeight: FontWeight.w700,
                                 ),
-                              ),
-                            ),
 
-                            SizedBox(height: height * 0.005),
-
-                            Padding(
-                              padding: EdgeInsets.only(left: width * 0.03),
-                              child: Row(
-                                children: [
-                                  Icon(
-                                    Icons.star,
-                                    color: Colors.amber,
-                                    size: height * 0.02,
+                                Padding(
+                                  padding: EdgeInsets.only(
+                                    left: width * 0.04,
+                                    top: height * 0.01,
                                   ),
-                                  SizedBox(width: width * 0.01),
-
-                                
-
-Text(
-  rating.toStringAsFixed(1), 
-  style: GoogleFonts.montserrat(
-    color: Color(0xFF234F68),
-    fontSize: width * 0.03,
-    fontWeight: FontWeight.w700,
-  ),
-),
-
-                                  SizedBox(width: width * 0.03),
-
-                                  Icon(
-                                    Icons.location_on,
-                                    size: height * 0.015,
-                                    color: Color(0xFF1F4C6B),
-                                  ),
-
-                                  SizedBox(width: width * 0.01),
-
-                                  Text(
-                                    item["location"],
-                                    style: TextStyle(
-                                      fontSize: width * 0.03,
-                                      fontWeight: FontWeight.bold,
-                                      color: Color(0xFF1F4C6B),
+                                  child: Text(
+                                    item["title"],
+                                    style: GoogleFonts.raleway(
+                                      color: Color(0xFF242B5C),
+                                      fontSize: width * 0.05,
+                                      fontWeight: FontWeight.w700,
                                     ),
                                   ),
-                                ],
-                              ),
+                                ),
+
+                                SizedBox(height: height * 0.005),
+
+                                Padding(
+                                  padding: EdgeInsets.only(left: width * 0.03),
+                                  child: Row(
+                                    children: [
+                                      Icon(
+                                        Icons.star,
+                                        color: Colors.amber,
+                                        size: height * 0.02,
+                                      ),
+                                      SizedBox(width: width * 0.01),
+
+                                      Text(
+                                        rating.toStringAsFixed(1),
+                                        style: GoogleFonts.montserrat(
+                                          color: Color(0xFF234F68),
+                                          fontSize: width * 0.03,
+                                          fontWeight: FontWeight.w700,
+                                        ),
+                                      ),
+
+                                      SizedBox(width: width * 0.03),
+
+                                      Icon(
+                                        Icons.location_on,
+                                        size: height * 0.015,
+                                        color: Color(0xFF1F4C6B),
+                                      ),
+
+                                      SizedBox(width: width * 0.01),
+
+                                      Text(
+                                        item["location"],
+                                        style: TextStyle(
+                                          fontSize: width * 0.03,
+                                          fontWeight: FontWeight.bold,
+                                          color: Color(0xFF1F4C6B),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
                             ),
-                          ],
+                          ),
                         ),
-                      ),
-                    ),
+                      );
+                    },
                   );
                 },
-             );} )
+              ),
             ],
           ),
         ),

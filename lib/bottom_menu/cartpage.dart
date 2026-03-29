@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:real_esate_finder/homepage.dart';
-import 'CreateProvider.dart';
+import 'package:real_esate_finder/bottom_menu/homepage.dart';
+import '../Provider/CreateProvider.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
-import 'package:real_esate_finder/ApiConfig.dart';
+import 'package:real_esate_finder/ApiConfig/ApiConfig.dart';
 import 'package:real_esate_finder/screens/property_details/property_details.dart';
 
 class Cartpage extends StatefulWidget {

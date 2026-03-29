@@ -9,7 +9,7 @@ class Loader extends StatelessWidget {
     final width = MediaQuery.of(context).size.width;
     final height = MediaQuery.of(context).size.height;
 
-    // Responsive title size
+    
     double titleSize = width < 360
         ? 28
         : width < 600
@@ -19,7 +19,7 @@ class Loader extends StatelessWidget {
     return Scaffold(
       body: Stack(
         children: [
-          /// Background Image
+          
           Image.asset(
             "assets/Loader_img.png",
             fit: BoxFit.fill,
@@ -27,13 +27,13 @@ class Loader extends StatelessWidget {
             height: double.infinity,
           ),
 
-          /// Color Overlay
+         
           Opacity(
             opacity: 0.5,
             child: Container(color: const Color(0xCC21628A)),
           ),
 
-          /// Gradient Overlay
+          
           Positioned.fill(
             child: Container(
               decoration: const BoxDecoration(
@@ -47,12 +47,12 @@ class Loader extends StatelessWidget {
             ),
           ),
 
-          /// Center Logo + Text
+          
           Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Transform.translate(
-                offset: Offset(0, -height * 0.10), // Moves up
+                offset: Offset(0, -height * 0.10), 
                 child: Center(
                   child: SizedBox(
                     height: height * 0.35,
@@ -60,7 +60,7 @@ class Loader extends StatelessWidget {
                     child: Stack(
                       alignment: Alignment.center, 
                       children: [
-                        /// Logo Image
+                     
                         Image.asset(
                           "assets/logo.png",
                           fit: BoxFit.cover,
@@ -68,7 +68,6 @@ class Loader extends StatelessWidget {
                           height: height * 0.25,
                         ),
 
-                        /// PERFECT CENTERED TEXT ✔
                         Positioned(
                           top: height * 0.23,
                           left: 0,
@@ -94,7 +93,7 @@ class Loader extends StatelessWidget {
             ],
           ),
 
-          /// Bottom Button + Version Info
+     
           Column(
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
@@ -103,7 +102,7 @@ class Loader extends StatelessWidget {
                   padding: const EdgeInsets.only(bottom: 30),
                   child: Column(
                     children: [
-                      // Responsive Button
+                      
                       SizedBox(
                         width: width * 0.40,
                         height: height * 0.06,
@@ -137,7 +136,7 @@ class Loader extends StatelessWidget {
 
                       const SizedBox(height: 10),
 
-                      // Version Info
+                     
                       Text.rich(
                         TextSpan(
                           children: [

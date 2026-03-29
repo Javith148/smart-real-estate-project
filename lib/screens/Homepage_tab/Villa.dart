@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:real_esate_finder/CreateProvider.dart';
+import 'package:real_esate_finder/Provider/CreateProvider.dart';
 import 'package:provider/provider.dart';
 import 'package:real_esate_finder/screens/property_details/property_details.dart';
-import 'package:real_esate_finder/ApiConfig.dart';
+import 'package:real_esate_finder/ApiConfig/ApiConfig.dart';
 
 class VillaTab extends StatefulWidget {
   const VillaTab({super.key});
@@ -24,7 +24,7 @@ class _VillaTabState extends State<VillaTab> {
           final propertyList = provider.propertyList
               .where(
                 (property) =>
-                    property["proAperty_type"].toLowerCase() == "villa",
+                    property["proAperty_type"]?.toLowerCase() == "villa",
               )
               .toList();
 

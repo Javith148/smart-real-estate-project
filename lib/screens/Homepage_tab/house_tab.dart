@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:real_esate_finder/CreateProvider.dart';
+import 'package:real_esate_finder/Provider/CreateProvider.dart';
 import 'package:provider/provider.dart';
 import 'package:real_esate_finder/screens/property_details/property_details.dart';
-import 'package:real_esate_finder/ApiConfig.dart';
+import 'package:real_esate_finder/ApiConfig/ApiConfig.dart';
 
 class HouseTab extends StatefulWidget {
   const HouseTab({super.key});
@@ -24,7 +24,7 @@ class _HouseTabState extends State<HouseTab> {
           final propertyList = provider.propertyList
               .where(
                 (property) =>
-                    property["property_type"].toLowerCase() == "house",
+                    property["property_type"]?.toLowerCase() == "house",
               )
               .toList();
 

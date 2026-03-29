@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:real_esate_finder/screens/loader/page2.dart';
-import 'package:real_esate_finder/main_login.dart';
+import 'package:real_esate_finder/screens/login/main_login.dart';
 
 class LoadPage1 extends StatelessWidget {
   const LoadPage1({super.key});

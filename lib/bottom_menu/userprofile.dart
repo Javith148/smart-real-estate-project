@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:real_esate_finder/main_login.dart';
+import 'package:real_esate_finder/screens/login/main_login.dart';
 import 'package:provider/provider.dart';
-import 'package:real_esate_finder/CreateProvider.dart';
+import 'package:real_esate_finder/Provider/CreateProvider.dart';
 import 'package:intl/intl.dart';
 
 class Userprofile extends StatefulWidget {
