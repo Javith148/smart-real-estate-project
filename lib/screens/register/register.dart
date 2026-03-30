@@ -198,6 +198,7 @@ class _RegisterState extends State<Register> {
     final height = MediaQuery.of(context).size.height;
 
     return Scaffold(
+       backgroundColor: Colors.white,
       appBar: AppBar(
         backgroundColor: Colors.white,
         leading: Padding(
@@ -210,6 +211,7 @@ class _RegisterState extends State<Register> {
         ),
       ),
       body: SingleChildScrollView(
+       
         child: Form(
           key: _formKey,
           child: Padding(

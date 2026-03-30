@@ -9,6 +9,9 @@ import 'package:provider/provider.dart';
 import 'package:real_esate_finder/Provider/CreateProvider.dart';
 import 'dart:math';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:real_esate_finder/ApiConfig/ApiConfig.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 class Searchpage extends StatefulWidget {
   const Searchpage({super.key});
@@ -49,15 +52,66 @@ class _SearchpageState extends State<Searchpage> {
       _lastAddress = address;
       moveCameraToAddress();
     }
+     if (!fetched) {
+    fetched = true;
+    fetchAndSetupProperties();
+  }
   }
 
   @override
   void initState() {
     super.initState();
     createFilteredMarkers();
+    fetchPropertiesFromAPI();
+    print(propertyList);
   }
 
 
+bool fetched = false;
+
+Future<void> fetchAndSetupProperties() async {
+ 
+  await fetchPropertiesFromAPI();
+
+  await createFilteredMarkers();
+
+  
+  final nearbyList = getNearbyPropertyDetails(currentCameraPosition);
+  setState(() {
+    nearbyProperties = nearbyList;
+    hasNearbyProperty = nearbyList.isNotEmpty;
+    nearbyPropertyCount = nearbyList.length;
+  });
+}
+
+Future<void> fetchPropertiesFromAPI() async {
+  try {
+    final url = Uri.parse(ApiConfig.getApi('/api/property_details/'));
+    final response = await http.get(url);
+
+    if (response.statusCode == 200) {
+      final List data = jsonDecode(response.body);
+
+      // Append API items to your list
+      setState(() {
+        propertyList.addAll(data.map<Map<String, dynamic>>((item) {
+          return {
+            "image": item["image"] ?? "",
+            "title": item["title"] ?? "",
+            "price": item["price"] ?? "",
+            "rating": item["rating"] ?? "",
+            "property-type": item["property-type"] ?? "",
+            "location": item["location"] ?? "",
+          };
+        }).toList());
+      });
+    } else {
+      debugPrint("API Error: ${response.statusCode}");
+    }
+  } catch (e) {
+    debugPrint("API Fetch Error: $e");
+  }
+}
   List<Map<String, dynamic>> propertyList = [
     {
       "image": "assets/nearby1.png",
@@ -82,6 +136,14 @@ class _SearchpageState extends State<Searchpage> {
       "rating": "4.7",
       "property-type": "Apartment",
       "location": "RS Puram, TN",
+    },
+    {
+      "image": "assets/nearby3.png",
+      "title": "Garden Residency",
+      "price": "₹25k",
+      "rating": "4.7",
+      "property-type": "Apartment",
+      "location": "Ukkadam",
     },
     {
       "image": "assets/nearby4.png",
@@ -354,6 +416,7 @@ class _SearchpageState extends State<Searchpage> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   // 🔹 Drag Indicator
+                  Text(propertyList.length.toString()),
                   Center(
                     child: Container(
                       width: width * 0.12,

@@ -1,5 +1,5 @@
 class ApiConfig {
-  static const String baseUrl = "https://9638-2401-4900-93da-6d70-cdd0-f781-4239-d2f3.ngrok-free.app";
+  static const String baseUrl = "https://e641-2405-201-e017-9148-fc97-893e-eaa6-4cb9.ngrok-free.app/";
 
   static String getImage(String path) {
     return "$baseUrl$path";
